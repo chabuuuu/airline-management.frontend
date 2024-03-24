@@ -1,7 +1,10 @@
+"use client";
+
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
+import SearchModal from "@/components/SearchModal";
 import Image from "next/image";
 
 export default function Home() {
@@ -17,10 +20,66 @@ export default function Home() {
     {
       logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
       brand: "VietNamAirlines",
-      date: "2024-03-25",
+      date: "16:20 PM, 2024-03-25",
       spot: ["HoChiMinh", "HaNoi"],
       status: "available",
       price: 3500000,
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
+    },
+    {
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-26",
+      spot: ["HoChiMinh", "HaNoi"],
+      status: "sold",
+      price: "Not available",
     },
     {
       logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
@@ -37,7 +96,8 @@ export default function Home() {
     <main className="main">
       <div className=" card-actions justify-end">
         <Button content={"Tạo chuyến bay"} />
-        <Button content={"Tìm kiếm"} color="bg-orange-600" />
+        {/* Open the modal using document.getElementById('ID').showModal() method */}
+        <SearchModal />
       </div>
       <Menu />
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">

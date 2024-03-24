@@ -1,8 +1,10 @@
+import Link from "next/link";
+
 const Navbar = () => {
   return (
     <div className="navbar bg-neutral-100">
       <div className="container justify-between">
-        <a className="btn btn-ghost text-xl">CSE</a>
+        <Link href="/">CSE</Link>
         <div className="Right">
           <button className="btn btn-ghost mr-3 ml-3 btn-circle">
             <svg
@@ -20,9 +22,12 @@ const Navbar = () => {
               />
             </svg>
           </button>
-          <button className="btn btn-ghost mr-3 ml-3 ">ABOUT US</button>
-          <button className="btn btn-ghost mr-3 ml-3 btn-circle">
-            <div className="indicator">
+          <Link className="btn btn-ghost mr-3 ml-3 " href="/About">
+            ABOUT US
+          </Link>
+
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -30,9 +35,20 @@ const Navbar = () => {
               >
                 <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
               </svg>
-              <span className="badge badge-xs badge-primary indicator-item"></span>
             </div>
-          </button>
+
+            <ul
+              tabIndex={0}
+              className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-4"
+            >
+              <li>
+                <a>Item 1</a>
+              </li>
+              <li>
+                <a>Item 2</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
