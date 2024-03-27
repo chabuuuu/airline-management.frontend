@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import SearchModal from "@/components/SearchModal";
 import Image from "next/image";
 
-export default function Home() {
+export default function StaffHome() {
   type inputType = {
     logo: string;
     brand: string;
