@@ -7,11 +7,9 @@ const PayingPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-10">
-        <Button content={"Tro lai"} />
-        <Button content={"Thanh toan"} />
+        <Button link="/" content={"Tro lai"} />
+        <Button link="/" content={"Thanh toan"} />
       </div>
-      <Ticket />
-      <Ticket />
       <Ticket />
     </div>
   );

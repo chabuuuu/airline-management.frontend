@@ -20,34 +20,36 @@ const TicketCard: React.FC<TicketCardProps> = ({
   price,
 }) => {
   return (
-    <div className="bg-white shadow rounded-lg p-6 mb-4">
+    <div className="bg-white shadow rounded-lg p-4  mb-5 min-w-[450px]">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-lg text-gray-900 font-semibold">{airline}</div>
-        <div className="text-sm text-gray-500">
+        <div className="text-lg text-gray-900 font-semibold">
+          <div className="flex items-center">
+            <div className=" h-8 w-8 rounded-full overflow-hidden">
+              <div
+                className=" bg-cover h-8 w-8"
+                style={{
+                  backgroundImage:
+                    "url('https://i.postimg.cc/PxvbyDxx/image-362-2.png')",
+                }}
+              ></div>
+            </div>
+            <span className="font-semibold ml-2 text-xl">{airline}</span>
+          </div>
+        </div>
+        <div className="text-base text-gray-500">
           {date} {time}
         </div>
       </div>
-      <div className="mb-4">
-        <div className="text-gray-900 font-semibold">
-          {departure} - {arrival}
-        </div>
-        <div className="text-sm text-gray-500">Duration: {duration}</div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="text-lg text-gray-900 font-semibold">{price}</div>
+      <div className="mb-4 flex justify-between items-center">
         <div>
-          <button
-            className="bg-orange-500 text-white active:bg-orange-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-            type="button"
-          >
-            Thanh toán
-          </button>
-          <button
-            className="bg-gray-300 text-gray-900 active:bg-gray-500 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-            type="button"
-          >
-            Hủy vé
-          </button>
+          <div className="text-gray-900 font-semibold text-xl">
+            {departure} - {arrival}
+          </div>
+          <div className="text-sm text-gray-500">Duration: {duration}</div>
+        </div>
+
+        <div>
+          <div className="text-lg text-gray-900 font-semibold">{price}</div>
         </div>
       </div>
     </div>
