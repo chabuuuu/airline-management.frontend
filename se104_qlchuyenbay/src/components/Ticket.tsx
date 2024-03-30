@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Ticket() {
   const [formData, setFormData] = useState({
-    fullName: "NGUYEN VAN A | SILVER",
+    fullName: "NGUYEN VAN A ",
     phoneNumber: "012345678",
     email: "123@gmail.com",
     luggage: "20 kg",
@@ -19,32 +19,33 @@ export default function Ticket() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log("Form submitted:", formData);
   };
 
   return (
     <div className="flex justify-center items-center mb-6">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <div className="flex justify-between items-center border-b pb-4">
+      <div className="bg-white rounded-3xl shadow-md max-w-3xl">
+        <div className="flex rounded-t-3xl p-2 bg-teal-600 justify-between items-center border-b ">
           <div className="flex items-center">
-            <div className="bg-white h-10 w-10 rounded-full overflow-hidden">
+            <div className=" h-12 w-12 rounded-full overflow-hidden">
               <div
-                className=" bg-cover h-10 w-10"
+                className=" bg-cover h-12 w-12"
                 style={{
                   backgroundImage:
-                    "url('https://i.pinimg.com/564x/7a/ec/17/7aec17946661a88378269d0b642b61f3.jpg')",
+                    "url('https://i.postimg.cc/PxvbyDxx/image-362-2.png')",
                 }}
               ></div>
             </div>
-            <span className="font-semibold ml-2 text-2xl">VietNamAirlines</span>
+            <span className="text-white font-semibold ml-2 text-xl">
+              VietNamAirlines
+            </span>
           </div>
-          <span className="bg-teal-500 text-white py-1 px-3 rounded-full text-sm">
+          <span className="font-semibold text-2xl text-white py-1 px-3 rounded-full ">
             ECONOMY CLASS
           </span>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="pl-10 pr-10 pb-10 pt-5">
           <div className="my-4 grid grid-cols-4 gap-4">
             <div>
               <h3 className="font-bold text-gray-600">CHUYẾN BAY/FLIGHT</h3>
@@ -52,11 +53,11 @@ export default function Ticket() {
             </div>
             <div>
               <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
-              <p className="text-xl">16:20</p>
+              <p className="text-lg">16:20</p>
             </div>
             <div>
               <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>
-              <p className="text-xl">21/4/2024</p>
+              <p className="text-lg">21/4/2024</p>
             </div>
             <div>
               <h3 className="font-bold text-gray-600">GHẾ/SEAT</h3>
@@ -75,7 +76,7 @@ export default function Ticket() {
             />
           </div>
 
-          <div className="my-4 grid grid-cols-2 gap-4">
+          <div className=" grid grid-cols-2 gap-4">
             <div>
               <h3 className="font-bold text-gray-600">SỐ ĐIỆN THOẠI</h3>
               <input

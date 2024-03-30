@@ -92,19 +92,33 @@ const DetailPage = () => {
             <span className="font-semibold text-lg mb-4">
               Ghế: {selectedSeat}
             </span>
-            {/* Dummy data, replace with actual seat information */}
-            <span className="font-semibold text-lg mb-4">
-              Hạng: Econmomy Class
-            </span>
-            {/* Dummy data, replace with actual seat information */}
-            <span className="font-semibold text-lg mb-4">
-              Giá: 2.500.000 VND
-            </span>
+            <span className="font-semibold text-lg mb-4">Hạng:</span>
+            <span className="font-semibold text-lg mb-4">Giá:</span>
           </div>
-
-          <Link href={"/PayingPage"} className="btn btn-ghost">
+          <button className="btn btn-ghost flex justify-center items-center w-full  drop-shadow-md bg-white rounded-full ">
+            <svg
+              className="w-12 h-12"
+              stroke="currentColor"
+              fill="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              height="200px"
+              width="200px"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="Circle_Plus">
+                <g>
+                  <path d="M15,12.5H12.5V15a.5.5,0,0,1-1,0V12.5H9a.5.5,0,0,1,0-1h2.5V9a.5.5,0,0,1,1,0v2.5H15A.5.5,0,0,1,15,12.5Z"></path>
+                </g>
+              </g>
+            </svg>
+          </button>
+          <Link
+            href={"/PayingPage"}
+            className="btn btn-ghost bg-orange-500 text-white w-full rounded-full"
+          >
             {" "}
-            Thanh toán
+            Tiếp tục thanh toán
           </Link>
         </div>
       </div>
