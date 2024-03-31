@@ -1,9 +1,33 @@
 "use client";
 import Button from "@/components/Button";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const DetailPage = () => {
+  const [departure, setDeparture] = useState<string>("");
+  const [destination, setDestination] = useState<string>("");
+  const [date, setDate] = useState<string>("");
+  const [time, setTime] = useState<string>("");
+  const [brand, setBrand] = useState<string>("");
+  const [logo, setLogo] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const params = Object.fromEntries(searchParams.entries());
+
+    setDeparture(params.departure || "");
+    setDestination(params.destination || "");
+    setDate(params.date || "");
+    setTime(params.time || "");
+    setBrand(params.brand || "");
+    setLogo(params.date || "");
+    setPrice(params.price || " ");
+    setLogo(params.logo || " ");
+  }, [searchParams]);
+
   const [selectedSeat, setSelectedSeat] = useState(null);
 
   const handleSeatSelection = (seat: any) => {
@@ -40,18 +64,14 @@ const DetailPage = () => {
         <div className="mt-5 ml-5 h-full w-full">
           <div className="card bg-white h-80 w-full mb-5 p-5">
             <div className="flex items-center">
-              <div className="h-10 w-10 rounded-full overflow-hidden">
-                <div
-                  className="bg-cover h-10 w-10"
-                  style={{
-                    backgroundImage:
-                      "url('https://i.pinimg.com/564x/7a/ec/17/7aec17946661a88378269d0b642b61f3.jpg')",
-                  }}
-                ></div>
+              <div className="flex items-center mb-4">
+                <img
+                  src={logo}
+                  alt={brand}
+                  className="w-12 object-cover mr-4"
+                />
+                <h2 className="text-2xl font-semibold">{brand}</h2>
               </div>
-              <span className="font-semibold ml-2 text-2xl">
-                VietNamAirlines
-              </span>
             </div>
             <div className="my-4 grid grid-cols-3 gap-4">
               <div>
@@ -60,16 +80,16 @@ const DetailPage = () => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
-                <p className="text-xl">16:20</p>
+                <p className="text-xl">{time}</p>
               </div>
               <div>
                 <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>
-                <p className="text-xl">21/4/2024</p>
+                <p className="text-xl">{date}</p>
               </div>
             </div>
             <div className="mb-4">
               <div className="text-gray-900 text-2xl font-semibold mb-3">
-                HoChiMinh (HCM) - HaNoi (HN)
+                {departure} - {destination}
               </div>
               <div className="text-base text-gray-500">
                 Duration: 2 hours 15 minutes
@@ -77,7 +97,7 @@ const DetailPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <div className="text-gray-900 text-2xl font-bold">
-                2.000.0000 VND
+                {price} VND
               </div>
             </div>
           </div>
@@ -100,7 +120,7 @@ const DetailPage = () => {
               className="w-12 h-12"
               stroke="currentColor"
               fill="currentColor"
-              stroke-width="0"
+              strokeWidth="0"
               viewBox="0 0 24 24"
               height="200px"
               width="200px"
@@ -114,8 +134,20 @@ const DetailPage = () => {
             </svg>
           </button>
           <Link
-            href={"/PayingPage"}
-            className="btn btn-ghost bg-orange-500 text-white w-full rounded-full"
+            href={{
+              pathname: "/PayingPage",
+              query: {
+                logo: logo,
+                brand: brand,
+                date: date,
+                time: time,
+                departure: departure,
+                destination: destination,
+                price: price,
+                seat: selectedSeat,
+              },
+            }}
+            className="btn bg-orange-500 text-white w-full rounded-full"
           >
             {" "}
             Tiếp tục thanh toán
