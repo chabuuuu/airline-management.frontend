@@ -3,9 +3,16 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
+  function getCurrentDate() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
   const [departure, setDeparture] = useState("");
   const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getCurrentDate());
   const [flightType, setFlightType] = useState("One way");
 
   const handleSubmit = (e: any) => {
@@ -38,6 +45,7 @@ export default function Home() {
                       placeholder="HoChiMinh (HCM)"
                       value={departure}
                       onChange={(e) => setDeparture(e.target.value)}
+                      required
                     />
                   </div>
                 </div>
@@ -55,6 +63,7 @@ export default function Home() {
                       placeholder="HaNoi (HN)"
                       value={destination}
                       onChange={(e) => setDestination(e.target.value)}
+                      required
                     />
                   </div>
                 </div>

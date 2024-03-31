@@ -1,12 +1,23 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export default function Ticket() {
+interface Params {
+  logo: string;
+  brand: string;
+  date: string;
+  time: string;
+  departure: string;
+  destination: string;
+  price: string;
+  seat: string;
+}
+
+const Ticket: React.FC<{ params: Params }> = ({ params }) => {
   const [formData, setFormData] = useState({
     fullName: "NGUYEN VAN A ",
     phoneNumber: "012345678",
     email: "123@gmail.com",
-    luggage: "20 kg",
+    luggage: "0 kg",
   });
 
   const handleChange = (e: any) => {
@@ -24,44 +35,49 @@ export default function Ticket() {
 
   return (
     <div className="flex justify-center items-center mb-6">
-      <div className="bg-white rounded-3xl shadow-md max-w-3xl">
+      <div className="bg-white rounded-3xl shadow-md ">
         <div className="flex rounded-t-3xl p-2 bg-teal-600 justify-between items-center border-b ">
           <div className="flex items-center">
-            <div className=" h-12 w-12 rounded-full overflow-hidden">
-              <div
-                className=" bg-cover h-12 w-12"
-                style={{
-                  backgroundImage:
-                    "url('https://i.postimg.cc/PxvbyDxx/image-362-2.png')",
-                }}
-              ></div>
-            </div>
-            <span className="text-white font-semibold ml-2 text-xl">
-              VietNamAirlines
-            </span>
+            <img
+              src={params.logo}
+              alt={params.brand}
+              className="w-12 object-cover mx-4"
+            />
+            <h2 className="text-2xl font-semibold text-white">
+              {params.brand}
+            </h2>
           </div>
+
           <span className="font-semibold text-2xl text-white py-1 px-3 rounded-full ">
             ECONOMY CLASS
           </span>
         </div>
 
         <form onSubmit={handleSubmit} className="pl-10 pr-10 pb-10 pt-5">
-          <div className="my-4 grid grid-cols-4 gap-4">
+          <div className="my-4 grid grid-cols-6 gap-6 max-w-[800px]">
             <div>
               <h3 className="font-bold text-gray-600">CHUYẾN BAY/FLIGHT</h3>
               <p className="text-xl font-bold">AIR2056</p>
             </div>
             <div>
+              <h3 className="font-bold text-gray-600">FROM:</h3>
+              <p className="text-xl font-bold">{params.departure}</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-600">TO:</h3>
+              <p className="text-xl font-bold">{params.destination}</p>
+            </div>
+            <div>
               <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
-              <p className="text-lg">16:20</p>
+              <p className="text-lg">{params.time}</p>
             </div>
             <div>
               <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>
-              <p className="text-lg">21/4/2024</p>
+              <p className="text-lg">{params.date}</p>
             </div>
             <div>
               <h3 className="font-bold text-gray-600">GHẾ/SEAT</h3>
-              <p className="text-4xl font-bold">E3</p>
+              <p className="text-4xl font-bold">{params.seat}</p>
             </div>
           </div>
 
@@ -108,11 +124,11 @@ export default function Ticket() {
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
               >
+                <option>0 kg</option>
                 <option>20 kg</option>
                 <option>15 kg</option>
                 <option>10 kg</option>
                 <option>7 kg</option>
-                {/* Other options */}
               </select>
             </div>
 
@@ -122,7 +138,7 @@ export default function Ticket() {
                   TỔNG THANH TOÁN
                 </h3>
                 <p className="text-3xl font-bold text-orange-500">
-                  3.500.000 VND
+                  {params.price} VND
                 </p>
               </div>
             </div>
@@ -131,4 +147,5 @@ export default function Ticket() {
       </div>
     </div>
   );
-}
+};
+export default Ticket;
