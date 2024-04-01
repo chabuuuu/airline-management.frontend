@@ -1,5 +1,7 @@
 "use client";
 
+import Ticket from "@/components/Ticket";
+
 const Orders = () => {
   return (
     <div>

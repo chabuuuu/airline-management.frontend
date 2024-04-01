@@ -22,7 +22,12 @@ const config: Config = {
         "2xl": "1200px",
       },
     },
+    boxShadow: {
+      aesthetic:
+        "0 10px 15px -3px rgba(156, 136, 255, 0.5), 0 4px 6px -2px rgba(249, 168, 212, 0.5)",
+    },
   },
+  darkMode: "class",
   plugins: [require("daisyui"), require("@nextui-org/react")],
 };
 export default config;
