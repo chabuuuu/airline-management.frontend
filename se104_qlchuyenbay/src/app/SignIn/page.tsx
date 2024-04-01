@@ -1,3 +1,5 @@
+import SearchForm from "@/components/SearchForm";
+import SignInForm from "@/components/SignInForm";
 import Link from "next/link";
 
 function SignIn() {
@@ -17,47 +19,8 @@ function SignIn() {
             <h2 className="text-2xl font-bold mb-5 text-indigo-900">
               Welcome, <br /> sign in to continue
             </h2>
-            <form className="space-y-4 z-50 ">
-              <div className="mt-10 mb-5">
-                <label className=" px-1 block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="abc@gmail.com"
-                  className="w-full  p-2  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+            <SignInForm />
 
-              <div>
-                <label className=" px-1 block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="*******"
-                  className="w-full  p-2  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <a href="#" className="text-sm text-blue-600">
-                Forgot Password?
-              </a>
-              <button
-                type="submit"
-                className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-900"
-              >
-                Sign In
-              </button>
-              <button
-                type="submit"
-                className="btn btn-ghost w-full py-2 px-4 bg-white  rounded "
-              >
-                Sign In with Google
-              </button>
-            </form>
             <p className="mt-4 text-center text-sm text-gray-600">
               Don't have an account?{" "}
               <Link
