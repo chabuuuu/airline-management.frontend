@@ -50,7 +50,10 @@ const SignUpForm = () => {
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="grid grid-cols-2 gap-6 p-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div>
         <label
           htmlFor="name"
@@ -63,22 +66,6 @@ const SignUpForm = () => {
           type="text"
           id="name"
           placeholder="John"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="address"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Address
-        </label>
-        <input
-          {...register("address")}
-          type="text"
-          id="address"
-          placeholder="123 Street, City"
           className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
       </div>
@@ -101,6 +88,21 @@ const SignUpForm = () => {
       </div>
       <div>
         <label
+          htmlFor="address"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Address
+        </label>
+        <input
+          {...register("address")}
+          type="text"
+          id="address"
+          placeholder="123 Street, City"
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+        />
+      </div>
+      <div>
+        <label
           htmlFor="phone"
           className="block text-sm font-medium text-gray-700"
         >
@@ -114,7 +116,7 @@ const SignUpForm = () => {
           className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
       </div>
-      <div>
+      <div className="col-span-2">
         <label
           htmlFor="email"
           className="block text-sm font-medium text-gray-700"
@@ -132,7 +134,7 @@ const SignUpForm = () => {
           <div className="text-red-500">{errors.email.message}</div>
         )}
       </div>
-      <div>
+      <div className="col-span-2">
         <label
           htmlFor="password"
           className="block text-sm font-medium text-gray-700"
@@ -153,13 +155,13 @@ const SignUpForm = () => {
       <button
         disabled={isSubmitting}
         type="submit"
-        className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none"
+        className="col-span-2 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none"
       >
         {isSubmitting ? "Loading... " : " Create account"}
       </button>
       <button
         type="button"
-        className="w-full py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none"
+        className="col-span-2 py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none"
       >
         Create an account with Google
       </button>

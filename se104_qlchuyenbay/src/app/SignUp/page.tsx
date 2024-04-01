@@ -4,16 +4,16 @@ import Link from "next/link";
 function SignUp() {
   return (
     <>
-      <div className="flex justify-center items-center h-screen">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-6 lg:p-12 bg-gray-100 rounded-lg shadow-lg">
+      <div className="flex justify-center items-center ">
+        <div className="flex">
           <div className="hidden lg:block">
             <img
-              src="https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png"
+              src="https://images.pexels.com/photos/2517931/pexels-photo-2517931.jpeg?auto=compress&cs=tinysrgb&w=600"
               alt="Illustration"
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-[700px] object-contain rounded-s-2xl"
             />
           </div>
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center rounded-e-2xl  bg-white p-6">
             <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-gray-800">
               Let's get started
             </h2>
