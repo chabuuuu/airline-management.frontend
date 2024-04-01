@@ -15,7 +15,7 @@ function SignIn() {
 
       <div className="flex justify-center items-center h-fit">
         <div className="flex flex-row h-full mt-10">
-          <div className="flex-grow max-w-md bg-white p-8 rounded-lg shadow-lg ">
+          <div className="flex-grow max-w-md bg-white p-8 rounded-s-2xl shadow-lg ">
             <h2 className="text-2xl font-bold mb-5 text-indigo-900">
               Welcome, <br /> sign in to continue
             </h2>
@@ -33,7 +33,7 @@ function SignIn() {
           </div>
           <div className="flex w-96 ">
             <div
-              className="h-full w-full bg-cover justify-center"
+              className="h-full w-full bg-cover rounded-e-2xl justify-center"
               style={{
                 backgroundImage:
                   "url('https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png')",

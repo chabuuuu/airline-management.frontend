@@ -38,7 +38,7 @@ function SignInForm() {
 
   return (
     <form
-      className="space-y-4 z-50 w-[350px]"
+      className="space-y-4 z-50 w-[350px] "
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="mt-10 mb-5">
