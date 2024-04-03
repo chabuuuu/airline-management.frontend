@@ -3,15 +3,40 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import qs from "qs";
 
 const schema = z.object({
-  fullname: z.string(),
-  birthday: z.string().transform((str) => new Date(str)),
-  address: z.string(),
-  phonenumber: z.string(),
   email: z.string().email(),
   password: z.string().min(8),
+  fullname: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
+  birthday: z.string().transform((str) => new Date(str)),
+  cccd: z.string(),
+  cccdPicture: z.custom<File>(),
 });
+async function createAccount(data: Object) {
+  const url = `${process.env.NEXT_PUBLIC_SERVER}/customer`;
+
+  let config = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {},
+    data: qs.stringify(data),
+  };
+
+  axios
+    .request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      console.log(response.data.token);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 type FormFields = z.infer<typeof schema>;
 
@@ -26,32 +51,11 @@ const SignUpForm = () => {
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     console.log(data);
-    try {
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      };
-
-      const response = await fetch(
-        "https://airlane-management-backend.onrender.com/api/v1",
-        options
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
-      }
-      console.log("Form submitted successfully!");
-    } catch (error) {
-      console.error(error);
-    }
+    createAccount(data);
   };
-
   return (
     <form
-      className="grid grid-cols-2 gap-6 p-4"
+      className="grid grid-cols-2 gap-6 p-3"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
@@ -66,7 +70,7 @@ const SignUpForm = () => {
           type="text"
           id="name"
           placeholder="John"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
       </div>
       <div>
@@ -80,10 +84,42 @@ const SignUpForm = () => {
           {...register("birthday")}
           type="date"
           id="birthday"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
         {errors.birthday && (
           <div className="text-red-500">{errors.birthday.message}</div>
+        )}
+      </div>
+      <div>
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700"
+        >
+          CCCD
+        </label>
+        <input
+          {...register("cccd")}
+          type="text"
+          id="cccd"
+          placeholder="John"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="birthday"
+          className="block text-sm font-medium text-gray-700"
+        >
+          CCCD Picture
+        </label>
+        <input
+          {...register("cccdPicture")}
+          type="file"
+          id="cccdPicture"
+          className="file-input file-input-bordered w-full file-input-sm rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+        />
+        {errors.cccdPicture && (
+          <div className="text-red-500">{errors.cccdPicture.message}</div>
         )}
       </div>
       <div>
@@ -98,7 +134,7 @@ const SignUpForm = () => {
           type="text"
           id="address"
           placeholder="123 Street, City"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
       </div>
       <div>
@@ -109,11 +145,11 @@ const SignUpForm = () => {
           Phone Number
         </label>
         <input
-          {...register("phonenumber")}
+          {...register("phoneNumber")}
           type="tel"
           id="phone"
           placeholder="123-456-7890"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
       </div>
       <div className="col-span-2">
@@ -128,7 +164,7 @@ const SignUpForm = () => {
           type="email"
           id="email"
           placeholder="you@example.com"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
         {errors.email && (
           <div className="text-red-500">{errors.email.message}</div>
@@ -146,7 +182,7 @@ const SignUpForm = () => {
           type="password"
           id="password"
           placeholder="Enter your password"
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
+          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
         {errors.password && (
           <div className="text-red-500">{errors.password.message}</div>

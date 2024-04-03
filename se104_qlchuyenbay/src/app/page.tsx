@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import SearchForm from "@/components/SearchForm";
 
 export default function Home() {
   function getCurrentDate() {

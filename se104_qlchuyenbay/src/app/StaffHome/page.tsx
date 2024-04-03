@@ -12,6 +12,7 @@ export default function StaffHome() {
     logo: string;
     brand: string;
     date: string;
+    time?: string;
     spot: [string, string];
     status: string;
     price: string | number;
@@ -96,7 +97,6 @@ export default function StaffHome() {
     <main className="main">
       <div className=" card-actions justify-end">
         <Button link="/CreateFlight" content={"Tạo chuyến bay"} />
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
         <SearchModal />
       </div>
       <Menu />

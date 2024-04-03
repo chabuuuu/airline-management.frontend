@@ -1,8 +1,13 @@
 "use client";
+
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import qs from "qs";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const schema = z.object({
   email: z.string().email(),
@@ -19,21 +24,18 @@ function SignInForm() {
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     defaultValues: {
-      email: "ducnguyen@gmail.com",
+      email: "ducnguyenkudo@gmail.com",
+      password: "@Duc201103",
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    try {
-      console.log(data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      throw new Error();
-    } catch (error) {
-      setError("email", {
-        message: "This email is already taken",
-      });
-    }
+    const res = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
   };
 
   return (
@@ -93,9 +95,9 @@ function SignInForm() {
           Remember me
         </label>
       </div>
-      <a href="#" className="mt-4 text-sm text-blue-600">
+      <Link href="/" className="text-sm text-blue-600 hover:underline">
         Forgot Password?
-      </a>
+      </Link>
       <button
         disabled={isSubmitting}
         type="submit"
