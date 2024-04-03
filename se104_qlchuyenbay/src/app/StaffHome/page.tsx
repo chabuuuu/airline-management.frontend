@@ -12,6 +12,7 @@ export default function StaffHome() {
     logo: string;
     brand: string;
     date: string;
+    time?: string;
     spot: [string, string];
     status: string;
     price: string | number;
