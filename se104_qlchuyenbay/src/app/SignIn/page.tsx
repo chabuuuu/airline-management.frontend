@@ -25,7 +25,7 @@ function SignIn() {
               Don't have an account?{" "}
               <Link
                 href="/SignUp"
-                className=" text-sm text-blue-600 mt-5 hover:border-b-2 hover:border-slate-300"
+                className=" text-sm text-blue-600 mt-5 hover:underline"
               >
                 Create an account
               </Link>

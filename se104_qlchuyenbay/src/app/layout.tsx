@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import BottomNavbar from "@/components/BottomNavbar";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +18,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let session = null;
+  try {
+    session = getServerSession(options);
+  } catch (error) {
+    console.error("Error fetching session:", error);
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
+        {session ? <Navbar isSession={true} /> : <Navbar isSession={false} />}
         <div className="container h-full pt-12">{children}</div>
       </body>
     </html>
