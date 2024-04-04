@@ -119,7 +119,7 @@ const SignUpForm = () => {
           className="file-input file-input-bordered w-full file-input-sm rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
         />
         {errors.cccdPicture && (
-          <div className="text-red-500">{errors.cccdPicture.message}</div>
+          <div className="text-red-500">{errors.cccdPicture?.message}</div>
         )}
       </div>
       <div>

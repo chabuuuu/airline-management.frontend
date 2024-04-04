@@ -4,10 +4,9 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import qs from "qs";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   email: z.string().email(),
@@ -17,10 +16,10 @@ const schema = z.object({
 type FormFields = z.infer<typeof schema>;
 
 function SignInForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     defaultValues: {
@@ -36,6 +35,11 @@ function SignInForm() {
       password: data.password,
       redirect: false,
     });
+
+    if (!res?.error) {
+      router.push("/");
+      router.refresh();
+    }
   };
 
   return (
