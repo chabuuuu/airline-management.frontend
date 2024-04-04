@@ -97,7 +97,6 @@ export default function StaffHome() {
     <main className="main">
       <div className=" card-actions justify-end">
         <Button link="/CreateFlight" content={"Tạo chuyến bay"} />
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
         <SearchModal />
       </div>
       <Menu />
