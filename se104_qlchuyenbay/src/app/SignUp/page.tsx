@@ -1,7 +1,13 @@
 import SignUpForm from "@/components/SignUpForm";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-function SignUp() {
+const SignUp = async () => {
+  const session = await getServerSession();
+  if (session) {
+    redirect("/");
+  }
   return (
     <>
       <div className="flex justify-center items-center ">
@@ -29,6 +35,6 @@ function SignUp() {
       </div>
     </>
   );
-}
+};
 
 export default SignUp;
