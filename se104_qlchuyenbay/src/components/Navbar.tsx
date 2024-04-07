@@ -11,6 +11,9 @@ const Navbar = () => {
           <Link className="btn btn-ghost mr-1 ml-1 " href="/About">
             ABOUT US
           </Link>
+          <Link className="btn btn-ghost mr-1 ml-1 " href="/RegulationsPage">
+            Regulation
+          </Link>
           <Link className="btn btn-ghost mr-1 ml-1 " href={"/SignIn"}>
             Sign In
           </Link>
