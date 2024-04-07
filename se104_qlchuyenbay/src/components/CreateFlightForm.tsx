@@ -3,8 +3,7 @@
 function CreateFlightForm() {
     return (
         <form className="p-6 mx-auto bg-white shadow-md rounded  pt-6 pb-8 mb-4">
-            <h1 className="text-3xl font-bold mb-8 text-center">Tạo chuyến bay</h1>
-
+            <h1 className="text-3xl font-bold mb-8">Tạo chuyến bay</h1>
             <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-2">Thông tin chuyến bay</h2>
 
@@ -190,7 +189,15 @@ function CreateFlightForm() {
                     Tạo chuyến bay
                 </button>
             </div>
-        </form>
+            <div className="flex items-center justify-center">
+                <button
+                    className="font-bold bg-gray-400 text-gray-800 text-sm px-4 py-2 rounded w-full"
+                    type="button"
+                >
+                    Quay lại
+                </button>
+            </div>
+        </form >
     );
 }
 

@@ -2,6 +2,8 @@
 
 import CreateFlightForm from "@/components/CreateFlightForm";
 import BottomNavbar from "@/components/BottomNavbar";
+import Button from "@/components/Button";
+
 import Link from "next/link";
 
 function CreateFlight() {
