@@ -35,7 +35,10 @@ const Navbar = () => {
                 className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
                 <li>
-                  <Link className="btn btn-ghost mr-1 ml-1 " href="/About">
+                  <Link
+                    className="btn btn-ghost mr-1 ml-1 "
+                    href="/ProfilePage"
+                  >
                     <div className=" w-full flex justify-between items-center">
                       <span>PROFILE</span>
                       <svg

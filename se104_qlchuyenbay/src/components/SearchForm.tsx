@@ -1,12 +1,8 @@
 "use client";
 import React from "react";
-import { useState, FormEvent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import qs from "qs";
-import Link from "next/link";
 
 const schema = z.object({
   departure: z.string(),
@@ -21,51 +17,54 @@ const SearchForm = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
-    defaultValues: {
-      departure: "HoChiMinh",
-      destination: "HaNoi",
-    },
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     console.log(data);
+    const queryParams = `?departure=${encodeURIComponent(
+      data.departure
+    )}&destination=${encodeURIComponent(
+      data.destination
+    )}&date=${encodeURIComponent(data.date)}&flightType=${encodeURIComponent(
+      data.flight
+    )}`;
+    window.location.href = `/SearchingPage${queryParams}`;
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className=" flex flex-row justify-between     items-center mb-10">
-        <div className="mr-5 ">
+      <div className="flex flex-row justify-between items-center mb-10">
+        <div className="mr-5">
           <label
-            htmlFor=""
-            className=" px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="departure"
+            className="px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Departure
           </label>
-          <div className="flex">
+          <div className="flex flex-col">
             <input
               {...register("departure")}
+              id="departure"
               type="text"
               className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
               placeholder="HoChiMinh (HCM)"
             />
-            {errors.departure && (
-              <div className="text-red-500">{errors.departure.message}</div>
-            )}
           </div>
         </div>
-        <div className=" ">
+        <div>
           <label
-            htmlFor=""
-            className=" px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="destination"
+            className="px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Destination
           </label>
-          <div className="flex">
+          <div className=" flex flex-col">
             <input
               {...register("destination")}
+              id="destination"
               type="text"
               className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
               placeholder="HaNoi (HN)"
@@ -75,34 +74,36 @@ const SearchForm = () => {
       </div>
 
       <div className="flex flex-row justify-between items-center ">
-        <div className=" w-full mb-5">
+        <div className="w-full mb-5">
           <label
-            htmlFor=""
-            className=" px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="date"
+            className="px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Date
           </label>
           <div>
             <input
               {...register("date")}
-              type="text"
+              id="date"
+              type="date"
               className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
             />
-            {errors.date && (
-              <div className="text-red-500">{errors.date.message}</div>
-            )}
           </div>
         </div>
         <div className="w-1/2 ml-5 mb-5">
           <label
-            htmlFor=""
-            className=" px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="flight"
+            className="px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Flights
           </label>
-          <select className="select select-bordered w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500">
-            <option>One way</option>
-            <option>Round trip</option>
+          <select
+            {...register("flight")}
+            id="flight"
+            className="select select-bordered w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+          >
+            <option value="One way">One way</option>
+            <option value="Round trip">Round trip</option>
           </select>
         </div>
       </div>

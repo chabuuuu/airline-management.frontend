@@ -107,7 +107,11 @@ function SignInForm() {
         type="submit"
         className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-900"
       >
-        {isSubmitting ? "Loading... " : "Sign In"}
+        {isSubmitting ? (
+          <span className="loading loading-spinner loading-md"></span>
+        ) : (
+          "Sign In"
+        )}
       </button>
       <button
         type="submit"
