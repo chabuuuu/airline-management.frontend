@@ -1,10 +1,40 @@
-import type { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { DefaultUser } from "next-auth";
 import axios from "axios";
 import qs from "qs";
 import { cookies } from "next/headers";
 
+import { DefaultSession, DefaultUser } from "next-auth";
+import { JWT, DefaultJWT } from "next-auth/jwt";
+
+interface CustomUser extends DefaultUser {
+  name: string;
+  email: string;
+  id: string;
+  token: string;
+}
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      name: string;
+      email: string;
+      id: string;
+      token: string;
+    } & DefaultSession;
+  }
+
+  interface User extends CustomUser {}
+}
+
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    name: string;
+    email: string;
+    id: string;
+    token: string;
+  }
+}
 export const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -12,7 +42,7 @@ export const options: NextAuthOptions = {
         email: {},
         password: {},
       },
-      async authorize(credentials, req): Promise<DefaultUser | null> {
+      async authorize(credentials, req): Promise<CustomUser | null> {
         try {
           const url = `${process.env.NEXT_PUBLIC_SERVER}/customer/login`;
           const config = {
@@ -29,16 +59,17 @@ export const options: NextAuthOptions = {
 
           if (response.status === 200) {
             const user = response.data.customer;
-            cookies().set({
-              name: "user-token",
-              value: response.data.token,
-              httpOnly: true,
-              path: "/About",
-            });
+            // cookies().set({
+            //   name: "Customer-Token",
+            //   value: response.data.token,
+            //   httpOnly: true,
+            //   path: "/ProfilePage",
+            // });
             return {
-              id: user.customerId,
               name: user.fullname,
               email: user.email,
+              id: user.customerId,
+              token: response.data.token,
             };
           }
           return null;
@@ -50,11 +81,29 @@ export const options: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token, user }) {
-      return session;
-    },
-    async jwt({ token, user, session }) {
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+          token: user.token,
+        };
+      }
       return token;
+    },
+
+    async session({ session, token }) {
+      if (session && token) {
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.id,
+            token: token.token,
+          },
+        };
+      }
+      return session;
     },
   },
   session: {

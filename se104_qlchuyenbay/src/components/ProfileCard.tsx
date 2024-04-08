@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import qs from "qs";
 
 type inputType = {
-  token?: string;
+  CUSTOMER_TOKEN: any;
 };
 
-const ProfileCard: React.FC<inputType> = ({ token }) => {
+const ProfileCard: React.FC<inputType> = ({ CUSTOMER_TOKEN }) => {
   const [profile, setProfile] = useState({
     customerId: "",
     email: "",
@@ -29,13 +27,13 @@ const ProfileCard: React.FC<inputType> = ({ token }) => {
         const options = {
           method: "get",
           headers: {
-            Authorization: `${token}`,
+            Authorization: `${CUSTOMER_TOKEN}`,
           },
           muteHttpExceptions: true,
         };
 
         const response = await fetch(
-          "http://3.1.220.207:3001/api/v1/customer/me",
+          `${process.env.NEXT_PUBLIC_SERVER}/customer/me`,
           options
         );
         const data = await response.json();
@@ -45,7 +43,7 @@ const ProfileCard: React.FC<inputType> = ({ token }) => {
         console.error(error);
       }
     }
-    //fetchProfile();
+    fetchProfile();
   }, []);
 
   return (
@@ -62,6 +60,7 @@ const ProfileCard: React.FC<inputType> = ({ token }) => {
             alt="Profile Picture"
           />
         </div>
+
         <h2 className="text-2xl mb-5 font-bold text-gray-800  flex justify-center">
           {profile.fullname}
         </h2>
