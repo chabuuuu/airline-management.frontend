@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   function getCurrentDate() {
@@ -21,13 +21,16 @@ export default function Home() {
     window.location.href = `/SearchingPage${queryParams}`;
   };
 
+  const { data: session } = useSession();
+
   return (
     <main className="main">
       <div className="flex justify-center items-center ">
         <div className="flex flex-row h-[500px] mt-10 ">
           <div className="flex p-10 flex-col justify-between rounded-l-2xl h-full  bg-white w-[500px]">
             <h2 className="text-2xl font-bold  text-indigo-900">
-              Welcome, <br /> find the best flights with us!
+              Welcome {session?.user?.name ?? "Guest"}, <br /> find the best
+              flights with us!
             </h2>
             <form onSubmit={handleSubmit}>
               <div className=" flex flex-row justify-between items-center mb-10">

@@ -7,11 +7,16 @@ import TicketCard from "@/components/TIcketCard";
 import Link from "next/link";
 import React from "react";
 
+import { useCookies } from "next-client-cookies";
+
 function About() {
+  const cookies = useCookies();
+  const CUSTOMER_TOKEN = cookies.get("user-token");
+
   return (
     <div className="container ">
       <div className="flex flex-row justify-between ">
-        <ProfileCard />
+        <ProfileCard token={CUSTOMER_TOKEN} />
         <div className="flex flex-col justify-between w-full ml-5">
           <div className="  mb-5 flex justify-between items-center">
             <PieChart />

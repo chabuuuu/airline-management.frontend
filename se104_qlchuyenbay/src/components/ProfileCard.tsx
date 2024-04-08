@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import qs from "qs";
 
-const ProfileCard: React.FC = () => {
+type inputType = {
+  token?: string;
+};
+
+const ProfileCard: React.FC<inputType> = ({ token }) => {
   const [profile, setProfile] = useState({
     customerId: "",
     email: "",
@@ -20,12 +26,10 @@ const ProfileCard: React.FC = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const CUSTOMER_TOKEN: string = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdjYmI3OTQzLWMyMzktNGE2Ni04OTRmLTcwYTQ0MDZhZTBhMCIsImVtYWlsIjoiaGFwaHV0aGluaDMzMjAwNEBnbWFpbC5jb20iLCJwYXNzd29yZCI6IkAxVGhpbmhIYSIsInJvbGUiOiJDdXN0b21lciIsImlhdCI6MTcxMTc4OTM3MCwiZXhwIjoxNzEyMTEzMzcwfQ.vI5F_KzoEAvwf8liAmDnc6UO2UgqSO_p3DnrtzFGMPI`;
         const options = {
           method: "get",
           headers: {
-            Authorization: `Bearer ${CUSTOMER_TOKEN}`,
-            "Content-Type": "application/json",
+            Authorization: `${token}`,
           },
           muteHttpExceptions: true,
         };
@@ -41,7 +45,7 @@ const ProfileCard: React.FC = () => {
         console.error(error);
       }
     }
-    fetchProfile();
+    //fetchProfile();
   }, []);
 
   return (

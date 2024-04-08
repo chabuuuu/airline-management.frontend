@@ -6,7 +6,7 @@ import { Navbar } from "@nextui-org/react";
 function iPayPage() {
     return (
         <div>
-            <div className="bg-white shadow rounded-lg p-6 flex items-center">
+            <div className="shadow rounded-lg p-6 flex items-center">
                 <PayForm />
                 <BottomNavbar />
             </div>
