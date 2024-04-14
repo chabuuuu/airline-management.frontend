@@ -1,8 +1,12 @@
 "use client";
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Cities from "@/cities.json";
 
 const schema = z.object({
   departure: z.string(),
@@ -17,10 +21,19 @@ const SearchForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
   });
+
+  const [departure, setDeparture] = useState<string | null>(null);
+  const [destination, setDestination] = useState<string | null>(null);
+  const [cityOptions, setCityOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    const options = Cities.map((city) => city.name);
+    setCityOptions(options);
+  }, []);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     console.log(data);
@@ -44,13 +57,20 @@ const SearchForm = () => {
           >
             Departure
           </label>
-          <div className="flex flex-col">
-            <input
-              {...register("departure")}
-              id="departure"
-              type="text"
-              className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
-              placeholder="HoChiMinh (HCM)"
+          <div className="w-full">
+            <Autocomplete
+              onChange={(_, value) => setDeparture(value)}
+              disabled={isSubmitting}
+              options={cityOptions}
+              value={departure}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  {...register("departure")}
+                  sx={{ width: 200 }}
+                  placeholder="Departure"
+                />
+              )}
             />
           </div>
         </div>
@@ -61,18 +81,24 @@ const SearchForm = () => {
           >
             Destination
           </label>
-          <div className=" flex flex-col">
-            <input
-              {...register("destination")}
-              id="destination"
-              type="text"
-              className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
-              placeholder="HaNoi (HN)"
+          <div className="w-full">
+            <Autocomplete
+              onChange={(_, value) => setDestination(value)}
+              disabled={isSubmitting}
+              options={cityOptions}
+              value={destination}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  {...register("destination")}
+                  sx={{ width: 200 }}
+                  placeholder="Destination"
+                />
+              )}
             />
           </div>
         </div>
       </div>
-
       <div className="flex flex-row justify-between items-center ">
         <div className="w-full mb-5">
           <label

@@ -7,16 +7,17 @@ import TicketCard from "@/components/TIcketCard";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect } from "react";
+import TicketsPurchasedModal from "@/components/TicketsPurchasedModal";
 
 function ProfilePage() {
   const { data: session } = useSession();
 
-  const router = useRouter();
-  useEffect(() => {
-    if (!session) {
-      router.push("/");
-    }
-  }, [session, router]);
+  // const router = useRouter();
+  // useEffect(() => {
+  //   if (!session) {
+  //     router.push("/");
+  //   }
+  // }, [session, router]);
 
   return (
     <div className="container ">
@@ -47,12 +48,7 @@ function ProfilePage() {
                 />
               </div>
             </div>
-            <Link
-              href="/"
-              className="btn w-full bg-blue-600 text-white hover:text-black "
-            >
-              See all tickets purchased
-            </Link>
+            <TicketsPurchasedModal />
           </div>
         </div>
       </div>

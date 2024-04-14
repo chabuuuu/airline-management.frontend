@@ -1,11 +1,28 @@
-import React, { useState, useEffect } from "react";
+import axios from "axios";
+import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 
-type inputType = {
-  CUSTOMER_TOKEN: any;
-};
+interface Profile {
+  customerId: string;
+  email: string;
+  phoneNumber: string;
+  fullname: string;
+  birthday: string;
+  address: string;
+  nationality: string;
+  emailValidated: boolean;
+  cccd: string;
+  cccdPicture: string;
+  profilePicture: string;
+  createAt: string;
+  updateAt: string;
+}
 
-const ProfileCard: React.FC<inputType> = ({ CUSTOMER_TOKEN }) => {
-  const [profile, setProfile] = useState({
+interface ProfileCardProps {
+  CUSTOMER_TOKEN: string | undefined;
+}
+
+const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
+  const [profile, setProfile] = useState<Profile>({
     customerId: "",
     email: "",
     phoneNumber: "",
@@ -22,65 +39,85 @@ const ProfileCard: React.FC<inputType> = ({ CUSTOMER_TOKEN }) => {
   });
 
   useEffect(() => {
-    async function fetchProfile() {
+    const fetchProfile = async () => {
       try {
-        const options = {
-          method: "get",
-          headers: {
-            Authorization: `${CUSTOMER_TOKEN}`,
-          },
-          muteHttpExceptions: true,
-        };
-
-        const response = await fetch(
+        const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER}/customer/me`,
-          options
+          {
+            headers: {
+              Authorization: `${CUSTOMER_TOKEN}`,
+            },
+          }
         );
-        const data = await response.json();
-        console.log(data);
-        setProfile(data);
+        setProfile(response.data);
       } catch (error) {
         console.error(error);
+        // Handle error properly, e.g., show a message to the user
       }
-    }
+    };
     fetchProfile();
-  }, []);
+  }, [CUSTOMER_TOKEN]);
+
+  const handleChangeProfilePicture = (e: ChangeEvent<HTMLInputElement>) => {
+    // Handle file change here
+  };
+
+  const handleOnsubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Implement form submit logic here
+  };
 
   return (
-    <div className="bg-white rounded-xl p-6 w-96 shadow-lg flex flex-col items-center justify-between">
+    <div className="bg-white rounded-xl px-10 pt-10 shadow-lg flex flex-col justify-between min-w-72">
       <div>
-        <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white relative">
-          <img
-            className="object-cover w-full h-full"
-            src={
-              profile.cccdPicture
-                ? profile.cccdPicture
-                : "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
-            }
-            alt="Profile Picture"
-          />
+        <div>
+          <div className="w-28 h-28 mx-auto  rounded-full overflow-hidden border-4 border-white relative">
+            <img
+              className="object-cover w-full h-full"
+              src={
+                profile.cccdPicture ||
+                "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
+              }
+              alt="Profile Picture"
+            />
+          </div>
         </div>
 
-        <h2 className="text-2xl mb-5 font-bold text-gray-800  flex justify-center">
+        <h2 className="text-3xl mb-5 font-bold text-gray-800 text-center">
           {profile.fullname}
         </h2>
-        <p className="text-sm text-gray-600 mb-1">
-          Date of Birth: {profile.birthday}
+        <div className="bg-gray-200 p-2 rounded-lg my-3">
+          <p className="text-base font-medium">Basic Details</p>
+        </div>
+
+        <p className="text-sm text-gray-600 mb-2">
+          <span className="text-sm font-semibold">Date of Birth</span> <br />
+          <span className="text-sm">{profile.birthday}</span>
         </p>
-        <p className="text-sm text-gray-600 mb-1">ID: {profile.cccd}</p>
-        <p className="text-sm text-gray-600 mb-1">
-          National: {profile.nationality}
+        <p className="text-sm text-gray-600 mb-2">
+          <span className="text-sm font-semibold">Address</span> <br />
+          <span className="text-sm">
+            {profile.address}, {profile.nationality}
+          </span>
         </p>
-        <p className="text-sm text-gray-600 mb-1">Email: {profile.email}</p>
-        <p className="text-sm text-gray-600 mb-1">
-          Phone: {profile.phoneNumber}
+        <p className="text-sm text-gray-600 mb-2">
+          <span className="text-sm font-semibold">Identification</span> <br />
+          <span className="text-sm">{profile.cccd}</span>
+        </p>
+
+        <div className="bg-gray-200 p-2 rounded-lg my-3">
+          <p className="text-base font-medium">Contact Information</p>
+        </div>
+        <p className="text-sm text-gray-600 mb-2">
+          <span className="text-sm font-semibold">Email</span> <br />
+          <span className="text-sm">{profile.email}</span>
+        </p>
+        <p className="text-sm text-gray-600 mb-2">
+          <span className="text-sm font-semibold">Phone</span> <br />
+          <span className="text-sm">{profile.phoneNumber}</span>
         </p>
       </div>
-      <footer className="bg-base-100 text-gray-600 p-4 rounded-xl w-full text-center">
-        <p className="text-xs">
-          Copyright © 2024 - All right reserved by UIT CSE
-        </p>
-      </footer>
+      <button className="btn btn-ghost">Edit profile</button>
     </div>
   );
 };
