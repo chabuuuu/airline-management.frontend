@@ -1,3 +1,5 @@
+"use client";
+import { AutocompleteInput } from "@/components/AutocompleteInput";
 import Link from "next/link";
 import React from "react";
 

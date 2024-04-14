@@ -13,6 +13,7 @@ export default function Home() {
               Welcome {session?.user.name ?? "Guest"}, <br /> find the best
               flights with us!
             </h2>
+
             <SearchForm />
           </div>
           <div className="flex w-96 ">

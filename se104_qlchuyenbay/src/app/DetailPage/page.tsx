@@ -35,15 +35,28 @@ const DetailPage = () => {
   };
 
   const renderSeatGrid = () => {
-    const cols = ["A", "B", "C", "D", "E", "F", "G"];
-    const rows = ["1", "2", "3", "4"];
+    const cols = [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+    ];
+    const rows = ["A", "B", "C", "D"];
 
     return rows.map((row) => (
-      <div key={row} className="flex justify-center items-center">
+      <div key={row} className="flex justify-between items-center">
         {cols.map((col) => (
           <div
             key={col}
-            className={`seat w-10 h-6 flex justify-center items-center rounded-lg bg-gray-200 m-4 cursor-pointer ${
+            className={`seat w-10  h-6 flex justify-center items-center rounded-lg bg-gray-200 m-3 cursor-pointer ${
               selectedSeat === `${row}${col}`
                 ? "bg-green-500 text-white"
                 : "text-black"
@@ -101,7 +114,7 @@ const DetailPage = () => {
               </div>
             </div>
           </div>
-          <div className="card bg-white h-80 w-full p-5">
+          <div className="card bg-white  w-full p-5 ">
             <span className="font-semibold ml-2 text-2xl">Sơ đồ ghế</span>
             {renderSeatGrid()}
           </div>

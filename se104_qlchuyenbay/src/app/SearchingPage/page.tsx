@@ -23,7 +23,7 @@ export default function SearchingPage() {
 
   return (
     <main className="main">
-      <div className="card-actions justify-end">
+      <div className="flex justify-end">
         <SearchModal />
       </div>
       <div className="flex justify-center items-center mb-10 ">
