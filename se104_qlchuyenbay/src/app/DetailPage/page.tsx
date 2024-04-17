@@ -1,10 +1,13 @@
 "use client";
-import Button from "@/components/Button";
+
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import AirPlaneDetail from "@/components/AirPlaneDetail";
 
 const DetailPage = () => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+
   const [departure, setDeparture] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -23,15 +26,40 @@ const DetailPage = () => {
     setDate(params.date || "");
     setTime(params.time || "");
     setBrand(params.brand || "");
-    setLogo(params.date || "");
-    setPrice(params.price || " ");
-    setLogo(params.logo || " ");
+    setLogo(params.logo || "");
+    setPrice(params.price || "");
   }, [searchParams]);
 
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  const baseSeatChoose = {
+    seat: "",
+    class: "",
+    price: "",
+  };
+  const [chooseSeats, setChooseSeats] = useState<
+    {
+      seat: string;
+      class: string;
+      price: string;
+    }[]
+  >([baseSeatChoose]);
 
-  const handleSeatSelection = (seat: any) => {
-    setSelectedSeat(seat);
+  const handleSeatSelection = (seat: string) => {
+    console.log(chooseSeats);
+    if (!chooseSeats.find((selectedSeat) => selectedSeat.seat === seat)) {
+      const newSeat = {
+        seat,
+        class: "Bussiness",
+        price: "12000000",
+      };
+      const updatedSeats = [...chooseSeats];
+      updatedSeats[updatedSeats.length - 1] = newSeat;
+      setChooseSeats(updatedSeats);
+    }
+  };
+
+  const handleChooseMoreSeat = () => {
+    console.log(chooseSeats);
+    setChooseSeats([...chooseSeats, baseSeatChoose]);
   };
 
   const renderSeatGrid = () => {
@@ -56,8 +84,10 @@ const DetailPage = () => {
         {cols.map((col) => (
           <div
             key={col}
-            className={`seat w-10  h-6 flex justify-center items-center rounded-lg bg-gray-200 m-3 cursor-pointer ${
-              selectedSeat === `${row}${col}`
+            className={`seat w-10 h-6 flex justify-center items-center rounded-lg bg-gray-200 m-3 cursor-pointer ${
+              chooseSeats.find(
+                (selectedSeat) => selectedSeat.seat === `${row}${col}`
+              )
                 ? "bg-green-500 text-white"
                 : "text-black"
             }`}
@@ -73,7 +103,7 @@ const DetailPage = () => {
 
   return (
     <div className="flex justify-center h-screen">
-      <div className="flex flex-row justify-between w-full ">
+      <div className="flex flex-row justify-between w-full">
         <div className="mt-5 ml-5 h-full w-full">
           <div className="card bg-white h-80 w-full mb-5 p-5">
             <div className="flex items-center">
@@ -114,21 +144,38 @@ const DetailPage = () => {
               </div>
             </div>
           </div>
-          <div className="card bg-white  w-full p-5 ">
-            <span className="font-semibold ml-2 text-2xl">Sơ đồ ghế</span>
+          <div className="card bg-white w-full p-5">
+            <div className="flex justify-between">
+              <span className="font-semibold ml-2 text-2xl">Sơ đồ ghế</span>
+              <AirPlaneDetail />
+            </div>
             {renderSeatGrid()}
           </div>
         </div>
-        <div className="flex justify-between flex-col items-center m-5 p-5 h-96 min-h-96 min-w-72 bg-white rounded-2xl shadow">
+
+        <div className="flex justify-between flex-col items-center m-5 p-5 min-w-72 h-fit bg-white rounded-2xl shadow">
           <span className="font-semibold text-2xl mb-4">Chỗ ngồi đã chọn</span>
-          <div className="card bg-white h-40 w-64 p-4 drop-shadow-lg">
-            <span className="font-semibold text-lg mb-4">
-              Ghế: {selectedSeat}
-            </span>
-            <span className="font-semibold text-lg mb-4">Hạng:</span>
-            <span className="font-semibold text-lg mb-4">Giá:</span>
-          </div>
-          <button className="btn btn-ghost flex justify-center items-center w-full  drop-shadow-md bg-white rounded-full ">
+          {chooseSeats.map((param, index) => (
+            <div
+              key={index}
+              className="card bg-white h-40 w-64 p-4 drop-shadow-lg mb-5"
+            >
+              <span className="font-semibold text-lg mb-4">
+                Ghế: {param.seat}
+              </span>
+              <span className="font-semibold text-lg mb-4">
+                Hạng: {param.class}
+              </span>
+              <span className="font-semibold text-lg mb-4">
+                Giá: {param.price}
+              </span>
+            </div>
+          ))}
+
+          <button
+            onClick={handleChooseMoreSeat}
+            className="btn btn-ghost flex justify-center items-center mb-5 w-full drop-shadow-md bg-white rounded-full "
+          >
             <svg
               className="w-12 h-12"
               stroke="currentColor"
@@ -146,6 +193,7 @@ const DetailPage = () => {
               </g>
             </svg>
           </button>
+
           <Link
             href={{
               pathname: "/PayingPage",
@@ -156,13 +204,11 @@ const DetailPage = () => {
                 time: time,
                 departure: departure,
                 destination: destination,
-                price: price,
-                seat: selectedSeat,
+                chooseSeat: JSON.stringify(chooseSeats),
               },
             }}
             className="btn bg-orange-500 text-white w-full rounded-full"
           >
-            {" "}
             Tiếp tục thanh toán
           </Link>
         </div>

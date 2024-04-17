@@ -1,10 +1,14 @@
 "use client";
 import Button from "@/components/Button";
-
 import Ticket from "@/components/Ticket";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSearchParams } from "next/navigation";
+
+interface Seat {
+  seat: string;
+  class: string;
+  price: string;
+}
 
 interface Params {
   logo: string;
@@ -13,8 +17,7 @@ interface Params {
   time: string;
   departure: string;
   destination: string;
-  price: string;
-  seat: string;
+  chooseSeat: Seat[];
 }
 
 const PayingPage = () => {
@@ -27,8 +30,7 @@ const PayingPage = () => {
     time: params.time,
     departure: params.departure,
     destination: params.destination,
-    price: params.price,
-    seat: params.seat,
+    chooseSeat: params.chooseSeat ? JSON.parse(params.chooseSeat) : [],
   };
 
   return (

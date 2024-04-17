@@ -62,11 +62,12 @@ const CreateFlightForm = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="p-6 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"
+      className="p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"
     >
-      <h1 className="text-3xl font-bold mb-8 text-center">Tạo chuyến bay</h1>
+      <h1 className="text-2xl font-bold ">Tạo chuyến bay</h1>
+      <div className="divider h-1"></div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <h2 className="text-xl font-semibold mb-6">Thông tin chuyến bay</h2>
 
         <div className="grid grid-cols-2 gap-5">
@@ -110,7 +111,7 @@ const CreateFlightForm = () => {
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
@@ -152,7 +153,7 @@ const CreateFlightForm = () => {
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
@@ -211,7 +212,7 @@ const CreateFlightForm = () => {
           </div>
         </div>
       </div>
-      <div className="mb-6">
+      <div className="mb-3">
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
@@ -223,7 +224,7 @@ const CreateFlightForm = () => {
             <input
               {...register("total_business_seat")}
               id="firstClassSeats"
-              className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight "
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
               type="text"
               placeholder="Số ghế hạng 1"
             />
@@ -244,7 +245,7 @@ const CreateFlightForm = () => {
             <input
               {...register("total_economy_seat")}
               id="secondClassSeats"
-              className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight "
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
               type="text"
               placeholder="Số ghế hạng 2"
             />
@@ -256,7 +257,7 @@ const CreateFlightForm = () => {
           </div>
         </div>
       </div>
-      <div className="mb-6">
+      <div className="mb-3">
         <h2 className="text-xl font-semibold mb-6">Sân bay trung gian</h2>
 
         <div className="flex">
@@ -280,9 +281,9 @@ const CreateFlightForm = () => {
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         {intermediateAirport.map((_, index) => (
-          <div className="flex mb-5" key={index}>
+          <div className="flex mb-3" key={index}>
             <div className="w-20 flex justify-center items-center">
               <span>{index + 1}</span>
             </div>
@@ -345,13 +346,16 @@ const CreateFlightForm = () => {
         </div>
       </div>
 
-      <button
-        disabled={isSubmitting}
-        type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full "
-      >
-        {isSubmitting ? "Loading... " : " Tạo chuyến bay"}
-      </button>
+      <div className="flex justify-end">
+        <button className="btn btn-ghost rounded-2xl mr-5">Cancel</button>
+        <button
+          disabled={isSubmitting}
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4  rounded-2xl "
+        >
+          {isSubmitting ? "Loading... " : " Tạo chuyến bay"}
+        </button>
+      </div>
     </form>
   );
 };
