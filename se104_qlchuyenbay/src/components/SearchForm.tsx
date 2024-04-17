@@ -21,7 +21,7 @@ const SearchForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
   });
@@ -69,9 +69,13 @@ const SearchForm = () => {
                   {...register("departure")}
                   sx={{ width: 200 }}
                   placeholder="Departure"
+                  required
                 />
               )}
             />
+            {errors.departure && (
+              <div className="text-red-500">{errors.departure.message}</div>
+            )}
           </div>
         </div>
         <div>
@@ -93,9 +97,13 @@ const SearchForm = () => {
                   {...register("destination")}
                   sx={{ width: 200 }}
                   placeholder="Destination"
+                  required
                 />
               )}
             />
+            {errors.destination && (
+              <div className="text-red-500">{errors.destination.message}</div>
+            )}
           </div>
         </div>
       </div>
@@ -112,8 +120,12 @@ const SearchForm = () => {
               {...register("date")}
               id="date"
               type="date"
+              required
               className="w-full p-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
             />
+            {errors.date && (
+              <div className="text-red-500">{errors.date.message}</div>
+            )}
           </div>
         </div>
         <div className="w-1/2 ml-5 mb-5">
