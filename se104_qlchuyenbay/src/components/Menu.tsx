@@ -1,42 +1,13 @@
 "use client";
 import SearchModal from "./SearchModal";
 import Button from "./Button";
+import CreateFlightForm from "./CreateFlightForm";
 
 function Menu() {
   return (
     <div className="flex justify-between h-full items-center mt-5">
       <div>
-        <Button
-          link="/CreateFlight"
-          content={
-            <svg
-              className="w-8 h-8"
-              xmlns="http://www.w3.org/2000/svg"
-              id="Layer_1"
-              data-name="Layer 1"
-              viewBox="0 0 314.84 250.19"
-            >
-              <path
-                d="M323.22,474.64C300,477,278.74,458.46,255.55,462.17c-14.58,3.81-29,8.33-43.45,12.5-9.22,2.66-11.55.37-12.66-9.23-1.62-14,1.48-25.2,15.2-31.62,22-9.2,16.35-28.27,16.68-48-28.92,8.1-55.1,15.59-83.48,23.61-6.83,1.92-10.77-.61-11-7.74,1-12.32-5.23-31.48,7-39.2q40.23-23.57,81-46.29c5.14-2.87,6.9-6.19,6.64-11.92-.46-10.28-.05-20.59-.15-30.88-2-25.27,26.28-68.16,49.63-36.94,25,29.88-.25,73.4,21.2,81.24,9.37,4.59,18.21,10.26,28.36,16.09-46.6,32.29-50.16,101.82-6.84,138Z"
-                transform="translate(-136.11 -225.51)"
-              />
-              <path
-                d="M451,407c-.54,91.53-141.14,91.31-140.44-.74C310.63,314,451.28,314.79,451,407Z"
-                transform="translate(-136.11 -225.51)"
-              />
-              <path
-                className="fill-white"
-                d="M408.6,414H352.86c-9.36.14-9.39-15.18,0-15H408.6a7.11,7.11,0,0,1,7.12,7.11A7.2,7.2,0,0,1,408.6,414Z"
-                transform="translate(-136.11 -225.51)"
-              />
-              <path
-                className="fill-white"
-                d="M373.21,434.3V378.57c-.14-9.37,15.18-9.39,15,0V434.3a7.12,7.12,0,0,1-7.12,7.12A7.21,7.21,0,0,1,373.21,434.3Z"
-                transform="translate(-136.11 -225.51)"
-              />
-            </svg>
-          }
-        />
+        <CreateFlightForm />
       </div>
 
       <div className="flex justify-between">
@@ -80,7 +51,7 @@ function Menu() {
 
         <SearchModal />
         <div className="dropdown dropdown-end">
-          <button className="btn btn-ghost mr-3 ml-3 btn-circle">
+          <button className="btn btn-ghost ml-3 btn-circle">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"

@@ -9,7 +9,7 @@ const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <div className="navbar bg-neutral-100">
+    <div className="navbar  bg-neutral-100">
       <div className="container justify-between flex items-center ">
         <Link href="/" className="text-2xl font-bold">
           CSE
