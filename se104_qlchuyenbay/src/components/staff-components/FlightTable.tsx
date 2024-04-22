@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Flight = () => {
   type inputType = {
@@ -17,6 +17,8 @@ const Flight = () => {
     price: string | number;
     available: string;
   };
+  const MAX_LENGTH_COL = 7;
+
   const cardsData: inputType[] = [
     {
       flight: "AIR2056",
@@ -163,10 +165,124 @@ const Flight = () => {
       price: 3500000,
       available: "available",
     },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
+    {
+      flight: "AIR2056",
+      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
+      brand: "VietNamAirlines",
+      date: "2024-03-25",
+      time: "16:20 PM - 20:00 PM",
+      departure: "HoChiMinh",
+      airportStart: "San bay Tan Son Nhat",
+      destination: "HaNoi",
+      airportEnd: "San bay Noi Bai",
+      seat: "48",
+      placed: "20",
+      status: "available",
+      price: 3500000,
+      available: "available",
+    },
   ];
+  const [page, setPage] = useState<number>(1);
+
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto ">
         <table className="table">
           <thead>
             <tr>
@@ -181,70 +297,101 @@ const Flight = () => {
             </tr>
           </thead>
           <tbody>
-            {cardsData.map((cardData, index) => (
-              <tr
-                key={index}
-                className={cardData.status === "sold" ? " bg-red-50" : ""}
-              >
-                <th>
-                  <label>
-                    {/* <input type="checkbox" className="checkbox" /> */}
-                    <span>{index}</span>
-                  </label>
-                </th>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-12 h-12">
-                        <img
-                          src={cardData.logo}
-                          alt="Avatar Tailwind CSS Component"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-bold">{cardData.flight}</div>
-                      <div className="text-sm opacity-50">{cardData.brand}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className="font-semibold">{cardData.departure}</span>
-                  <br />
-                  <span className="text-sm">{cardData.airportStart}</span>
-                </td>
-                <td>
-                  <span className="font-semibold">{cardData.destination}</span>
-                  <br />
-                  <span className="text-sm">{cardData.airportEnd}</span>
-                </td>
-                <td>
-                  <span className="font-semibold">{cardData.date}</span>
-                  <p className="text-sm">{cardData.time}</p>
-                </td>
-                <td>
-                  <span className="font-medium">
-                    {cardData.placed}/{cardData.seat}
-                  </span>
-                </td>
-                <td>
-                  <span className="font-semibold ">{cardData.price}</span>
-                </td>
-                <td>
-                  <button
-                    className={
-                      cardData.available === "expired"
-                        ? "btn btn-ghost  text-red-400 btn-xs"
-                        : "btn btn-ghost text-green-400 btn-xs"
-                    }
+            {cardsData.map((cardData, index) => {
+              if (
+                index >= MAX_LENGTH_COL * (page - 1) &&
+                index < MAX_LENGTH_COL * page
+              ) {
+                return (
+                  <tr
+                    key={index}
+                    className={cardData.status === "sold" ? " bg-red-50" : ""}
                   >
-                    {cardData.available}
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    <th>
+                      <label>
+                        {/* <input type="checkbox" className="checkbox" /> */}
+                        <span>{index}</span>
+                      </label>
+                    </th>
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-12 h-12">
+                            <img
+                              src={cardData.logo}
+                              alt="Avatar Tailwind CSS Component"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-bold">{cardData.flight}</div>
+                          <div className="text-sm opacity-50">
+                            {cardData.brand}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="font-semibold">
+                        {cardData.departure}
+                      </span>
+                      <br />
+                      <span className="text-sm">{cardData.airportStart}</span>
+                    </td>
+                    <td>
+                      <span className="font-semibold">
+                        {cardData.destination}
+                      </span>
+                      <br />
+                      <span className="text-sm">{cardData.airportEnd}</span>
+                    </td>
+                    <td>
+                      <span className="font-semibold">{cardData.date}</span>
+                      <p className="text-sm">{cardData.time}</p>
+                    </td>
+                    <td>
+                      <span className="font-medium">
+                        {cardData.placed}/{cardData.seat}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="font-semibold ">{cardData.price}</span>
+                    </td>
+                    <td>
+                      <button
+                        className={
+                          cardData.available === "expired"
+                            ? "btn btn-ghost  text-red-400 btn-xs"
+                            : "btn btn-ghost text-green-400 btn-xs"
+                        }
+                      >
+                        {cardData.available}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              } else {
+                return null; // Return null for rows outside the current page range
+              }
+            })}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-between p-3">
+        <p className="font-medium">Total flight: {cardsData.length} </p>
+        <div className="join">
+          {[...Array(Math.ceil(cardsData.length / MAX_LENGTH_COL)).keys()].map(
+            (pageNumber) => (
+              <button
+                key={pageNumber}
+                className="join-item btn btn-xs"
+                onClick={() => setPage(pageNumber + 1)}
+              >
+                {pageNumber + 1}
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );

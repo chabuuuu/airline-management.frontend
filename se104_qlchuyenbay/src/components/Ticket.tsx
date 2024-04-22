@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 
 interface Seat {
@@ -59,7 +58,7 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                 </h2>
               </div>
               <span className="font-semibold text-2xl text-white py-1 px-3 rounded-full ">
-                ECONOMY CLASS
+                {param.class.toUpperCase()} CLASS
               </span>
             </div>
             <form onSubmit={handleSubmit} className="pl-10 pr-10 pb-10 pt-5">

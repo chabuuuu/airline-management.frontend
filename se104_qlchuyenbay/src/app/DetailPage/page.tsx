@@ -43,13 +43,14 @@ const DetailPage = () => {
     }[]
   >([baseSeatChoose]);
 
-  const handleSeatSelection = (seat: string) => {
-    console.log(chooseSeats);
+  const handleSeatSelection = (seat: string, seatClass: string) => {
+    const coef = seatClass === "Business" ? 1.4 : 1;
+
     if (!chooseSeats.find((selectedSeat) => selectedSeat.seat === seat)) {
       const newSeat = {
         seat,
-        class: "Bussiness",
-        price: "12000000",
+        class: seatClass,
+        price: (parseInt(price) * coef).toString(),
       };
       const updatedSeats = [...chooseSeats];
       updatedSeats[updatedSeats.length - 1] = newSeat;
@@ -63,25 +64,30 @@ const DetailPage = () => {
   };
 
   const renderSeatGrid = () => {
-    const cols = [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11",
-      "12",
-    ];
+    const businessCols = ["1", "2", "3"];
+    const economyCols = ["4", "5", "6", "7", "8", "9", "10", "11", "12"];
     const rows = ["A", "B", "C", "D"];
 
     return rows.map((row) => (
       <div key={row} className="flex justify-between items-center">
-        {cols.map((col) => (
+        {businessCols.map((col) => (
+          <div
+            key={col}
+            className={`seat w-10 h-6 flex justify-center items-center rounded-lg bg-gray-200 m-3 cursor-pointer ${
+              chooseSeats.find(
+                (selectedSeat) => selectedSeat.seat === `${row}${col}`
+              )
+                ? "bg-yellow-500 text-white"
+                : "text-black"
+            }`}
+            onClick={() => handleSeatSelection(`${row}${col}`, "Business")}
+          >
+            {row}
+            {col}
+          </div>
+        ))}
+        <div className="divider sm:divider-horizontal"></div>
+        {economyCols.map((col) => (
           <div
             key={col}
             className={`seat w-10 h-6 flex justify-center items-center rounded-lg bg-gray-200 m-3 cursor-pointer ${
@@ -91,7 +97,7 @@ const DetailPage = () => {
                 ? "bg-green-500 text-white"
                 : "text-black"
             }`}
-            onClick={() => handleSeatSelection(`${row}${col}`)}
+            onClick={() => handleSeatSelection(`${row}${col}`, "Economy")}
           >
             {row}
             {col}
@@ -153,24 +159,26 @@ const DetailPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-between flex-col items-center m-5 p-5 min-w-72 h-fit bg-white rounded-2xl shadow">
+        <div className="flex  justify-between flex-col items-center m-5 p-5 min-w-72 h-fit bg-white rounded-2xl shadow">
           <span className="font-semibold text-2xl mb-4">Chỗ ngồi đã chọn</span>
-          {chooseSeats.map((param, index) => (
-            <div
-              key={index}
-              className="card bg-white h-40 w-64 p-4 drop-shadow-lg mb-5"
-            >
-              <span className="font-semibold text-lg mb-4">
-                Ghế: {param.seat}
-              </span>
-              <span className="font-semibold text-lg mb-4">
-                Hạng: {param.class}
-              </span>
-              <span className="font-semibold text-lg mb-4">
-                Giá: {param.price}
-              </span>
-            </div>
-          ))}
+          <div className="m-5 max-h-[400px] overflow-y-scroll pl-3">
+            {chooseSeats.map((param, index) => (
+              <div
+                key={index}
+                className="card bg-white h-40 w-64 p-4 drop-shadow-lg mb-5"
+              >
+                <span className="font-semibold text-lg mb-4">
+                  Ghế: {param.seat}
+                </span>
+                <span className="font-semibold text-lg mb-4">
+                  Hạng: {param.class}
+                </span>
+                <span className="font-semibold text-lg mb-4">
+                  Giá: {param.price}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <button
             onClick={handleChooseMoreSeat}
