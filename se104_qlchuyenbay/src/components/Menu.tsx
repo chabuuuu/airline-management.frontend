@@ -1,13 +1,14 @@
 "use client";
 import SearchModal from "./SearchModal";
 import Button from "./Button";
-import CreateFlightForm from "./CreateFlightForm";
+import CreateFlightForm from "./staff-components/CreateFlightForm";
+import CreateAirportForm from "./staff-components/CreateAirportForm";
 
 function Menu() {
   return (
     <div className="flex justify-between h-full items-center mt-5">
       <div>
-        <CreateFlightForm />
+        <CreateAirportForm />
       </div>
 
       <div className="flex justify-between">

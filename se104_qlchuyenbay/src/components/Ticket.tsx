@@ -94,6 +94,7 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                 <input
                   type="text"
                   name="fullName"
+                  required
                   placeholder={formData.fullName}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -106,6 +107,7 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                   <input
                     type="text"
                     name="phoneNumber"
+                    required
                     placeholder={formData.phoneNumber}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -116,6 +118,7 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                   <input
                     type="email"
                     name="email"
+                    required
                     placeholder={formData.email}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -128,6 +131,7 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                   <h3 className="font-bold text-gray-600">HÀNH LÝ KÍ GỬI</h3>
                   <select
                     name="luggage"
+                    required
                     value={formData.luggage}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"

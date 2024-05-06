@@ -16,14 +16,12 @@ export default function Home() {
 
             <SearchForm />
           </div>
-          <div className="flex w-96 ">
-            <div
-              className="h-full w-full bg-cover justify-center rounded-e-2xl "
-              style={{
-                backgroundImage:
-                  "url('https://images.pexels.com/photos/1928067/pexels-photo-1928067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')",
-              }}
-            ></div>
+          <div className="w-full hidden lg:block ">
+            <img
+              src="https://images.pexels.com/photos/1928067/pexels-photo-1928067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="Illustration"
+              className=" h-full w-full bg-cover justify-center rounded-e-2xl"
+            />
           </div>
         </div>
       </div>

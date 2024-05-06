@@ -4,6 +4,21 @@ import { useSearchParams } from "next/navigation";
 import Card from "@/components/Card";
 import SearchModal from "@/components/SearchModal";
 import { cardData } from "@/data";
+import axios from "axios";
+import { PlanesData } from "@/planes";
+
+type CardType = {
+  flightId: string;
+  logo?: string;
+  brand: string;
+  date: string;
+  time?: string;
+  duration?: string;
+  departure: string;
+  arrival: string;
+  status: string;
+  price: string | number;
+};
 
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
@@ -11,6 +26,10 @@ export default function SearchingPage() {
   const [date, setDate] = useState<string>("");
 
   const searchParams = useSearchParams();
+
+  const [allFlightInfo, setAllFlightInfo] = useState<CardType[]>([]);
+
+  const [filterFlight, setFilterFlight] = useState<CardType[]>();
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -20,21 +39,77 @@ export default function SearchingPage() {
     setDate(params.date || "");
   }, [searchParams]);
 
-  const [filters, setFilters] = useState<string[]>([]);
+  useEffect(() => {
+    const searchForFlight = async () => {
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
+
+      try {
+        const response = await axios.get(url);
+        const responseData = response.data;
+
+        const updatedFlightInfo = responseData.data.map((dt: any) => {
+          const planeData = PlanesData.find(
+            (plane) => plane.brand === dt.airlines
+          );
+          const logo = planeData ? planeData.logo : "";
+
+          return {
+            flightId: dt.flightId,
+            brand: dt.airlines,
+            date: dt.departureTime.slice(0, 10),
+            time: dt.departureTime.slice(11, 16),
+            departure: dt.departureAirport.city,
+            arrival: dt.arrivalAirport.city,
+            duration: dt.flightDuration,
+            status: dt.status,
+            price: dt.price,
+            logo: logo,
+          };
+        });
+
+        setAllFlightInfo(updatedFlightInfo);
+      } catch (error) {
+        console.error("Error fetching flight data:", error);
+      }
+    };
+
+    if (departure && destination) {
+      searchForFlight();
+    }
+  }, [departure, destination]);
+
+  const [filters, setFilters] = useState<string | null>(null);
 
   const handleFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     const filterValue = event.currentTarget.textContent;
+
     if (filterValue) {
-      if (filters.includes(filterValue)) {
-        setFilters(filters.filter((filter) => filter !== filterValue));
-      } else {
-        setFilters([...filters, filterValue]);
+      setFilters(filterValue);
+      let filteredFlights = allFlightInfo;
+
+      if (filterValue.includes("Pricesb")) {
+        filteredFlights = filteredFlights.sort(
+          (a: any, b: any) => a.price - b.price
+        );
+      } else if (filterValue.includes("Prices")) {
+        filteredFlights = filteredFlights.sort(
+          (a: any, b: any) => b.price - a.price
+        );
       }
+
+      setFilterFlight(filteredFlights);
     }
   };
 
+  const offFilter = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    setFilters(null);
+    let filteredFlights = allFlightInfo;
+    setFilterFlight(filteredFlights);
+  };
   const [availableFlight, setAvailableFlight] = useState<boolean>(false);
 
   const handleFilterAvailableFlight = () => {
@@ -97,17 +172,10 @@ export default function SearchingPage() {
           <div className="flex justify-between items-center mr-4 rounded-lg  h-10 px-2 bg-base-300">
             <p className="font-normal text-slate-600 mr-3 text-sm">Sort by</p>
 
-            {filters.map((filter, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-white rounded-lg p-1 px-3  mr-2"
-              >
-                <span className="text-sm mr-3">{filter}</span>
-                <button
-                  onClick={() =>
-                    setFilters(filters.filter((_, i) => i !== index))
-                  }
-                >
+            {!!filters && (
+              <div className="flex items-center justify-between bg-white rounded-lg p-1 px-3  mr-2">
+                <span className="text-sm mr-3">{filters}</span>
+                <a onClick={offFilter}>
                   <svg
                     className="w-4 h-4"
                     xmlns="http://www.w3.org/2000/svg"
@@ -115,9 +183,9 @@ export default function SearchingPage() {
                   >
                     <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                   </svg>
-                </button>
+                </a>
               </div>
-            ))}
+            )}
 
             <div className="dropdown dropdown-bottom dropdown-end  ">
               <div
@@ -146,16 +214,28 @@ export default function SearchingPage() {
                 className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-5"
               >
                 <li>
-                  <a
-                    onClick={(e) => {
-                      handleFilter(e);
-                    }}
-                  >
-                    Filter 1
+                  <a onClick={handleFilter}>
+                    Pricesb{" "}
+                    <svg
+                      className="w-3 h-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48.85 166.12"
+                    >
+                      <path d="M46.35,30.37,18.48,2.51A8.56,8.56,0,0,0,11.58,0c-.28,0-.57,0-.86,0H8.55A8.55,8.55,0,0,0,0,8.55v149a8.55,8.55,0,0,0,8.55,8.55h2.17a8.55,8.55,0,0,0,8.55-8.55V35.25l11.1,11.1a8.56,8.56,0,0,0,12.1,0l3.88-3.88A8.56,8.56,0,0,0,46.35,30.37Z" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a onClick={handleFilter}>Filter 2</a>
+                  <a onClick={handleFilter}>
+                    Prices{" "}
+                    <svg
+                      className="w-3 h-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48.85 166.12"
+                    >
+                      <path d="M48.85,153.69V8.55A8.55,8.55,0,0,0,40.3,0H38.14a8.55,8.55,0,0,0-8.56,8.55V130.87l-11.1-11.1a8.56,8.56,0,0,0-12.1,0l-3.87,3.88a8.54,8.54,0,0,0,0,12.1l27.86,27.86a8.56,8.56,0,0,0,6.9,2.47c.29,0,.57,0,.87,0H40.3a8.55,8.55,0,0,0,8.55-8.55v-3.88Z" />
+                    </svg>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -168,20 +248,13 @@ export default function SearchingPage() {
       </div>
 
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-        {cardData.map((carddata, index) => {
-          if (
-            carddata.spot[0] === departure &&
-            carddata.spot[1] === destination &&
-            carddata.date === date
-          ) {
-            if (!availableFlight && carddata.status === "available") {
-              return <Card key={index} {...carddata} />;
-            } else if (availableFlight) {
-              return <Card key={index} {...carddata} />;
-            }
-          }
-          return null;
-        })}
+        {!filters
+          ? allFlightInfo?.map((carddata, index) => (
+              <Card key={index} {...carddata} />
+            ))
+          : filterFlight?.map((carddata, index) => (
+              <Card key={index} {...carddata} />
+            ))}
       </div>
     </main>
   );

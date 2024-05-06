@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Cities from "@/cities.json";
+import axios from "axios";
 
 const schema = z.object({
   departure: z.string(),
@@ -31,8 +32,23 @@ const SearchForm = () => {
   const [cityOptions, setCityOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    const options = Cities.map((city) => city.name);
-    setCityOptions(options);
+    const get_all_city_by_code = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/city?country=VN`,
+        headers: {},
+      };
+      try {
+        const response = await axios.request(config);
+        const responseData = response.data;
+        console.log(responseData);
+        setCityOptions(responseData);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    get_all_city_by_code();
   }, []);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {

@@ -5,8 +5,10 @@ const AirplaneTable = () => {
     airplaneModel: string;
     airlinePicture: string;
     airlines: string;
+    description?: string;
     total_seat: string;
     total_business_seat: string;
+
     total_economy_seat: string;
     status: string;
   };
@@ -16,6 +18,7 @@ const AirplaneTable = () => {
       airlinePicture:
         "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
       airlines: "VietNamAirlines",
+      description: "Biggest airplane",
       total_seat: "40",
       total_business_seat: "20",
       total_economy_seat: "20",
@@ -26,6 +29,7 @@ const AirplaneTable = () => {
       airlinePicture:
         "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
       airlines: "VietNamAirlines",
+      description: "Biggest airplane",
       total_seat: "40",
       total_business_seat: "20",
       total_economy_seat: "20",
@@ -36,6 +40,7 @@ const AirplaneTable = () => {
       airlinePicture:
         "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
       airlines: "VietNamAirlines",
+      description: "Biggest airplane",
       total_seat: "40",
       total_business_seat: "20",
       total_economy_seat: "20",
@@ -46,6 +51,7 @@ const AirplaneTable = () => {
       airlinePicture:
         "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
       airlines: "VietNamAirlines",
+      description: "Biggest airplane",
       total_seat: "40",
       total_business_seat: "20",
       total_economy_seat: "20",
@@ -102,7 +108,9 @@ const AirplaneTable = () => {
                   </div>
                 </td>
                 <td className=" max-w-[300px]">
-                  <span className="font-normal text-sm">Biggest airport</span>
+                  <span className="font-normal text-sm">
+                    {cardData.description}
+                  </span>
                 </td>
                 <td>
                   <span className="font-semibold">

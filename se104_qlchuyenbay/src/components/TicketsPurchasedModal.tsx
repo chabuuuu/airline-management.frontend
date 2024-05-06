@@ -1,12 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchForm from "./SearchForm";
 import TicketCard from "./TIcketCard";
+import axios from "axios";
 
 const SearchModal: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
-
+  useEffect(() => {
+    const getBookingTicket = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/booking/me`,
+        headers: {
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNDI0YzFhLWJmZjAtNDY3Yy1hNDM2LTM2OTc1MDM4NTUxOSIsImVtYWlsIjoiaGFwaHV0aGluaDMzNjRAZ21haWwuY29tIiwicGFzc3dvcmQiOiJAMVRoaW5oSGEiLCJyb2xlIjoiQ3VzdG9tZXIiLCJpYXQiOjE3MTIwMjI1MjMsImV4cCI6MTcxMjM0NjUyM30.lQmtGwfLJFtGfFQWJgZqF61Pfb7KGb1vwtWcRlIpKt0`,
+        },
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getBookingTicket();
+  });
   return (
     <div className="w-full">
       <div className="w-full">

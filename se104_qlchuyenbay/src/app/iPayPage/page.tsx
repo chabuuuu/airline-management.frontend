@@ -5,7 +5,7 @@ import PayForm from "@/components/PayForm";
 const iPayPage = () => {
   return (
     <div>
-      <div className=" shadow rounded-lg p-6 flex items-center">
+      <div className="shadow rounded-lg p-6 flex items-center justify-center">
         <PayForm />
       </div>
     </div>

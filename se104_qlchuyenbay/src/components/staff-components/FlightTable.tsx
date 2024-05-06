@@ -1,284 +1,53 @@
-import React, { useEffect, useState } from "react";
+import { PlanesData } from "@/planes";
+import axios from "axios";
+import Link from "next/link";
+import React, { FormEvent, useEffect, useState } from "react";
+import HandleSeatModal from "./HandleSeatModal";
 
-const Flight = () => {
-  type inputType = {
-    flight: string;
-    logo: string;
-    brand: string;
-    date: string;
-    time?: string;
-    departure: string;
-    airportStart?: string;
-    airportEnd?: string;
-    destination: string;
-    seat: string;
-    placed: string;
-    status: string;
-    price: string | number;
-    available: string;
-  };
+type RowType = {
+  flight: string;
+  logo: string;
+  brand: string;
+  date: string;
+  time: string;
+  duration?: string;
+  departure: string;
+  airportStart?: string;
+  airportEnd?: string;
+  arrival: string;
+  seat: string;
+  placed?: string;
+  status: string;
+  price: string | number;
+  available: string;
+};
+
+const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
   const MAX_LENGTH_COL = 7;
 
-  const cardsData: inputType[] = [
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2058",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "48",
-      status: "sold",
-      price: 3500000,
-      available: "expired",
-    },
-
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2058",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "48",
-      status: "sold",
-      price: 3500000,
-      available: "expired",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2058",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "48",
-      status: "sold",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "expired",
-    },
-    {
-      flight: "AIR2058",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "48",
-      status: "sold",
-      price: 3500000,
-      available: "expired",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-    {
-      flight: "AIR2056",
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-25",
-      time: "16:20 PM - 20:00 PM",
-      departure: "HoChiMinh",
-      airportStart: "San bay Tan Son Nhat",
-      destination: "HaNoi",
-      airportEnd: "San bay Noi Bai",
-      seat: "48",
-      placed: "20",
-      status: "available",
-      price: 3500000,
-      available: "available",
-    },
-  ];
   const [page, setPage] = useState<number>(1);
+  const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
+  const [showSeatModal, setShowSeatModal] = useState<boolean>(false);
+
+  const [value, setStatus] = useState<string | null>(null);
+  const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
+  const [handleSave, setHandleSave] = useState<boolean | null>(false);
+
+  const handleChangeStatus = () => {
+    setHandleSave(true);
+  };
+  const statusColor = (status: any) => {
+    switch (status) {
+      case "Đã hủy chuyến":
+        return `btn btn-ghost text-red-400 btn-xs`;
+      case "Đang bay":
+        return `btn btn-ghost text-green-400 btn-xs`;
+      case "Chưa khởi hành":
+        return `btn btn-ghost text-yellow-400 btn-xs`;
+      default:
+        return `btn btn-ghost text-blue-400 btn-xs`;
+    }
+  };
 
   return (
     <div>
@@ -293,11 +62,12 @@ const Flight = () => {
               <th>Date</th>
               <th>Seat</th>
               <th>Price</th>
+              <th>Status</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {cardsData.map((cardData, index) => {
+            {allFlight.map((cardData, index) => {
               if (
                 index >= MAX_LENGTH_COL * (page - 1) &&
                 index < MAX_LENGTH_COL * page
@@ -309,14 +79,13 @@ const Flight = () => {
                   >
                     <th>
                       <label>
-                        {/* <input type="checkbox" className="checkbox" /> */}
                         <span>{index}</span>
                       </label>
                     </th>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className="avatar">
-                          <div className="mask mask-squircle w-12 h-12">
+                        <div className="">
+                          <div className="w-8 object-cover">
                             <img
                               src={cardData.logo}
                               alt="Avatar Tailwind CSS Component"
@@ -339,48 +108,72 @@ const Flight = () => {
                       <span className="text-sm">{cardData.airportStart}</span>
                     </td>
                     <td>
-                      <span className="font-semibold">
-                        {cardData.destination}
-                      </span>
+                      <span className="font-semibold">{cardData.arrival}</span>
                       <br />
                       <span className="text-sm">{cardData.airportEnd}</span>
                     </td>
                     <td>
                       <span className="font-semibold">{cardData.date}</span>
-                      <p className="text-sm">{cardData.time}</p>
+                      <p className="text-sm">
+                        {cardData.time}, {cardData.duration} hours
+                      </p>
                     </td>
                     <td>
-                      <span className="font-medium">
-                        {cardData.placed}/{cardData.seat}
-                      </span>
+                      <div className="tooltip" data-tip="Detail seats ">
+                        <button
+                          onClick={() => {
+                            setShowSeatModal(true);
+                            setSelectedFlightId(cardData.flight);
+                          }}
+                          className="btn btn-ghost text-rose-400 btn-xs font-medium"
+                        >
+                          {cardData.placed}/{cardData.seat}
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <span className="font-semibold ">{cardData.price}</span>
                     </td>
                     <td>
-                      <button
-                        className={
-                          cardData.available === "expired"
-                            ? "btn btn-ghost  text-red-400 btn-xs"
-                            : "btn btn-ghost text-green-400 btn-xs"
-                        }
-                      >
-                        {cardData.available}
+                      <div className="tooltip" data-tip="Change status">
+                        <button
+                          onClick={() => {
+                            setShowStatusModal(true);
+                            setSelectedFlightId(cardData.flight);
+                          }}
+                          className={statusColor(cardData.status)}
+                        >
+                          {cardData.status}
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <button>
+                        <svg
+                          className="w-4 h-4 hover:opacity-50 cursor-pointer"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 200 50"
+                          fill="none"
+                        >
+                          <circle cx="25" cy="25" r="25" fill="#2F2F2F" />
+                          <circle cx="100" cy="25" r="25" fill="#2F2F2F" />
+                          <circle cx="175" cy="25" r="25" fill="#2F2F2F" />
+                        </svg>
                       </button>
                     </td>
                   </tr>
                 );
               } else {
-                return null; // Return null for rows outside the current page range
+                return null;
               }
             })}
           </tbody>
         </table>
       </div>
       <div className="flex justify-between p-3">
-        <p className="font-medium">Total flight: {cardsData.length} </p>
+        <p className="font-medium">Total flight: {allFlight.length} </p>
         <div className="join">
-          {[...Array(Math.ceil(cardsData.length / MAX_LENGTH_COL)).keys()].map(
+          {[...Array(Math.ceil(allFlight.length / MAX_LENGTH_COL)).keys()].map(
             (pageNumber) => (
               <button
                 key={pageNumber}
@@ -393,8 +186,62 @@ const Flight = () => {
           )}
         </div>
       </div>
+      {showStatusModal && (
+        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Update Flight Status</h3>
+
+            <div>
+              <label>Status</label>
+              <select
+                value={value ?? "set-finish"}
+                onChange={(e) => {
+                  setStatus(e.target.value);
+                }}
+                className="select select-bordered select-sm w-full  "
+              >
+                <option value="set-finish">Success</option>
+                <option value="set-in-progress">In Progress</option>
+                <option value="set-cancel">Cancel</option>
+                <option value="set-not-started">Not Started</option>
+              </select>
+            </div>
+            <div className="modal-action">
+              <button className="btn" onClick={() => setShowStatusModal(false)}>
+                Close
+              </button>
+              <button className="btn btn-warning" onClick={handleChangeStatus}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSeatModal && (
+        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Update Seat Flight </h3>
+
+            <div className="flex flex-col justify-between">
+              <HandleSeatModal flightId={selectedFlightId} />
+            </div>
+            <div className="modal-action">
+              <button className="btn" onClick={() => setShowSeatModal(false)}>
+                Close
+              </button>
+              <button
+                className="btn btn-warning"
+                onClick={() => setShowSeatModal(false)}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Flight;
+export default FlightTable;
