@@ -1,7 +1,9 @@
+import CreateFlightForm from "@/components/staff-components/CreateFlightForm";
+
 function CreateFlight() {
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex items-center space-x-6 mb-4"></div>
+    <div className=" ">
+      <CreateFlightForm />
     </div>
   );
 }

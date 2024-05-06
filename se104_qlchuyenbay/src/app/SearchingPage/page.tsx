@@ -1,10 +1,24 @@
 "use client";
-
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Card from "@/components/Card";
 import SearchModal from "@/components/SearchModal";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { cardData } from "@/data";
+import axios from "axios";
+import { PlanesData } from "@/planes";
+
+type CardType = {
+  flightId: string;
+  logo?: string;
+  brand: string;
+  date: string;
+  time?: string;
+  duration?: string;
+  departure: string;
+  arrival: string;
+  status: string;
+  price: string | number;
+};
 
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
@@ -12,6 +26,10 @@ export default function SearchingPage() {
   const [date, setDate] = useState<string>("");
 
   const searchParams = useSearchParams();
+
+  const [allFlightInfo, setAllFlightInfo] = useState<CardType[]>([]);
+
+  const [filterFlight, setFilterFlight] = useState<CardType[]>();
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -21,76 +39,222 @@ export default function SearchingPage() {
     setDate(params.date || "");
   }, [searchParams]);
 
-  return (
-    <main className="main">
-      <div className="card-actions justify-end">
-        <SearchModal />
-      </div>
-      <div className="flex justify-center items-center mb-10 ">
-        {
-          <>
-            <p className="text-4xl font-bold mb-3 text-slate-800">
-              {departure}
-            </p>
+  useEffect(() => {
+    const searchForFlight = async () => {
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
 
-            <div className="flex flex-col justify-center items-center mx-3">
-              <span className="text-base">{date}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="200"
-                height="15"
-                viewBox="0 0 252 17"
-                fill="none"
-                className="mt-1"
-              >
-                <rect y="5" width="252" height="7" rx="3.5" fill="#D9D9D9" />
-                <ellipse cx="243" cy="8.5" rx="9" ry="8.5" fill="black" />
-                <ellipse cx="9" cy="8.5" rx="9" ry="8.5" fill="#B3B3B3" />
-              </svg>
+      try {
+        const response = await axios.get(url);
+        const responseData = response.data;
+
+        const updatedFlightInfo = responseData.data.map((dt: any) => {
+          const planeData = PlanesData.find(
+            (plane) => plane.brand === dt.airlines
+          );
+          const logo = planeData ? planeData.logo : "";
+
+          return {
+            flightId: dt.flightId,
+            brand: dt.airlines,
+            date: dt.departureTime.slice(0, 10),
+            time: dt.departureTime.slice(11, 16),
+            departure: dt.departureAirport.city,
+            arrival: dt.arrivalAirport.city,
+            duration: dt.flightDuration,
+            status: dt.status,
+            price: dt.price,
+            logo: logo,
+          };
+        });
+
+        setAllFlightInfo(updatedFlightInfo);
+      } catch (error) {
+        console.error("Error fetching flight data:", error);
+      }
+    };
+
+    if (departure && destination) {
+      searchForFlight();
+    }
+  }, [departure, destination]);
+
+  const [filters, setFilters] = useState<string | null>(null);
+
+  const handleFilter = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    const filterValue = event.currentTarget.textContent;
+
+    if (filterValue) {
+      setFilters(filterValue);
+      let filteredFlights = allFlightInfo;
+
+      if (filterValue.includes("Pricesb")) {
+        filteredFlights = filteredFlights.sort(
+          (a: any, b: any) => a.price - b.price
+        );
+      } else if (filterValue.includes("Prices")) {
+        filteredFlights = filteredFlights.sort(
+          (a: any, b: any) => b.price - a.price
+        );
+      }
+
+      setFilterFlight(filteredFlights);
+    }
+  };
+
+  const offFilter = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    setFilters(null);
+    let filteredFlights = allFlightInfo;
+    setFilterFlight(filteredFlights);
+  };
+  const [availableFlight, setAvailableFlight] = useState<boolean>(false);
+
+  const handleFilterAvailableFlight = () => {
+    setAvailableFlight(!availableFlight);
+  };
+
+  return (
+    <main className="main  rounded-2xl p-5">
+      <div className="flex justify-center items-center mb-10  p-5 ">
+        <>
+          <p className="text-4xl font-bold  text-slate-800">{departure}</p>
+
+          <div className="flex flex-col justify-center items-center mx-3 ">
+            <span className="text-base">{date}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="200"
+              height="15"
+              viewBox="0 0 252 17"
+              fill="none"
+              className="mt-1"
+            >
+              <rect y="6" width="252" height="4" rx="3.5" fill="#C9C9C9" />
+              <ellipse cx="243" cy="8.5" rx="9" ry="8.5" fill="black" />
+              <ellipse cx="9" cy="8.5" rx="9" ry="8.5" fill="#B3B3B3" />
+            </svg>
+          </div>
+          <p className="text-4xl font-bold text-slate-800">{destination}</p>
+        </>
+      </div>
+
+      <div className="flex justify-between items-center ">
+        <div>
+          <div className="flex rounded-md bg-base-300 p-1 justify-around ">
+            <div
+              className={`${
+                availableFlight
+                  ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+              }`}
+              onClick={handleFilterAvailableFlight}
+            >
+              All flight
             </div>
-            <p className="text-4xl font-bold mb-3 text-slate-800">
-              {destination}
-            </p>
-          </>
-        }
-      </div>
-      <div className="dropdown dropdown-bottom dropdown-end flex justify-end items-center">
-        <div
-          tabIndex={0}
-          role="button"
-          className="bg-white flex justify-center items-center w-12 h-5 rounded-full hover:bg-slate-50 m-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            className="h-5 w-10 rounded-full"
-          >
-            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
-          </svg>
+
+            <div
+              className={`${
+                availableFlight
+                  ? "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  : "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+              }`}
+              onClick={handleFilterAvailableFlight}
+            >
+              Available flight
+            </div>
+          </div>
         </div>
-        <ul
-          tabIndex={0}
-          className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-        >
-          <li>
-            <a>Item 1</a>
-          </li>
-          <li>
-            <a>Item 2</a>
-          </li>
-        </ul>
+
+        <div className="flex items-center">
+          <div className="flex justify-between items-center mr-4 rounded-lg  h-10 px-2 bg-base-300">
+            <p className="font-normal text-slate-600 mr-3 text-sm">Sort by</p>
+
+            {!!filters && (
+              <div className="flex items-center justify-between bg-white rounded-lg p-1 px-3  mr-2">
+                <span className="text-sm mr-3">{filters}</span>
+                <a onClick={offFilter}>
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 384 512"
+                  >
+                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                  </svg>
+                </a>
+              </div>
+            )}
+
+            <div className="dropdown dropdown-bottom dropdown-end  ">
+              <div
+                tabIndex={0}
+                role="button"
+                className="flex justify-center items-center rounded-full "
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5 "
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M11.1924 5.65685C11.5829 5.26633 11.5829 4.63316 11.1924 4.24264L8.36397 1.41421C8.30576 1.356 8.24485 1.30212 8.18165 1.25259C7.50286 0.720577 6.55947 0.689024 5.84929 1.15793C5.73839 1.23115 5.63317 1.31658 5.53554 1.41421L2.70711 4.24264C2.31658 4.63316 2.31658 5.26633 2.70711 5.65685C3.09763 6.04738 3.7308 6.04738 4.12132 5.65685L6.00003 3.77814V18C6.00003 18.5523 6.44775 19 7.00003 19C7.55232 19 8.00003 18.5523 8.00003 18V3.8787L9.77818 5.65685C10.1687 6.04737 10.8019 6.04737 11.1924 5.65685Z"
+                    fill="#0F0F0F"
+                  />
+                  <path
+                    d="M12.7071 18.3432C12.3166 18.7337 12.3166 19.3668 12.7071 19.7574L15.5355 22.5858C15.6332 22.6834 15.7384 22.7689 15.8493 22.8421C16.6256 23.3546 17.6805 23.2692 18.364 22.5858L21.1924 19.7574C21.5829 19.3668 21.5829 18.7337 21.1924 18.3432C20.8019 17.9526 20.1687 17.9526 19.7782 18.3432L18 20.1213L18 6C18 5.44771 17.5523 5 17 5C16.4477 5 16 5.44771 16 6L16 20.2218L14.1213 18.3432C13.7308 17.9526 13.0976 17.9526 12.7071 18.3432Z"
+                    fill="#0F0F0F"
+                  />
+                </svg>
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-5"
+              >
+                <li>
+                  <a onClick={handleFilter}>
+                    Pricesb{" "}
+                    <svg
+                      className="w-3 h-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48.85 166.12"
+                    >
+                      <path d="M46.35,30.37,18.48,2.51A8.56,8.56,0,0,0,11.58,0c-.28,0-.57,0-.86,0H8.55A8.55,8.55,0,0,0,0,8.55v149a8.55,8.55,0,0,0,8.55,8.55h2.17a8.55,8.55,0,0,0,8.55-8.55V35.25l11.1,11.1a8.56,8.56,0,0,0,12.1,0l3.88-3.88A8.56,8.56,0,0,0,46.35,30.37Z" />
+                    </svg>
+                  </a>
+                </li>
+                <li>
+                  <a onClick={handleFilter}>
+                    Prices{" "}
+                    <svg
+                      className="w-3 h-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 48.85 166.12"
+                    >
+                      <path d="M48.85,153.69V8.55A8.55,8.55,0,0,0,40.3,0H38.14a8.55,8.55,0,0,0-8.56,8.55V130.87l-11.1-11.1a8.56,8.56,0,0,0-12.1,0l-3.87,3.88a8.54,8.54,0,0,0,0,12.1l27.86,27.86a8.56,8.56,0,0,0,6.9,2.47c.29,0,.57,0,.87,0H40.3a8.55,8.55,0,0,0,8.55-8.55v-3.88Z" />
+                    </svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white flex items-center justify-between rounded-3xl">
+            <SearchModal />
+          </div>
+        </div>
       </div>
-      <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-        {cardData.map((carddata, index) => {
-          if (
-            carddata.spot[0] === departure &&
-            carddata.spot[1] === destination &&
-            carddata.date === date
-          ) {
-            return <Card key={index} {...carddata} />;
-          }
-          return null;
-        })}
+
+      <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
+        {!filters
+          ? allFlightInfo?.map((carddata, index) => (
+              <Card key={index} {...carddata} />
+            ))
+          : filterFlight?.map((carddata, index) => (
+              <Card key={index} {...carddata} />
+            ))}
       </div>
     </main>
   );

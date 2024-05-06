@@ -1,8 +1,13 @@
 "use client";
+
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 
 const schema = z.object({
   email: z.string().email(),
@@ -12,35 +17,35 @@ const schema = z.object({
 type FormFields = z.infer<typeof schema>;
 
 function SignInForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     defaultValues: {
-      email: "ducnguyen@gmail.com",
+      email: "ducnguyenkudo@gmail.com",
+      password: "@Duc201103",
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    try {
-      console.log(data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      throw new Error();
-    } catch (error) {
-      setError("email", {
-        message: "This email is already taken",
-      });
+    const res = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+      admin: false,
+    });
+
+    if (!res?.error) {
+      router.push("/");
+      router.refresh();
     }
   };
 
   return (
-    <form
-      className="space-y-4 z-50 w-[350px] "
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="space-y-4 z-50 w-full " onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-10 mb-5">
         <label
           htmlFor="email"
@@ -93,22 +98,21 @@ function SignInForm() {
           Remember me
         </label>
       </div>
-      <a href="#" className="mt-4 text-sm text-blue-600">
+      <Link href="/" className="text-sm text-blue-600 hover:underline">
         Forgot Password?
-      </a>
+      </Link>
       <button
         disabled={isSubmitting}
         type="submit"
         className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-900"
       >
-        {isSubmitting ? "Loading... " : "Sign In"}
+        {isSubmitting ? (
+          <span className="loading loading-spinner loading-md"></span>
+        ) : (
+          "Sign In"
+        )}
       </button>
-      <button
-        type="submit"
-        className="btn btn-ghost w-full py-2 px-4 bg-white  rounded "
-      >
-        Sign In with Google
-      </button>
+      <GoogleSignInButton />
     </form>
   );
 }

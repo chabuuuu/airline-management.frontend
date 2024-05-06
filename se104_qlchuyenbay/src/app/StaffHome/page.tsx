@@ -1,110 +1,124 @@
 "use client";
 
-import Button from "@/components/Button";
-import Card from "@/components/Card";
+import { useState } from "react";
 import Menu from "@/components/Menu";
-import Navbar from "@/components/Navbar";
-import SearchModal from "@/components/SearchModal";
-import Image from "next/image";
+import FlightTable from "@/components/staff-components/FlightTable";
+import AirplaneTable from "@/components/staff-components/AirplaneTable";
+import AirportTable from "@/components/staff-components/AirportTable";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
+import AirportManage from "@/components/staff-components/AirportManage";
+import FlightManage from "@/components/staff-components/FlightManage";
 
 export default function StaffHome() {
-  type inputType = {
-    logo: string;
-    brand: string;
-    date: string;
-    spot: [string, string];
-    status: string;
-    price: string | number;
+  const { data: session } = useSession();
+  if (session && session?.user.role !== "Staff_LV2") {
+    redirect("/");
+  }
+  const [activeTab, setActiveTab] = useState(1);
+
+  const handleTabChange = (tabIndex: any) => {
+    setActiveTab(tabIndex);
   };
-  const cardsData: inputType[] = [
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "16:20 PM, 2024-03-25",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "available",
-      price: 3500000,
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    {
-      logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
-      brand: "VietNamAirlines",
-      date: "2024-03-26",
-      spot: ["HoChiMinh", "HaNoi"],
-      status: "sold",
-      price: "Not available",
-    },
-    // Add more card data as needed
-  ];
 
   return (
-    <main className="main">
-      <div className=" card-actions justify-end">
-        <Button link="/CreateFlight" content={"Tạo chuyến bay"} />
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
-        <SearchModal />
-      </div>
-      <Menu />
-      <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-        {cardsData.map((cardData, index) => (
-          <Card key={index} {...cardData} />
-        ))}
-      </div>
-    </main>
+    session &&
+    session.user.role === "Staff_LV2" && (
+      <main className="main">
+        <div role="tablist" className="tabs tabs-lifted">
+          <input
+            type="radio"
+            name="my_tabs_0"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Profile "
+            checked={activeTab === 0}
+            onChange={() => handleTabChange(0)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 0 ? "" : "hidden"
+            }`}
+          ></div>
+          <input
+            type="radio"
+            name="my_tabs_1"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Flight "
+            checked={activeTab === 1}
+            onChange={() => handleTabChange(1)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 1 ? "" : "hidden"
+            }`}
+          >
+            <FlightManage />
+          </div>
+
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Airplane "
+            checked={activeTab === 2}
+            onChange={() => handleTabChange(2)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 2 ? "" : "hidden"
+            }`}
+          >
+            <div className="collapse collapse-arrow bg-base-200 my-3">
+              <input type="checkbox" defaultChecked />
+              <div className="collapse-title text-2xl font-semibold">
+                Airplane DashBoard
+              </div>
+              <div className="collapse-content">
+                <p>hello</p>
+              </div>
+            </div>
+
+            <div className="collapse collapse-arrow bg-base-200 my-3">
+              <input type="checkbox" />
+              <div className="collapse-title ">
+                <div className="text-2xl font-semibold inline-flex items-center">
+                  Airplane Table Management
+                </div>
+              </div>
+              <div className="flex flex-col collapse-content">
+                <Menu />
+                <div className=" bg-white rounded-2xl p-5 my-3">
+                  <AirplaneTable />{" "}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Airport"
+            checked={activeTab === 3}
+            onChange={() => handleTabChange(3)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 3 ? "" : "hidden"
+            }`}
+          >
+            <AirportManage />
+          </div>
+        </div>
+      </main>
+    )
   );
 }
