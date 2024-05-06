@@ -12,7 +12,7 @@ const SignIn = async () => {
   return (
     <>
       <div
-        className="fixed w-2/3 h-48 bg-no-repeat top-50 mt-10 right-6 rotate-12 "
+        className="hidden lg:block fixed w-2/3 h-48 bg-no-repeat top-40 right-0.5 rotate-12 "
         style={{
           backgroundImage:
             "url('https://i.postimg.cc/CxjRL1xY/plane-01-7-2.png')",
@@ -37,14 +37,12 @@ const SignIn = async () => {
               </Link>
             </p>
           </div>
-          <div className="flex w-96 ">
-            <div
-              className="h-full w-full bg-cover rounded-e-2xl justify-center"
-              style={{
-                backgroundImage:
-                  "url('https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png')",
-              }}
-            ></div>
+          <div className=" w-96 hidden lg:block ">
+            <img
+              src="https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png"
+              alt="Illustration"
+              className="w-full h-full object-cover rounded-e-2xl justify-center "
+            />
           </div>
         </div>
       </div>

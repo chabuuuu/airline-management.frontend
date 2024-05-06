@@ -58,7 +58,7 @@ const PayingPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    console.log(formData);
     console.log(totalMoney);
   };
   const router = useRouter();

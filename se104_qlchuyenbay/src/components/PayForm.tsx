@@ -8,6 +8,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 const schema = z.object({
   country: z.string(),
@@ -37,14 +38,6 @@ const PayForm = () => {
       } catch (e) {
         console.log(e);
       }
-      // const response = await fetch('/api/auth/get_all_country', {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // })
-      // const ctry = await response.json()
-      // console.log(ctry)
     };
     getAllCountry();
   }, []);
@@ -66,8 +59,13 @@ const PayForm = () => {
   };
 
   const discount = 0;
+  const handleCompleteCheckout = () => {
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/`;
+  };
+  const [showModal, setShowModal] = useState<boolean>(false);
+
   return (
-    <div className="flex justify-between md:flex-row">
+    <div className="flex justify-between md:flex-row max-w-[1100px]">
       <div className="bg-white p-6 rounded-2xl">
         <h1 className="text-3xl font-bold mb-4">Thanh toán</h1>
         <div className="flex items-center mb-2">
@@ -270,7 +268,10 @@ const PayForm = () => {
           </p>
         </div>
         <div className="w-full">
-          <button className="w-full bg-purple-500 mx-auto block text-white rounded px-4 py-2 mb-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="w-full bg-purple-500 mx-auto block text-white rounded px-4 py-2 mb-4"
+          >
             Complete Checkout
           </button>
           <button
@@ -280,6 +281,24 @@ const PayForm = () => {
             Cancel
           </button>
         </div>
+        {showModal && (
+          <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-10 rounded-2xl">
+              <h3 className="font-bold text-2xl">Success!</h3>
+              <p className="py-4">
+                The payment has been completed, please check your mail
+              </p>
+              <div className="modal-action">
+                <button className="btn" onClick={() => setShowModal(false)}>
+                  Close
+                </button>
+                <Link href={"/"} className="btn btn-ghost">
+                  Go to HomePage
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

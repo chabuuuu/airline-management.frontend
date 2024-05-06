@@ -1,4 +1,4 @@
-import CreateFlightForm from "@/components/CreateFlightForm";
+import CreateFlightForm from "@/components/staff-components/CreateFlightForm";
 
 function CreateFlight() {
   return (

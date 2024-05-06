@@ -7,35 +7,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { GoogleSignInButton } from "./GoogleSignInButton";
+import axios from "axios";
 
 const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  username: z.string(),
+  password: z.string(),
 });
 
 type FormFields = z.infer<typeof schema>;
 
-function SignInForm() {
+function StaffLoginForm() {
   const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
-    defaultValues: {
-      email: "ducnguyenkudo@gmail.com",
-      password: "@Duc201103",
-    },
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     const res = await signIn("credentials", {
-      email: data.email,
+      email: data.username,
       password: data.password,
       redirect: false,
-      admin: false,
+      admin: true,
     });
 
     if (!res?.error) {
@@ -51,17 +47,17 @@ function SignInForm() {
           htmlFor="email"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
-          Email
+          Account
         </label>
         <input
-          {...register("email")}
+          {...register("username")}
           type="text"
-          id="email"
+          id="username"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="name@flowbite.com"
         />
-        {errors.email && (
-          <div className="text-red-500">{errors.email.message}</div>
+        {errors.username && (
+          <div className="text-red-500">{errors.username.message}</div>
         )}
       </div>
       <div className="mb-5">
@@ -98,9 +94,6 @@ function SignInForm() {
           Remember me
         </label>
       </div>
-      <Link href="/" className="text-sm text-blue-600 hover:underline">
-        Forgot Password?
-      </Link>
       <button
         disabled={isSubmitting}
         type="submit"
@@ -109,12 +102,11 @@ function SignInForm() {
         {isSubmitting ? (
           <span className="loading loading-spinner loading-md"></span>
         ) : (
-          "Sign In"
+          "Login"
         )}
       </button>
-      <GoogleSignInButton />
     </form>
   );
 }
 
-export default SignInForm;
+export default StaffLoginForm;

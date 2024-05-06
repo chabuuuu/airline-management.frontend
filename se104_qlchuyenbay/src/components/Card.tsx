@@ -3,23 +3,27 @@ import Button from "./Button";
 import Link from "next/link";
 
 type inputType = {
-  logo: string;
+  flightId: string;
+  logo?: string;
   brand: string;
   date: string;
   time?: string;
   duration?: string;
-  spot: [string, string];
+  departure?: string;
+  arrival?: string;
   status: string;
   price: string | number;
 };
 
 const Card: React.FC<inputType> = ({
+  flightId,
   logo,
   brand,
   date,
   time,
   duration,
-  spot,
+  departure,
+  arrival,
   status,
   price,
 }) => {
@@ -27,7 +31,9 @@ const Card: React.FC<inputType> = ({
     <div className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5">
       <div className="flex items-center">
         <img src={logo} alt={brand} className=" h-8 object-cover mr-4" />
-        <h2 className="text-2xl  font-semibold">{brand}</h2>
+        <h2 className="text-2xl  font-semibold">
+          {brand} {flightId}
+        </h2>
       </div>
       <div className="flex justify-end -mt-4">
         <p className="text-sm text-gray-600">{time + ","}</p>
@@ -36,10 +42,10 @@ const Card: React.FC<inputType> = ({
 
       <div className="grid grid-cols-3 grid-cen items-center ">
         <a className="text-blue-500 font-medium text-lg flex justify-center">
-          {spot[0]}
+          {departure}
         </a>
         <div className="flex flex-col items-center">
-          <div>{duration} </div>
+          <div>{duration}h </div>
           <svg
             className="w-20 h-2"
             viewBox="0 0 100 10"
@@ -52,15 +58,15 @@ const Card: React.FC<inputType> = ({
           </svg>
         </div>
         <a className="text-blue-500 font-medium text-lg flex justify-center">
-          {spot[1]}
+          {arrival}
         </a>
       </div>
 
       <div className="-mb-3 ">
         {status === "available" ? (
-          <div className="text-green-600 font-semibold ">Available</div>
+          <div className="text-green-600 font-semibold ">{status}</div>
         ) : (
-          <div className="text-red-600 font-semibold ">Sold Out</div>
+          <div className="text-red-600 font-semibold ">{status}</div>
         )}
       </div>
 
@@ -72,12 +78,13 @@ const Card: React.FC<inputType> = ({
           href={{
             pathname: "/DetailPage",
             query: {
+              flightId: flightId,
               logo: logo,
               brand: brand,
               date: date,
               time: time,
-              departure: spot[0],
-              destination: spot[1],
+              departure: departure,
+              destination: arrival,
               status: status,
               price: price,
             },

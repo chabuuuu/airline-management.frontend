@@ -9,6 +9,7 @@ interface CustomUser extends DefaultUser {
   name: string;
   email: string;
   id: string;
+  role: string;
   token: string;
 }
 
@@ -18,6 +19,7 @@ declare module "next-auth" {
       name: string;
       email: string;
       id: string;
+      role: string;
       token: string;
     } & DefaultSession;
   }
@@ -30,6 +32,7 @@ declare module "next-auth/jwt" {
     name: string;
     email: string;
     id: string;
+    role: string;
     token: string;
   }
 }
@@ -40,41 +43,69 @@ export const options: NextAuthOptions = {
         email: {},
         password: {},
       },
-      async authorize(credentials, req): Promise<CustomUser | null> {
-        try {
-          const url = `${process.env.NEXT_PUBLIC_SERVER}/customer/login`;
-          const config = {
-            method: "post",
-            maxBodyLength: Infinity,
-            url: url,
-            headers: {},
-            data: qs.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
-          };
-          const response = await axios.request(config);
-
-          if (response.status === 200) {
-            const user = response.data.customer;
-            // cookies().set({
-            //   name: "Customer-Token",
-            //   value: response.data.token,
-            //   httpOnly: true,
-            //   path: "/ProfilePage",
-            // });
-            return {
-              name: user.fullname,
-              email: user.email,
-              id: user.customerId,
-              token: response.data.token,
+      async authorize(credentials, req) {
+        const isStaff = req.body?.admin;
+        console.log(typeof isStaff);
+        if (isStaff === "false") {
+          try {
+            const url = `${process.env.NEXT_PUBLIC_SERVER}/customer/login`;
+            const config = {
+              method: "post",
+              maxBodyLength: Infinity,
+              url: url,
+              headers: {},
+              data: qs.stringify({
+                email: credentials?.email,
+                password: credentials?.password,
+              }),
             };
+            const response = await axios.request(config);
+
+            if (response.status === 200) {
+              const user = response.data.customer;
+              return {
+                name: user.fullname,
+                email: user.email,
+                role: null,
+                id: user.customerId,
+                token: response.data.token,
+              };
+            }
+            return null;
+          } catch (error) {
+            console.error("Authorization error:", error);
+            return null;
           }
-          return null;
-        } catch (error) {
-          console.error("Authorization error:", error);
-          return null;
-        }
+        } else if (isStaff === "true") {
+          try {
+            const url = `${process.env.NEXT_PUBLIC_SERVER}/staff/login`;
+            const config = {
+              method: "post",
+              maxBodyLength: Infinity,
+              url: url,
+              headers: {},
+              data: qs.stringify({
+                username: credentials?.email,
+                password: credentials?.password,
+              }),
+            };
+            const response = await axios.request(config);
+            if (response.status === 200) {
+              const user = response.data.staff;
+              return {
+                name: user.username,
+                email: user.email,
+                role: user.role,
+                id: user.staffId,
+                token: response.data.token,
+              };
+            }
+            return null;
+          } catch (error) {
+            console.error("Authorization error:", error);
+            return null;
+          }
+        } else return null;
       },
     }),
   ],
@@ -84,6 +115,7 @@ export const options: NextAuthOptions = {
         return {
           ...token,
           id: user.id,
+          role: user.role,
           token: user.token,
         };
       }
@@ -97,6 +129,7 @@ export const options: NextAuthOptions = {
           user: {
             ...session.user,
             id: token.id,
+            role: token.role,
             token: token.token,
           },
         };
@@ -106,8 +139,5 @@ export const options: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-  },
-  pages: {
-    signIn: "/SignIn",
   },
 };
