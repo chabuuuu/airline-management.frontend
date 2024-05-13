@@ -36,6 +36,28 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
   const handleChangeStatus = () => {
     setHandleSave(true);
   };
+
+  useEffect(() => {
+    const changStatus = async () => {
+      let config = {
+        method: "put",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/flight/${value}/${selectedFlightId}`,
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNDkyMzE3MiwiZXhwIjoxNzE1MjQ3MTcyfQ.ZbSTaXL4nD1VkI60teruKC1Xp5TidgycSmn9KLJZRiU",
+        },
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+        // if (response.status === 200) alert("Succes change seat class");
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    if (handleSave) changStatus();
+  });
   const statusColor = (status: any) => {
     switch (status) {
       case "Đã hủy chuyến":

@@ -5,6 +5,14 @@ import SearchForm from "./SearchForm";
 import TicketCard from "./TIcketCard";
 import axios from "axios";
 
+// "bookingId": "a073d6bd-287d-40f0-a33a-7876fb657786",
+// "paymentStatus": false,
+// "bookingStatus": "BOOKED",
+// "passengerId": "1342a007-d259-4969-b3db-c455384f6d79",
+// "price": "156250.00",
+// "bookedAt": "04-05-2024 10:10:09",
+// "updateAt": "04-05-2024 10:10:09"
+
 const SearchModal: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   useEffect(() => {

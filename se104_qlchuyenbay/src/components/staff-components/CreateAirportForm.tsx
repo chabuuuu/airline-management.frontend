@@ -188,7 +188,7 @@ const CreateAirportForm = () => {
                         <TextField
                           {...params}
                           {...register("city")}
-                          placeholder="Destination"
+                          placeholder="City"
                         />
                       )}
                     />
@@ -205,16 +205,16 @@ const CreateAirportForm = () => {
                 <div>
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="airline"
+                    htmlFor="airport"
                   >
-                    Tạo sân bay
+                    Tên sân bay
                   </label>
                   <input
                     {...register("airportName")}
-                    id="airline"
+                    id="airportName"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                     type="text"
-                    placeholder="Giá vé"
+                    placeholder="Sân bay"
                   />
                   {errors.airportName && (
                     <div className="text-red-500">
@@ -242,16 +242,16 @@ const CreateAirportForm = () => {
               <div>
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="firstClassSeats"
+                  htmlFor="descriptions"
                 >
                   Miêu tả
                 </label>
                 <input
                   {...register("description")}
-                  id="firstClassSeats"
+                  id="descriptions"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                   type="text"
-                  placeholder="Số ghế hạng 1"
+                  placeholder="Miêu tả"
                 />
                 {errors.description && (
                   <div className="text-red-500">
@@ -266,14 +266,14 @@ const CreateAirportForm = () => {
                 onClick={() => setShowModal(false)}
                 className="btn btn-ghost rounded-2xl mr-5"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 disabled={isSubmitting}
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4  rounded-2xl "
               >
-                {isSubmitting ? "Loading... " : " Tạo chuyến bay"}
+                {isSubmitting ? "Loading... " : " Tạo sân bay"}
               </button>
             </div>
           </form>

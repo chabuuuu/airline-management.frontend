@@ -13,15 +13,19 @@ const CreateClassForm = () => {
     setLoading(true);
     setError(null);
 
-    let data =
-      '{\n    "className": "Thương gia",\n    "color": "red",\n    "priceBonusInterest": 0.3\n}';
+    let data = {
+      className: className,
+      color: color,
+      priceBonusInterest: parseFloat(priceBonusInterest),
+    };
 
     let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/list`,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/create`,
       headers: {
-        Authorization: "{{STAFF_LV1_TOKEN}}",
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIzMTEiLCJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJAMVRoaW5oSGEiLCJyb2xlIjoiU3RhZmZfTFYxIiwiaWF0IjoxNzE1MDQ2NTAyLCJleHAiOjE3MTUzNzA1MDJ9.jIpNTIColQSM4rY5D7jJVPlMHllHZtGABkO3TxqMJC8",
       },
       data: data,
     };

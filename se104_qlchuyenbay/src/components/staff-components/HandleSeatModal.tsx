@@ -3,473 +3,16 @@ import Link from "next/link";
 import React, { FormEvent, useEffect, useState } from "react";
 import CreateClassForm from "./CreateClassForm";
 
-const data = [
-  {
-    seatId: "A1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D1",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D2",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D3",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D4",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D5",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D6",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D7",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D8",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E1",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E2",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E3",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E4",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E5",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E6",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E7",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E8",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F1",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F2",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F3",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F4",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F5",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F6",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F7",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F8",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-];
 type Props = {
   flightId: string | null;
 };
 
 const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
+
   useEffect(() => {
     const getSeatOfAirplane = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=10`;
       let config = {
         method: "get",
         maxBodyLength: Infinity,
@@ -479,22 +22,22 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
       try {
         const response = await axios.request(config);
         const seatData = response.data.data;
-        // setAlreadySelectedSeats((prevSeats) => {
-        //   const newSeats = seatData.map((seat: any) => ({
-        //     seatId: seat.seatId,
-        //     class: seat.class,
-        //     color: seat.ticketClass.color,
-        //     selected: seat.isEmpty,
-        //   }));
+        setAlreadySelectedSeats((prevSeats) => {
+          const newSeats = seatData.map((seat: any) => ({
+            seatId: seat.seatId,
+            class: seat.class,
+            color: seat.ticketClass.color,
+            selected: !seat.isEmpty,
+          }));
 
-        //   const uniqueSeats = newSeats.filter((newSeat: any) => {
-        //     return !prevSeats.some(
-        //       (prevSeat) => prevSeat.seatId === newSeat.seatId
-        //     );
-        //   });
+          const uniqueSeats = newSeats.filter((newSeat: any) => {
+            return !prevSeats.some(
+              (prevSeat) => prevSeat.seatId === newSeat.seatId
+            );
+          });
 
-        //   return [...prevSeats, ...uniqueSeats];
-        // });
+          return [...prevSeats, ...uniqueSeats];
+        });
       } catch (error) {
         console.error("Error fetching flight data:", error);
       }
@@ -510,15 +53,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
       priceBonusInterest: string;
       selected: boolean;
     }[]
-  >(
-    data.map((seat: any) => ({
-      seatId: seat.seatId,
-      class: seat.class,
-      color: seat.ticketClass.color,
-      priceBonusInterest: seat.ticketClass.priceBonusInterest,
-      selected: !seat.isEmpty,
-    }))
-  );
+  >([]);
 
   const [chooseSeats, setChooseSeats] = useState<
     {
@@ -578,7 +113,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
           (selectedSeat) => selectedSeat.seat === seat.seatId
         )
           ? "bg-yellow-500"
-          : "bg-gray-200";
+          : "bg-yellow-200";
       }
       textColor = "text-white";
     } else {
@@ -691,19 +226,30 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
 
   const [classToChange, setClassToChange] = useState<string>("");
   const [isChange, setIsChange] = useState<boolean>(false);
+
   const changeSeatClass = async () => {
+    const listSeat = [chooseSeats.map((s) => s.seat).toString()];
+    console.log(listSeat, classToChange);
+
+    const dt = {
+      flightId: 10,
+      seatIdList: listSeat,
+      class: classToChange,
+    };
+
     let config = {
       method: "put",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/change-class`,
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIzMTEiLCJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJAMVRoaW5oSGEiLCJyb2xlIjoiU3RhZmZfTFYxIiwiaWF0IjoxNzE0NDY0MDQyLCJleHAiOjE3MTQ3ODgwNDJ9.9LB5yO-9rG9EfCW7u7Xqr5Nknnsy-8qTnAsy4e8Hruw",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNTA0NjAwOSwiZXhwIjoxNzE1MzcwMDA5fQ.ccBMjYTyD8BcgBZwrxl_XVqjz9Cj6CJSlnfqOcy8qB8",
       },
-      data: JSON.stringify(data),
+      data: dt,
     };
     try {
       const response = await axios.request(config);
+      console.log(dt);
       console.log(response);
     } catch (e) {
       console.log(e);
@@ -719,6 +265,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
     }
   }, [isChange, chooseSeats, classToChange]);
   const [changeCollapse, setChangeCollapse] = useState<boolean>(false);
+  console.log(ticketColorClasses);
   return (
     <div>
       <div className="flex flex-col justify-between">
@@ -788,10 +335,6 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-5">
-          <CreateClassForm />
         </div>
       </div>
     </div>
