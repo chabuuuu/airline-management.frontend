@@ -1,72 +1,103 @@
-"use client"
-import BottomNavbar from "@/components/BottomNavbar";
+"use client";
+import CreateClassForm from "@/components/staff-components/CreateClassForm";
+import axios from "axios";
+import { useEffect, useState } from "react";
 const RegulationsPage = () => {
-  const regulations = [
+  useEffect(() => {
+    const getAllTicketClass = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/list`,
+        headers: {},
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+        const responseData = response.data.data;
+        const newClass = responseData.map((dt: any) => ({
+          ticketClass: dt.className,
+          ticketPriceInterest: dt.priceBonusInterest,
+        }));
+        setSecondRegulation(newClass);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getAllTicketClass();
+  }, []);
+
+  const [firstRegulation, setFirstRegulation] = useState<{
+    miniumDuration: string;
+    miniumMediateAiport: string;
+  }>();
+
+  const [secondRegulation, setSecondRegulation] = useState<
     {
-      id: 1,
-      title: 'Quy định về an toàn',
-      description: 'Mọi hành khách đều phải tuân thủ quy định về an toàn khi ở trong khu vực sân bay.',
-    },
+      ticketClass: string;
+      ticketPriceInterest: string;
+    }[]
+  >([]);
+  const [tmpSecondR, setTmpSecondR] = useState<
     {
-      id: 2,
-      title: 'Quy định về hành lý',
-      description: 'Hành lý cá nhân của hành khách không được vượt quá kích thước và trọng lượng quy định.',
-    },
-    {
-      id: 3,
-      title: 'Quy định về an ninh',
-      description: 'Hành khách phải tuân thủ tất cả các biện pháp an ninh do sân bay áp đặt.',
-    },
-    {
-      id: 4,
-      title: 'Quy định về mua vé',
-      description: 'Chỉ cho đặt vé chậm nhất 1 ngày trước khi khởi hành. Vào ngày khởi hành tất cả các phiếu đặt sẽ bị hủy.',
-    },
-  ];
-    return(
-      <div className="flex justify-center items-center ">
-        <div className="flex justify-center w-full h-[700px] items-center bg-white ">
-          <div className="flex flex-col justify-center rounded-e-2x1  bg-white py-1 ">
-           <BottomNavbar/>
-            <nav className=" p-4 flex items-center justify-between mb-10 ">
-              <div className="px-0 ">
-                <button className=" py-2 px-4 text-gray-800 bg-[#D5D5D5] hover:bg-gray-500 rounded mr-2" onClick={() => {}}>QUAY LẠI</button>
-              </div> 
-              <div className="">
-                <h1 className=" lg:text-4xl font-bold text-gray-800">QUY ĐỊNH</h1>
-              </div>
-              <div>
-          <button className="bg-[#D5D5D5] text-gray-800 px-4 py-2 hover:bg-gray-500 rounded mr-2" onClick={() => {}}>
-            THÊM
-          </button>
-          <button className="bg-[#D5D5D5] text-gray-800 px-4 py-2 hover:bg-gray-500 rounded mr-2" onClick={() => {}}>
-            SỬA
-          </button>
+      ticketClass: string;
+      ticketPriceInterest: string;
+    }[]
+  >([]);
+
+  const handleCancel = () => {
+    setTmpSecondR(secondRegulation);
+  };
+  useEffect(() => {
+    handleCancel();
+  });
+
+  const [secondRegulationModal, setSecondRegulationModal] =
+    useState<boolean>(false);
+
+  const [thirdRegulation, setThirdRegulation] = useState<{
+    timeBookedAtLeast: string;
+  }>();
+  console.log(secondRegulation);
+
+  return (
+    <div className="flex justify-center items-center ">
+      <div className="flex flex-col p-10 w-5/6 rounded-2xl bg-white ">
+        <div className="flex justify-center ">
+          <h1 className=" lg:text-4xl font-bold text-gray-800">QUY ĐỊNH</h1>
         </div>
-              
-              </nav>
-      
-<div className="container mx-auto">
-      <h1 className="text-3xl font-bold my-6">Danh sách các quy định sân bay</h1>
-      <ul className="divide-y divide-gray-200">
-        {regulations.map(regulation => (
-          <li key={regulation.id} className="py-4">
-            <h2 className="text-xl font-semibold">{regulation.title}</h2>
-            <p className="mt-2 text-gray-600">{regulation.description}</p>
+
+        <ul className="divide-y divide-gray-200">
+          <li className="py-4">
+            <h2 className="text-xl font-semibold">Quy Định 1</h2>
+            <p className="mt-2 text-gray-600">
+              {" "}
+              Có 10 sân bay. Thời gian bay tối thiểu là 30 phút. Có tối đa 2 sân
+              bay trung gian với thời gian dừng từ 10 đến 20 phút.,
+            </p>
           </li>
-        ))}
-      </ul>
-    </div>
-          
-          
-        </div>
-    
+          <li className="py-4">
+            <h2 className="text-xl font-semibold">Quy Định 2</h2>
+            <p className="mt-2 text-gray-600">
+              {" "}
+              Chỉ bán vé khi còn chỗ. Có 2 hạng vé (1, 2). Vé hạng 1 bằng 105%
+              của đơn giá, vé hạng 2 bằng với đơn giá, mỗi chuyến bay có một giá
+              vé riêng.,
+            </p>
+          </li>
+          <li className="py-4">
+            <h2 className="text-xl font-semibold">Quy Định 3</h2>
+            <p className="mt-2 text-gray-600">
+              {" "}
+              Chỉ cho đặt vé chậm nhất 1 ngày trước khi khởi hành. Vào ngày khởi
+              hành tất cả các phiếu đặt sẽ bị hủy
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
-    
-    )
-    
-}
+  );
+};
 
 export default RegulationsPage;
 /**/

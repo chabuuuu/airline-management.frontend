@@ -3,12 +3,13 @@ import { useSession } from "next-auth/react";
 import SearchForm from "@/components/SearchForm";
 import StaffLoginForm from "@/components/staff-components/StaffLoginForm";
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function StaffLogin() {
+  const router = useRouter();
   const { data: session } = useSession();
-  if (session && session?.user.role !== "Staff_LV2") {
-    redirect("/");
+  if (session && session?.user.role !== undefined) {
+    router.push("/");
   }
 
   return (

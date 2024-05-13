@@ -19,7 +19,7 @@ type CardType = {
   status: string;
   price: string | number;
 };
-
+const MAX_LENGTH_COL = 9;
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -46,7 +46,7 @@ export default function SearchingPage() {
       try {
         const response = await axios.get(url);
         const responseData = response.data;
-
+        console.log(responseData.data);
         const updatedFlightInfo = responseData.data.map((dt: any) => {
           const planeData = PlanesData.find(
             (plane) => plane.brand === dt.airlines
@@ -115,6 +115,7 @@ export default function SearchingPage() {
   const handleFilterAvailableFlight = () => {
     setAvailableFlight(!availableFlight);
   };
+  const [page, setPage] = useState<number>(1);
 
   return (
     <main className="main  rounded-2xl p-5">
@@ -187,7 +188,7 @@ export default function SearchingPage() {
               </div>
             )}
 
-            <div className="dropdown dropdown-bottom dropdown-end  ">
+            <div className="dropdown dropdown-bottom dropdown-end drop-shadow-lg z-[50] ">
               <div
                 tabIndex={0}
                 role="button"
@@ -214,8 +215,11 @@ export default function SearchingPage() {
                 className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-5"
               >
                 <li>
-                  <a onClick={handleFilter}>
-                    Pricesb{" "}
+                  <a
+                    className="flex w-full justify-between"
+                    onClick={handleFilter}
+                  >
+                    <p>Pricesb</p>
                     <svg
                       className="w-3 h-3"
                       xmlns="http://www.w3.org/2000/svg"
@@ -226,14 +230,17 @@ export default function SearchingPage() {
                   </a>
                 </li>
                 <li>
-                  <a onClick={handleFilter}>
-                    Prices{" "}
+                  <a
+                    className="flex w-full justify-between"
+                    onClick={handleFilter}
+                  >
+                    <p>Prices</p>
                     <svg
                       className="w-3 h-3"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 48.85 166.12"
                     >
-                      <path d="M48.85,153.69V8.55A8.55,8.55,0,0,0,40.3,0H38.14a8.55,8.55,0,0,0-8.56,8.55V130.87l-11.1-11.1a8.56,8.56,0,0,0-12.1,0l-3.87,3.88a8.54,8.54,0,0,0,0,12.1l27.86,27.86a8.56,8.56,0,0,0,6.9,2.47c.29,0,.57,0,.87,0H40.3a8.55,8.55,0,0,0,8.55-8.55v-3.88Z" />
+                      <path d="M46.35,30.37,18.48,2.51A8.56,8.56,0,0,0,11.58,0c-.28,0-.57,0-.86,0H8.55A8.55,8.55,0,0,0,0,8.55v149a8.55,8.55,0,0,0,8.55,8.55h2.17a8.55,8.55,0,0,0,8.55-8.55V35.25l11.1,11.1a8.56,8.56,0,0,0,12.1,0l3.88-3.88A8.56,8.56,0,0,0,46.35,30.37Z" />
                     </svg>
                   </a>
                 </li>
@@ -249,12 +256,43 @@ export default function SearchingPage() {
 
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
         {!filters
-          ? allFlightInfo?.map((carddata, index) => (
-              <Card key={index} {...carddata} />
-            ))
-          : filterFlight?.map((carddata, index) => (
-              <Card key={index} {...carddata} />
-            ))}
+          ? allFlightInfo?.map((carddata, index) => {
+              if (
+                index >= MAX_LENGTH_COL * (page - 1) &&
+                index < MAX_LENGTH_COL * page
+              ) {
+                return <Card key={index} {...carddata} />;
+              } else {
+                return null;
+              }
+            })
+          : filterFlight?.map((carddata, index) => {
+              if (
+                index >= MAX_LENGTH_COL * (page - 1) &&
+                index < MAX_LENGTH_COL * page
+              ) {
+                return <Card key={index} {...carddata} />;
+              } else {
+                return null;
+              }
+            })}
+      </div>
+
+      <div className="flex justify-between p-3 mt-5">
+        <p className="font-medium">Total flight: {allFlightInfo.length} </p>
+        <div className="join">
+          {[
+            ...Array(Math.ceil(allFlightInfo.length / MAX_LENGTH_COL)).keys(),
+          ].map((pageNumber) => (
+            <button
+              key={pageNumber}
+              className="join-item btn btn-xs"
+              onClick={() => setPage(pageNumber + 1)}
+            >
+              {pageNumber + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </main>
   );

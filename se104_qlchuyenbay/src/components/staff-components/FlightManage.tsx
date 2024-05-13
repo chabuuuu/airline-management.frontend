@@ -85,46 +85,57 @@ const FlightManage = () => {
     searchForFlight();
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<{
+    departure: string;
+    destination: string;
+    date: string;
+    status: string;
+  }>({ departure: "", destination: "", date: "", status: "" });
+  const [filters, setFilters] = useState<string | null>(null);
 
   useEffect(() => {
-    const filtered = allFlightInfo.filter((flight) =>
-      flight.departure.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = allFlightInfo.filter(
+      (flight) =>
+        flight.departure
+          .toLowerCase()
+          .includes(searchQuery.departure.toLowerCase()) &&
+        flight.arrival
+          .toLowerCase()
+          .includes(searchQuery.destination.toLowerCase()) &&
+        flight.date.includes(searchQuery.date) &&
+        flight.status.includes(searchQuery.status)
     );
     setFilteredFlights(filtered);
   }, [searchQuery, allFlightInfo]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const { id, value } = e.target;
+    console.log({ id, value });
+    setSearchQuery((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
   };
-
-  const [filterFlight, setFilterFlight] = useState<CardType[]>();
-
-  const [filters, setFilters] = useState<string | null>(null);
 
   const handleFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
-    const filterValue = event.currentTarget.textContent;
-    setFilters(filterValue);
+    const filterValue = event.currentTarget;
+    setSearchQuery((prevState) => ({
+      ...prevState,
+      status: filterValue.id,
+    }));
+    setFilters(filterValue.textContent);
   };
-
-  useEffect(() => {
-    let filtered = allFlightInfo;
-
-    if (filters) {
-      filtered = allFlightInfo.filter(
-        (flight) => flight.status.toLowerCase() === filters.toLowerCase()
-      );
-    }
-
-    setFilteredFlights(filtered);
-  }, [filters, allFlightInfo]);
 
   const offFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     setFilters(null);
+    setSearchQuery((prevState) => ({
+      ...prevState,
+      status: "",
+    }));
   };
   return (
     <div>
@@ -155,6 +166,7 @@ const FlightManage = () => {
               <label className="input max-w-[250px] input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Departure</p>
                 <input
+                  id="departure"
                   type="text"
                   className=" font-medium"
                   placeholder="HaNoi"
@@ -165,10 +177,11 @@ const FlightManage = () => {
               <label className="input max-w-[250px]  input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Destination</p>
                 <input
+                  id="destination"
                   type="text"
                   className="font-medium"
                   placeholder="HoChiMinh"
-                  //onChange={handleSearch}
+                  onChange={handleSearch}
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -186,10 +199,11 @@ const FlightManage = () => {
               <label className="input input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Date</p>
                 <input
+                  id="date"
                   type="date"
                   className="w-[200px] font-medium"
                   placeholder="HaNoi"
-                  // onChange={handleSearch}
+                  onChange={handleSearch}
                 />
               </label>
 
@@ -240,16 +254,24 @@ const FlightManage = () => {
                     className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-5"
                   >
                     <li>
-                      <a onClick={handleFilter}>Succes</a>
+                      <a id="Đã hoàn thành" onClick={handleFilter}>
+                        Succes
+                      </a>
                     </li>
                     <li>
-                      <a onClick={handleFilter}>In Progress</a>
+                      <a id="Đang bay" onClick={handleFilter}>
+                        In Progress
+                      </a>
                     </li>
                     <li>
-                      <a onClick={handleFilter}>Cancel</a>
+                      <a id="Đã hủy chuyến" onClick={handleFilter}>
+                        Cancel
+                      </a>
                     </li>
                     <li>
-                      <a onClick={handleFilter}>Not Finish</a>
+                      <a id="Chưa khởi hành" onClick={handleFilter}>
+                        Not Finish
+                      </a>
                     </li>
                   </ul>
                 </div>

@@ -101,10 +101,12 @@ const CreateFlightForm: React.FC = () => {
   };
 
   const handleAddIntermediateAirport = () => {
-    setIntermediateAirports([
-      ...intermediateAirports,
-      { airport: "", time: "", note: "" },
-    ]);
+    if (intermediateAirports.length < 2) {
+      setIntermediateAirports([
+        ...intermediateAirports,
+        { airport: "", time: "", note: "" },
+      ]);
+    }
   };
 
   const handleIntermediateAirportChange = (

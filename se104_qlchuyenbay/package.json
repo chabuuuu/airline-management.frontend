@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.5",
     "@hookform/resolvers": "^3.3.4",
     "@mui/material": "^5.15.15",
+    "@nextui-org/dropdown": "^2.1.23",
     "@nextui-org/react": "^2.2.10",
     "@types/qs": "^6.9.14",
     "axios": "^1.6.8",

@@ -100,7 +100,7 @@ const AirportManage = () => {
                 <input
                   type="text"
                   className="grow font-medium"
-                  placeholder="HaNoi"
+                  placeholder="Ha Noi"
                   onChange={handleSearch}
                 />
                 <svg
