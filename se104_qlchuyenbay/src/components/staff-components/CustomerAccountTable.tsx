@@ -9,6 +9,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { Checkbox } from "@nextui-org/checkbox";
+import { toast } from "react-toastify";
 type Customer = {
   customerId: string;
   email: string;
@@ -25,6 +26,7 @@ type Customer = {
   updateAt: string;
 };
 const MAX_LENGTH_COL = 7;
+const MAX_PAGE_BUTTONS = 3;
 
 const CustomerAccountTable = () => {
   const { data: session } = useSession();
@@ -60,6 +62,7 @@ const CustomerAccountTable = () => {
 
   const handleFilterAvailableFlight = () => {
     setEmailValidated(!emailValidated);
+    setPage(1);
   };
   useEffect(() => {
     if (emailValidated) {
@@ -79,7 +82,68 @@ const CustomerAccountTable = () => {
     console.log(e.target.value);
   };
 
+  const [selectCustomer, setSelectCustomer] = useState<{
+    username: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    birthday: string;
+    role: string;
+  }>({
+    username: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    birthday: "",
+    role: "Staff_LV2",
+  });
+  const changeCustomerRole = async () => {
+    if (checkChangeRole) {
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/staf`,
+        headers: {
+          Authorization: "{{STAFF_LV1_TOKEN}}",
+        },
+        data: JSON.stringify(selectCustomer),
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+        toast.success("Update succesful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } catch (e: any) {
+        const messages = e.response.data.message;
+        toast.error(messages || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    }
+  };
+  const [checkChangeRole, setCheckChangeRole] = useState<boolean>(false);
+
+  //Page pavagation
   const [page, setPage] = useState<number>(1);
+  const totalPages = Math.ceil(filterCustomer.length / MAX_LENGTH_COL);
+  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
+  const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
+  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   return (
     <div className="flex flex-col collapse-content">
@@ -253,7 +317,17 @@ const CustomerAccountTable = () => {
                             </DropdownItem>
 
                             <DropdownItem
-                              onClick={() => setCustomerChangeRoleModal(true)}
+                              onClick={() => {
+                                setCustomerChangeRoleModal(true);
+                                setSelectCustomer({
+                                  username: customer.fullname,
+                                  email: customer.email,
+                                  phoneNumber: customer.phoneNumber,
+                                  password: "@1ThinhHa",
+                                  birthday: customer.birthday,
+                                  role: "Staff_LV2",
+                                });
+                              }}
                               textValue="dropdown"
                               key={`changerole-${customer.customerId}`}
                               className="btn btn-sm btn-ghost"
@@ -310,19 +384,32 @@ const CustomerAccountTable = () => {
             Total customer: {filterCustomer.length}{" "}
           </p>
           <div className="join">
-            {[
-              ...Array(
-                Math.ceil(filterCustomer.length / MAX_LENGTH_COL)
-              ).keys(),
-            ].map((pageNumber) => (
-              <button
-                key={pageNumber}
-                className="join-item btn btn-xs"
-                onClick={() => setPage(pageNumber + 1)}
-              >
-                {pageNumber + 1}
-              </button>
-            ))}
+            <button
+              className="join-item btn btn-xs btn-ghost"
+              onClick={() => setPage(1)}
+            >
+              «
+            </button>
+            {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
+              const pageNumber = adjustedStartPage + index;
+              return (
+                <button
+                  key={pageNumber}
+                  className={`join-item btn btn-xs ${
+                    pageNumber === page ? "btn-active" : ""
+                  }`}
+                  onClick={() => setPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+            <button
+              className="join-item btn btn-xs btn-ghost"
+              onClick={() => setPage(totalPages)}
+            >
+              »
+            </button>
           </div>
         </div>
       </div>
@@ -355,15 +442,18 @@ const CustomerAccountTable = () => {
         <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-10 rounded-2xl">
             <h3 className="font-bold text-2xl">Change role</h3>
-
-            <Checkbox className=" text-white">
-              {" "}
-              <p className="text-black">Confirm to change customer to staff</p>
-            </Checkbox>
-
-            <div className="flex flex-col justify-between">
-              {/* <HandleSeatModal flightId={selectedFlightId} /> */}
-            </div>
+            <label className="inline-flex items-center  mt-5">
+              <input
+                type="checkbox"
+                className="form-checkbox"
+                checked={checkChangeRole}
+                onChange={(e) => setCheckChangeRole(e.target.checked)}
+              />
+              <span className="ml-2 text-black">
+                Confirm to change customer to staff
+              </span>
+            </label>
+            <div className="flex flex-col justify-between"></div>
             <div className="modal-action">
               <button
                 className="btn"
@@ -372,8 +462,11 @@ const CustomerAccountTable = () => {
                 Close
               </button>
               <button
+                type="button"
                 className="btn btn-warning"
-                onClick={() => setCustomerChangeRoleModal(false)}
+                onClick={() => {
+                  changeCustomerRole();
+                }}
               >
                 Save
               </button>

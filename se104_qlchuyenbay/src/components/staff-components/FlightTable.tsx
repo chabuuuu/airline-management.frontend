@@ -5,7 +5,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import HandleSeatModal from "./HandleSeatModal";
 
 type RowType = {
-  flight: string;
+  flightId: string;
   logo: string;
   brand: string;
   date: string;
@@ -115,7 +115,7 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
                           </div>
                         </div>
                         <div>
-                          <div className="font-bold">{cardData.flight}</div>
+                          <div className="font-bold">{cardData.flightId}</div>
                           <div className="text-sm opacity-50">
                             {cardData.brand}
                           </div>
@@ -145,7 +145,7 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
                         <button
                           onClick={() => {
                             setShowSeatModal(true);
-                            setSelectedFlightId(cardData.flight);
+                            setSelectedFlightId(cardData.flightId);
                           }}
                           className="btn btn-ghost text-rose-400 btn-xs font-medium"
                         >
@@ -161,7 +161,7 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
                         <button
                           onClick={() => {
                             setShowStatusModal(true);
-                            setSelectedFlightId(cardData.flight);
+                            setSelectedFlightId(cardData.flightId);
                           }}
                           className={statusColor(cardData.status)}
                         >

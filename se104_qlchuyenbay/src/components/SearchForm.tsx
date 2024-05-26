@@ -57,9 +57,7 @@ const SearchForm = () => {
       data.departure
     )}&destination=${encodeURIComponent(
       data.destination
-    )}&date=${encodeURIComponent(data.date)}&flightType=${encodeURIComponent(
-      data.flight
-    )}`;
+    )}&date=${encodeURIComponent(data.date)}`;
     window.location.href = `/SearchingPage${queryParams}`;
   };
 

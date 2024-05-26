@@ -8,6 +8,7 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 
 const schema = z.object({
   airportName: z.string(),
@@ -99,9 +100,31 @@ const CreateAirportForm = () => {
     console.log(config);
     try {
       const response = await axios.request(config);
-      console.log(response);
-    } catch (e) {
-      console.log(e);
+      toast.success("Create new Airport succesful", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      console.log(e.response.data.message);
+      messages.map((m: any) => {
+        toast.error(m || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      });
     }
   };
 
@@ -109,6 +132,7 @@ const CreateAirportForm = () => {
 
   return (
     <div>
+      <ToastContainer />
       <button
         onClick={() => setShowModal(true)}
         className="btn btn-ghost  transition duration-300"

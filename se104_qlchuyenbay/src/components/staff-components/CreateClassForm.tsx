@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const CreateClassForm = () => {
   const [className, setClassName] = useState("");
@@ -33,8 +34,31 @@ const CreateClassForm = () => {
     try {
       const response = await axios.request(config);
       console.log(response);
+
+      if (response) {
+        toast.success("Create Successful", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
     } catch (e) {
       console.log(e);
+      toast.error("Error while create", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 

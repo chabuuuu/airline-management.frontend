@@ -6,6 +6,8 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 type AirportType = {
   airportId?: string;
@@ -24,6 +26,45 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
 }) => {
   const MAX_LENGTH_COL = 7;
   const [page, setPage] = useState<number>(1);
+
+  const onDeleteAirport = async (airportId: any) => {
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/airport/${airportId}`,
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTccm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNDYyMDQyMSwiZXhwIjoxNzE0OTQ0NDIxfQ.hlH3BzvJkvjdVr9Qi22x1UokRxktCvHHt8pHiadS52A",
+      },
+    };
+
+    try {
+      const response = await axios.request(config);
+      if (response)
+        toast.success("Create new Airport succesful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
 
   return (
     <div>
@@ -155,7 +196,12 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
                             key={`delete-${cardData.airportId}`}
                             className="btn btn-sm btn-ghost text-red-600"
                           >
-                            <div className="flex justify-between">
+                            <div
+                              onClick={() => {
+                                onDeleteAirport(cardData.airportId);
+                              }}
+                              className="flex justify-between"
+                            >
                               <p> Delete airport</p>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"

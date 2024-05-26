@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { NextAuthProvider } from "./providers";
 import { CookiesProvider } from "next-client-cookies/server";
 import { options } from "./api/auth/[...nextauth]/options";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +29,8 @@ export default async function RootLayout({
       <body className={inter.className}>
         <CookiesProvider>
           <NextAuthProvider>
+            <ToastContainer />
+
             {!!session && <Navbar />}
             {!session && <Navbar />}
             <div className="container h-full pt-12">{children}</div>

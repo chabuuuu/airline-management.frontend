@@ -27,6 +27,18 @@ const Card: React.FC<inputType> = ({
   status,
   price,
 }) => {
+  const statusColor = (status: any) => {
+    switch (status) {
+      case "Đã hủy chuyến":
+        return ` font-medium text-red-400 `;
+      case "Đang bay":
+        return ` font-medium text-green-400`;
+      case "Chưa khởi hành":
+        return ` font-medium text-yellow-400`;
+      default:
+        return ` font-medium text-blue-400`;
+    }
+  };
   return (
     <div className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5">
       <div className="flex items-center">
@@ -63,11 +75,7 @@ const Card: React.FC<inputType> = ({
       </div>
 
       <div className="-mb-3 ">
-        {status === "available" ? (
-          <div className="text-green-600 font-semibold ">{status}</div>
-        ) : (
-          <div className="text-red-600 font-semibold ">{status}</div>
-        )}
+        <div className={statusColor(status)}>{status}</div>
       </div>
 
       <div className="flex justify-between items-center ">

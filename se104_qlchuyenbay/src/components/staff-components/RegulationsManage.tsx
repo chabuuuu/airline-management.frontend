@@ -2,6 +2,7 @@ import React from "react";
 import CreateClassForm from "@/components/staff-components/CreateClassForm";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
 const RegulationsManage = () => {
   useEffect(() => {
     const getAllTicketClass = async () => {
@@ -59,6 +60,7 @@ const RegulationsManage = () => {
     timeBookedAtLeast: string;
   }>();
   console.log(secondRegulation);
+
   return (
     <div className="overflow-x-auto mt-10 p-10">
       <table className="table">
@@ -245,9 +247,7 @@ const RegulationsManage = () => {
               </div>
             </div>
 
-            <div className="mt-5">
-              <CreateClassForm />
-            </div>
+            <CreateClassForm />
 
             <div className="modal-action">
               <button

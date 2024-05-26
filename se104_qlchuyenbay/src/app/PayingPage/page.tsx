@@ -28,6 +28,7 @@ interface FillForm {
 }
 
 const PayingPage = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const params = Object.fromEntries(searchParams.entries());
   const filteredParams: Params = {
@@ -58,15 +59,11 @@ const PayingPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
-    console.log(totalMoney);
+    router.push(`/iPayPage?total=${totalMoney.toString()}`);
   };
-  const router = useRouter();
+
   return (
     <div>
-      <button className="btn btn-ghost" onClick={router.back}>
-        Back
-      </button>
       <form onSubmit={handleSubmit}>
         {filteredParams.chooseSeat.map((param, index) => (
           <div key={index} className="flex justify-center items-center mb-6">
@@ -125,6 +122,7 @@ const PayingPage = () => {
                   <input
                     type="text"
                     name="fullName"
+                    required
                     placeholder="NGUYEN VAN A"
                     onChange={(e) => handleChange(e, index)}
                     className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -137,6 +135,7 @@ const PayingPage = () => {
                     <input
                       type="text"
                       name="phoneNumber"
+                      required
                       placeholder="012345678"
                       onChange={(e) => handleChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -147,6 +146,7 @@ const PayingPage = () => {
                     <input
                       type="email"
                       name="email"
+                      required
                       placeholder="ac@gmail.com"
                       onChange={(e) => handleChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
@@ -186,17 +186,20 @@ const PayingPage = () => {
             </div>
           </div>
         ))}
-        <button type="submit" className="w-full flex justify-center p-5 ">
-          <Link
-            href={{
-              pathname: "/iPayPage",
-              query: { total: JSON.stringify(totalMoney) },
-            }}
-            className="btn btn-active bg-orange-400 text-white hover:text-black w-full max-w-[900px]"
-          >
-            Thanh toan
-          </Link>
-        </button>
+        <div className="w-full flex justify-center">
+          <div className="w-full  flex justify-between max-w-[850px] ">
+            <button className="btn " onClick={router.back}>
+              Back
+            </button>
+
+            <button
+              type="submit"
+              className="btn btn-active bg-orange-400 text-white min-w-[200px] hover:text-black "
+            >
+              Pay
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

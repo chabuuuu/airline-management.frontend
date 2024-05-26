@@ -72,8 +72,8 @@ export const options: NextAuthOptions = {
               };
             }
             return null;
-          } catch (error) {
-            console.error("Authorization error:", error);
+          } catch (error: any) {
+            if (error) throw new Error(error.response.data.message);
             return null;
           }
         } else if (isStaff === "true") {
@@ -101,8 +101,9 @@ export const options: NextAuthOptions = {
               };
             }
             return null;
-          } catch (error) {
-            console.error("Authorization error:", error);
+          } catch (error: any) {
+            //console.log("Test :", error.response.data);
+            if (error) throw new Error(error.response.data.message);
             return null;
           }
         } else return null;
