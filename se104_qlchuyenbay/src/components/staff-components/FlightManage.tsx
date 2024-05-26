@@ -5,38 +5,24 @@ import CreateAirportForm from "./CreateAirportForm";
 import CreateFlightForm from "./CreateFlightForm";
 import axios from "axios";
 import { PlanesData } from "@/planes";
-
-type CardType = {
+type RowType = {
   flightId: string;
-  logo?: string;
+  logo: string;
   brand: string;
   date: string;
-  time?: string;
+  time: string;
   duration?: string;
   departure: string;
+  airportStart?: string;
+  airportEnd?: string;
   arrival: string;
+  seat: string;
+  placed?: string;
   status: string;
   price: string | number;
+  available: string;
 };
-
 const FlightManage = () => {
-  type RowType = {
-    flight: string;
-    logo: string;
-    brand: string;
-    date: string;
-    time: string;
-    duration?: string;
-    departure: string;
-    airportStart?: string;
-    airportEnd?: string;
-    arrival: string;
-    seat: string;
-    placed?: string;
-    status: string;
-    price: string | number;
-    available: string;
-  };
   const MAX_LENGTH_COL = 7;
 
   const [allFlightInfo, setAllFlightInfo] = useState<RowType[]>([]);
@@ -60,7 +46,7 @@ const FlightManage = () => {
             "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png";
 
           return {
-            flight: dt.flightId,
+            flightId: dt.flightId,
             brand: dt.airlines,
             logo: logo,
             date: dt.departureTime.slice(0, 10),

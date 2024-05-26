@@ -6,20 +6,29 @@ import SearchModal from "@/components/SearchModal";
 import { cardData } from "@/data";
 import axios from "axios";
 import { PlanesData } from "@/planes";
+import { tree } from "next/dist/build/templates/app-page";
+import FlightTable from "@/components/staff-components/FlightTable";
+import GridSearchingView from "@/components/GridSearchingView";
+import ListSearchingView from "@/components/ListSearchingView";
+import "react-toastify/dist/ReactToastify.css";
 
-type CardType = {
+type RowType = {
   flightId: string;
-  logo?: string;
+  logo: string;
   brand: string;
   date: string;
-  time?: string;
+  time: string;
   duration?: string;
   departure: string;
+  airportStart?: string;
+  airportEnd?: string;
   arrival: string;
+  seat: string;
+  placed?: string;
   status: string;
   price: string | number;
+  available: string;
 };
-const MAX_LENGTH_COL = 9;
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -27,9 +36,9 @@ export default function SearchingPage() {
 
   const searchParams = useSearchParams();
 
-  const [allFlightInfo, setAllFlightInfo] = useState<CardType[]>([]);
+  const [allFlightInfo, setAllFlightInfo] = useState<RowType[]>([]);
 
-  const [filterFlight, setFilterFlight] = useState<CardType[]>();
+  const [filterFlight, setFilterFlight] = useState<RowType[]>([]);
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -38,6 +47,49 @@ export default function SearchingPage() {
     setDestination(params.destination || "");
     setDate(params.date || "");
   }, [searchParams]);
+
+  useEffect(() => {
+    const searchForFlight = async () => {
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
+
+      try {
+        const response = await axios.get(url);
+        const responseData = response.data;
+        console.log(responseData.data);
+
+        const updatedFlightInfo = responseData.data.map((dt: any) => {
+          const planeData = PlanesData.find(
+            (plane) => plane.brand === dt.airlines
+          );
+          const logo = planeData ? planeData.logo : "";
+
+          return {
+            flightId: dt.flightId,
+            brand: dt.airlines,
+            logo: logo,
+            date: dt.departureTime.slice(0, 10),
+            time: dt.departureTime.slice(11, 16),
+            departure: dt.departureAirport.city,
+            airportStart: dt.departureAirport.airportName,
+            arrival: dt.arrivalAirport.city,
+            airportEnd: dt.arrivalAirport.airportName,
+            duration: dt.flightDuration,
+            status: dt.status,
+            price: dt.price,
+            seat: dt.seatsAvailable,
+          };
+        });
+
+        setAllFlightInfo(updatedFlightInfo);
+      } catch (error) {
+        console.error("Error fetching flight data:", error);
+      }
+    };
+
+    if (departure && destination) {
+      searchForFlight();
+    }
+  }, [departure, destination]);
 
   useEffect(() => {
     const searchForFlight = async () => {
@@ -115,10 +167,27 @@ export default function SearchingPage() {
   const handleFilterAvailableFlight = () => {
     setAvailableFlight(!availableFlight);
   };
-  const [page, setPage] = useState<number>(1);
 
+  const [gridView, setGridView] = useState<boolean>(true);
+  const handleChangeViewStyle = () => {
+    setGridView(!gridView);
+  };
   return (
     <main className="main  rounded-2xl p-5">
+      {/* <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <ToastContainer /> */}
+
       <div className="flex justify-center items-center mb-10  p-5 ">
         <>
           <p className="text-4xl font-bold  text-slate-800">{departure}</p>
@@ -247,53 +316,80 @@ export default function SearchingPage() {
               </ul>
             </div>
           </div>
+          <div>
+            <div className="flex rounded-md bg-base-300 p-2 mr-3 justify-around ">
+              <div
+                className={`${
+                  gridView
+                    ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                    : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                }`}
+                onClick={handleChangeViewStyle}
+              >
+                <div className="flex justify-between items-center gap-2 ">
+                  <p>Grid</p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3 h-3"
+                    viewBox="0 0 62 62"
+                    fill="none"
+                  >
+                    <rect width="26" height="26" rx="5" fill="#4A4A4A" />
+                    <rect x="36" width="26" height="26" rx="5" fill="#4A4A4A" />
+                    <rect y="36" width="26" height="26" rx="5" fill="#4A4A4A" />
+                    <rect
+                      x="36"
+                      y="36"
+                      width="26"
+                      height="26"
+                      rx="5"
+                      fill="#4A4A4A"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div
+                className={`${
+                  gridView
+                    ? "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                    : "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                }`}
+                onClick={handleChangeViewStyle}
+              >
+                <div className="flex justify-between items-center gap-2 ">
+                  <p>List</p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    viewBox="0 0 60 40"
+                    fill="none"
+                  >
+                    <rect width="60" height="6" rx="2" fill="#4A4A4A" />
+                    <rect y="19" width="60" height="5" rx="2" fill="#4A4A4A" />
+                    <rect y="38" width="60" height="4" rx="2" fill="#4A4A4A" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div className="bg-white flex items-center justify-between rounded-3xl">
             <SearchModal />
           </div>
         </div>
       </div>
-
-      <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-        {!filters
-          ? allFlightInfo?.map((carddata, index) => {
-              if (
-                index >= MAX_LENGTH_COL * (page - 1) &&
-                index < MAX_LENGTH_COL * page
-              ) {
-                return <Card key={index} {...carddata} />;
-              } else {
-                return null;
-              }
-            })
-          : filterFlight?.map((carddata, index) => {
-              if (
-                index >= MAX_LENGTH_COL * (page - 1) &&
-                index < MAX_LENGTH_COL * page
-              ) {
-                return <Card key={index} {...carddata} />;
-              } else {
-                return null;
-              }
-            })}
-      </div>
-
-      <div className="flex justify-between p-3 mt-5">
-        <p className="font-medium">Total flight: {allFlightInfo.length} </p>
-        <div className="join">
-          {[
-            ...Array(Math.ceil(allFlightInfo.length / MAX_LENGTH_COL)).keys(),
-          ].map((pageNumber) => (
-            <button
-              key={pageNumber}
-              className="join-item btn btn-xs"
-              onClick={() => setPage(pageNumber + 1)}
-            >
-              {pageNumber + 1}
-            </button>
-          ))}
-        </div>
-      </div>
+      {gridView ? (
+        !filters ? (
+          <GridSearchingView allFlight={allFlightInfo} />
+        ) : (
+          <GridSearchingView allFlight={filterFlight} />
+        )
+      ) : !filters ? (
+        <ListSearchingView allFlight={allFlightInfo} />
+      ) : (
+        <ListSearchingView allFlight={filterFlight} />
+      )}
     </main>
   );
 }

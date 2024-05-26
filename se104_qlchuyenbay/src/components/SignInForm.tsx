@@ -8,6 +8,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { GoogleSignInButton } from "./GoogleSignInButton";
+import { toast } from "react-toastify";
 
 const schema = z.object({
   email: z.string().email(),
@@ -39,8 +40,31 @@ function SignInForm() {
     });
 
     if (!res?.error) {
+      toast.success("Login Successful", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
       router.push("/");
       router.refresh();
+    } else {
+      console.log(res);
+      toast.error(res.error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 

@@ -9,6 +9,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const schema = z.object({
   country: z.string(),
@@ -269,7 +270,21 @@ const PayForm = () => {
         </div>
         <div className="w-full">
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              toast.success("Purchase Succesful. Redirect to Profile", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              setTimeout(() => {
+                route.push("/ProfilePage");
+              }, 6000);
+            }}
             className="w-full bg-purple-500 mx-auto block text-white rounded px-4 py-2 mb-4"
           >
             Complete Checkout
