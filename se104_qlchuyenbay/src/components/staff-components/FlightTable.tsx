@@ -3,29 +3,18 @@ import axios from "axios";
 import Link from "next/link";
 import React, { FormEvent, useEffect, useState } from "react";
 import HandleSeatModal from "./HandleSeatModal";
+import { FlightType } from "@/type";
 
-type RowType = {
-  flightId: string;
-  logo: string;
-  brand: string;
-  date: string;
-  time: string;
-  duration?: string;
-  departure: string;
-  airportStart?: string;
-  airportEnd?: string;
-  arrival: string;
-  seat: string;
-  placed?: string;
-  status: string;
-  price: string | number;
-  available: string;
-};
+const MAX_LENGTH_COL = 9;
+const MAX_PAGE_BUTTONS = 5;
 
-const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
-  const MAX_LENGTH_COL = 7;
-
+const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
   const [page, setPage] = useState<number>(1);
+  const totalPages = Math.ceil(allFlight.length / MAX_LENGTH_COL);
+  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
+  const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
+  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
+
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const [showSeatModal, setShowSeatModal] = useState<boolean>(false);
 
@@ -108,10 +97,7 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
                       <div className="flex items-center gap-3">
                         <div className="">
                           <div className="w-8 object-cover">
-                            <img
-                              src={cardData.logo}
-                              alt="Avatar Tailwind CSS Component"
-                            />
+                            <img src={cardData.logo} alt="Avatar" />
                           </div>
                         </div>
                         <div>
@@ -194,23 +180,38 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
       </div>
       <div className="flex justify-between p-3">
         <p className="font-medium">Total flight: {allFlight.length} </p>
-        <div className="join">
-          {[...Array(Math.ceil(allFlight.length / MAX_LENGTH_COL)).keys()].map(
-            (pageNumber) => (
+        <div className="join bg-slate-50">
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(1)}
+          >
+            «
+          </button>
+          {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
+            const pageNumber = adjustedStartPage + index;
+            return (
               <button
                 key={pageNumber}
-                className="join-item btn btn-xs"
-                onClick={() => setPage(pageNumber + 1)}
+                className={`join-item btn-ghost btn-xs ${
+                  pageNumber === page ? " btn-active" : ""
+                }`}
+                onClick={() => setPage(pageNumber)}
               >
-                {pageNumber + 1}
+                {pageNumber}
               </button>
-            )
-          )}
+            );
+          })}
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(totalPages)}
+          >
+            »
+          </button>
         </div>
       </div>
       {showStatusModal && (
         <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-10 rounded-2xl">
+          <div className="bg-white shadow-black p-10 rounded-2xl">
             <h3 className="font-bold text-2xl">Update Flight Status</h3>
 
             <div>
@@ -220,7 +221,7 @@ const FlightTable: React.FC<{ allFlight: RowType[] }> = ({ allFlight }) => {
                 onChange={(e) => {
                   setStatus(e.target.value);
                 }}
-                className="select select-bordered select-sm w-full  "
+                className="select select-bordered select-sm w-full"
               >
                 <option value="set-finish">Success</option>
                 <option value="set-in-progress">In Progress</option>

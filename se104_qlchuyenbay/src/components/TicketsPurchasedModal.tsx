@@ -4,17 +4,14 @@ import React, { useEffect, useState } from "react";
 import SearchForm from "./SearchForm";
 import TicketCard from "./TIcketCard";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { BookingType } from "@/type";
 
-// "bookingId": "a073d6bd-287d-40f0-a33a-7876fb657786",
-// "paymentStatus": false,
-// "bookingStatus": "BOOKED",
-// "passengerId": "1342a007-d259-4969-b3db-c455384f6d79",
-// "price": "156250.00",
-// "bookedAt": "04-05-2024 10:10:09",
-// "updateAt": "04-05-2024 10:10:09"
-
-const SearchModal: React.FC = () => {
+const TicketsPurchasedModal: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const { data: session } = useSession();
+  const [bookings, setBookings] = useState<BookingType[]>([]);
+
   useEffect(() => {
     const getBookingTicket = async () => {
       let config = {
@@ -22,12 +19,13 @@ const SearchModal: React.FC = () => {
         maxBodyLength: Infinity,
         url: `${process.env.NEXT_PUBLIC_SERVER}/booking/me`,
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNDI0YzFhLWJmZjAtNDY3Yy1hNDM2LTM2OTc1MDM4NTUxOSIsImVtYWlsIjoiaGFwaHV0aGluaDMzNjRAZ21haWwuY29tIiwicGFzc3dvcmQiOiJAMVRoaW5oSGEiLCJyb2xlIjoiQ3VzdG9tZXIiLCJpYXQiOjE3MTIwMjI1MjMsImV4cCI6MTcxMjM0NjUyM30.lQmtGwfLJFtGfFQWJgZqF61Pfb7KGb1vwtWcRlIpKt0`,
+          Authorization: session?.user.token,
         },
       };
       try {
         const response = await axios.request(config);
         console.log(response);
+        setBookings(response.data);
       } catch (e) {
         console.log(e);
       }
@@ -41,7 +39,7 @@ const SearchModal: React.FC = () => {
           onClick={() => setShowModal(true)}
           className="btn w-full bg-blue-600 text-white px-4 py-2 rounded-lg btn-ghost transition duration-300"
         >
-          See all tickets purchased
+          See all booking recently
         </button>
 
         {showModal && (
@@ -109,4 +107,4 @@ const SearchModal: React.FC = () => {
   );
 };
 
-export default SearchModal;
+export default TicketsPurchasedModal;

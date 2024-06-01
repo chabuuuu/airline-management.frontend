@@ -9,6 +9,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 const schema = z.object({
   airportName: z.string(),
@@ -61,6 +62,7 @@ const CreateAirportForm = () => {
     };
     get_all_country();
   }, []);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const get_all_city_by_code = async () => {
@@ -84,32 +86,42 @@ const CreateAirportForm = () => {
     get_all_city_by_code();
   }, [countryCode]);
 
-  const onSubmit: SubmitHandler<FormFields> = async (data: any) => {
-    const jsondata = JSON.stringify(data);
-    console.log(jsondata);
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/airport`,
-      headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTccm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNDYyMDQyMSwiZXhwIjoxNzE0OTQ0NDIxfQ.hlH3BzvJkvjdVr9Qi22x1UokRxktCvHHt8pHiadS52A",
-      },
-      data: jsondata,
-    };
-    console.log(config);
+  const onSubmit: SubmitHandler<FormFields> = async (data: any, event) => {
+    event?.preventDefault();
+
     try {
-      const response = await axios.request(config);
-      toast.success("Create new Airport succesful", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      const response = await fetch(`/api/auth/CreateAirport`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+      const mss = await response.json();
+      console.log(mss);
+      if (!(mss.statusCode === 200)) {
+        toast.error(mss.message.message[0], {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.success("Create new Airport succesful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
     } catch (e: any) {
       const messages = e.response.data.message;
       console.log(e.response.data.message);
@@ -125,6 +137,7 @@ const CreateAirportForm = () => {
           theme: "light",
         });
       });
+      console.log(e);
     }
   };
 
@@ -137,7 +150,7 @@ const CreateAirportForm = () => {
         onClick={() => setShowModal(true)}
         className="btn btn-ghost  transition duration-300"
       >
-        Tạo mới sân bay
+        Create new airport
         <svg
           className="w-4 h-4"
           xmlns="http://www.w3.org/2000/svg"
@@ -159,39 +172,39 @@ const CreateAirportForm = () => {
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block text-gray-700 text-sm font-bold "
                     htmlFor="arrivalAirport"
                   >
-                    Quốc gia
-                  </label>
-                  <div>
-                    <Autocomplete
-                      className="w-full"
-                      onChange={(_, value) => {
-                        setCountry(value);
-                        const selectedCountryCode = countryOptions.find(
-                          (option: any) => option.name === value
-                        )?.code;
-                        setCountryCode(selectedCountryCode || null);
-                        setCity(null);
-                      }}
-                      disabled={isSubmitting}
-                      options={countryOptions.map((option) => option.name)}
-                      value={country}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          {...register("country")}
-                          placeholder="Departure"
-                        />
+                    <p className=" mb-2 ">Country</p>
+                    <div>
+                      <Autocomplete
+                        className="w-full"
+                        onChange={(_, value) => {
+                          setCountry(value);
+                          const selectedCountryCode = countryOptions.find(
+                            (option: any) => option.name === value
+                          )?.code;
+                          setCountryCode(selectedCountryCode || null);
+                          setCity(null);
+                        }}
+                        disabled={isSubmitting}
+                        options={countryOptions.map((option) => option.name)}
+                        value={country}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            {...register("country")}
+                            placeholder="Departure"
+                          />
+                        )}
+                      />
+                      {errors.country && (
+                        <div className="text-red-500">
+                          {errors.country.message}
+                        </div>
                       )}
-                    />
-                    {errors.country && (
-                      <div className="text-red-500">
-                        {errors.country.message}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  </label>
                 </div>
 
                 <div>
@@ -199,33 +212,35 @@ const CreateAirportForm = () => {
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="arrivalAirport"
                   >
-                    Thành phố
-                  </label>
-                  <div>
-                    <Autocomplete
-                      className="w-full"
-                      onChange={(_, value) => setCity(value)}
-                      disabled={isSubmitting || !countryCode} // Disable city if country code is not selected
-                      options={cityOptions}
-                      value={city}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          {...register("city")}
-                          placeholder="City"
-                        />
+                    <p className=" mb-2 ">City</p>
+                    <div>
+                      <Autocomplete
+                        className="w-full"
+                        onChange={(_, value) => setCity(value)}
+                        disabled={isSubmitting || !countryCode} // Disable city if country code is not selected
+                        options={cityOptions}
+                        value={city}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            {...register("city")}
+                            placeholder="City"
+                          />
+                        )}
+                      />
+                      {errors.city && (
+                        <div className="text-red-500">
+                          {errors.city.message}
+                        </div>
                       )}
-                    />
-                    {errors.city && (
-                      <div className="text-red-500">{errors.city.message}</div>
-                    )}
-                  </div>
+                    </div>
+                  </label>
                 </div>
               </div>
             </div>
 
             <div className="mb-3">
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 gap-5">
                 <div>
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"

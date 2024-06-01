@@ -1,21 +1,9 @@
 import React from "react";
 import Button from "./Button";
 import Link from "next/link";
+import { FlightType } from "@/type";
 
-type inputType = {
-  flightId: string;
-  logo?: string;
-  brand: string;
-  date: string;
-  time?: string;
-  duration?: string;
-  departure?: string;
-  arrival?: string;
-  status: string;
-  price: string | number;
-};
-
-const Card: React.FC<inputType> = ({
+const Card: React.FC<FlightType> = ({
   flightId,
   logo,
   brand,
@@ -43,9 +31,10 @@ const Card: React.FC<inputType> = ({
     <div className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5">
       <div className="flex items-center">
         <img src={logo} alt={brand} className=" h-8 object-cover mr-4" />
-        <h2 className="text-2xl  font-semibold">
-          {brand} {flightId}
-        </h2>
+        <div className="flex  w-full  justify-between">
+          <h2 className="text-xl  font-medium">{brand}</h2>
+          <h2 className="text-2xl  font-semibold">{flightId}</h2>
+        </div>
       </div>
       <div className="flex justify-end -mt-4">
         <p className="text-sm text-gray-600">{time + ","}</p>

@@ -5,467 +5,35 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AirPlaneDetail from "@/components/AirPlaneDetail";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-const data = [
-  {
-    seatId: "A1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "A8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "B8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C1",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C2",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C3",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C4",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C5",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C6",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C7",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "C8",
-
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D1",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D2",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D3",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D4",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D5",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D6",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D7",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "D8",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E1",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E2",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E3",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E4",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E5",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E6",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E7",
-    class: "LV2",
-    isEmpty: false,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "E8",
-    class: "LV2",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.00",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F1",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F2",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F3",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F4",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F5",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F6",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F7",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-  {
-    seatId: "F8",
-    class: "LV1",
-    isEmpty: true,
-    ticketClass: {
-      priceBonusInterest: "0.5",
-      color: "blue",
-    },
-  },
-];
 const DetailPage = () => {
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const router = useRouter();
+  const buildQuery = (params: any) => {
+    return Object.keys(params)
+      .map(
+        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+      )
+      .join("&");
+  };
+  const handlePaymentClick = () => {
+    const query = buildQuery({
+      logo,
+      brand,
+      date,
+      time,
+      departure,
+      destination,
+      chooseSeat: JSON.stringify(
+        chooseSeats.filter((seat) => seat.seat !== "")
+      ),
+    });
+    router.push(`/PayingPage?${query}`);
+  };
+  const { data: session } = useSession();
+  //const roleSession = session?.user.role;
 
   const [flightId, setFlightId] = useState<string>("");
   const [departure, setDeparture] = useState<string>("");
@@ -493,6 +61,7 @@ const DetailPage = () => {
 
   const baseSeatChoose = {
     seat: "",
+    color: "",
     class: "",
     priceBonusInterest: "",
     price: "",
@@ -500,6 +69,7 @@ const DetailPage = () => {
   const [chooseSeats, setChooseSeats] = useState<
     {
       seat: string;
+      color: string;
       class: string;
       priceBonusInterest: string;
       price: string;
@@ -508,12 +78,14 @@ const DetailPage = () => {
 
   const handleSeatSelection = (
     seat: string,
+    color: string,
     seatClass: string,
     priceBonusInterest: string
   ) => {
     if (!chooseSeats.find((selectedSeat) => selectedSeat.seat === seat)) {
       const newSeat = {
         seat,
+        color: color,
         class: seatClass,
         priceBonusInterest: priceBonusInterest,
         price: (
@@ -528,7 +100,20 @@ const DetailPage = () => {
   };
 
   const handleChooseMoreSeat = () => {
-    console.log(chooseSeats);
+    console.log(chooseSeats[chooseSeats.length - 1]);
+    if (chooseSeats[chooseSeats.length - 1].seat === "") {
+      toast.error("You must choose one", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
     setChooseSeats([...chooseSeats, baseSeatChoose]);
   };
 
@@ -540,20 +125,12 @@ const DetailPage = () => {
       priceBonusInterest: string;
       selected: boolean;
     }[]
-  >(
-    data.map((seat: any) => ({
-      seatId: seat.seatId,
-      class: seat.class,
-      color: seat.ticketClass.color,
-      priceBonusInterest: seat.ticketClass.priceBonusInterest,
-      selected: !seat.isEmpty,
-    }))
-  );
+  >([]);
 
   useEffect(() => {
     const getSeatOfAirplane = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=13`;
-
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
+      console.log(url);
       let config = {
         method: "get",
         maxBodyLength: Infinity,
@@ -564,33 +141,39 @@ const DetailPage = () => {
         const response = await axios.request(config);
         const seatData = response.data.data;
 
-        console.log(seatData);
-        console.log(flightId);
+        setAlreadySelectedSeats((prevSeats) => {
+          const newSeats = seatData.map((seat: any) => ({
+            seatId: seat.seatId,
+            class: seat.class,
+            priceBonusInterest: seat.ticketClass.priceBonusInterest,
+            color: seat.ticketClass.color,
+            selected: !seat.isEmpty,
+          }));
 
-        // setAlreadySelectedSeats((prevSeats) => {
-        //   const newSeats = seatData.map((seat: any) => ({
-        //     seatId: seat.seatId,
-        //     class: seat.class,
-        //     color: seat.ticketClass.color,
-        //     selected: seat.isEmpty,
-        //   }));
+          const uniqueSeats = newSeats.filter((newSeat: any) => {
+            return !prevSeats.some(
+              (prevSeat) => prevSeat.seatId === newSeat.seatId
+            );
+          });
 
-        //   const uniqueSeats = newSeats.filter((newSeat: any) => {
-        //     return !prevSeats.some(
-        //       (prevSeat) => prevSeat.seatId === newSeat.seatId
-        //     );
-        //   });
-
-        //   return [...prevSeats, ...uniqueSeats];
-        // });
+          return [...prevSeats, ...uniqueSeats];
+        });
       } catch (error) {
         console.error("Error fetching flight data:", error);
       }
     };
 
     getSeatOfAirplane();
-  }, []);
+  }, [flightId]);
 
+  type SeatColor = "green" | "red" | "blue" | "yellow";
+
+  const colorVariants: Record<SeatColor, string[]> = {
+    green: ["bg-green-100", "bg-green-500"],
+    red: ["bg-red-100", "bg-red-500"],
+    blue: ["bg-blue-100", "bg-blue-500"],
+    yellow: ["bg-yellow-100", "bg-yellow-500"],
+  };
   const renderSeat = (seat: {
     seatId: string;
     class: string;
@@ -598,46 +181,43 @@ const DetailPage = () => {
     color: string;
     selected: boolean;
   }) => {
-    let seatClassName =
-      "seat text-sm font-light w-8 h-6 flex justify-center items-center rounded-lg m-2 cursor-pointer";
-    let seatBgColor = "bg-gray-200";
+    // Cast color to SeatColor
+    const seatWithTypedColor = { ...seat, color: seat.color as SeatColor };
+
+    const baseClassName =
+      "seat text-base font-light w-10 h-6 flex justify-center items-center rounded-lg m-2 cursor-pointer";
+    let seatBgColor;
     let textColor = "text-black";
 
-    if (!seat.selected) {
-      if (seat.class === "LV2") {
-        seatBgColor = chooseSeats.find(
-          (selectedSeat) => selectedSeat.seat === seat.seatId
-        )
-          ? "bg-green-500"
-          : "bg-gray-200";
-      } else {
-        seatBgColor = chooseSeats.find(
-          (selectedSeat) => selectedSeat.seat === seat.seatId
-        )
-          ? "bg-yellow-500"
-          : "bg-gray-200";
-      }
+    if (!seatWithTypedColor.selected) {
+      const isSeatChosen = chooseSeats.find(
+        (selectedSeat) => selectedSeat.seat === seatWithTypedColor.seatId
+      );
+      seatBgColor = isSeatChosen
+        ? colorVariants[seatWithTypedColor.color][1]
+        : colorVariants[seatWithTypedColor.color][0];
       textColor = "text-white";
     } else {
-      seatClassName += " bg-indigo-500 text-white";
+      seatBgColor = "bg-indigo-500";
+      textColor = "text-black";
     }
 
     return (
-      <div className="flex justify-between" key={seat.seatId}>
+      <div className="flex  justify-between" key={seatWithTypedColor.seatId}>
         <div
-          className={`${seatClassName} ${seatBgColor} ${textColor}`}
+          className={`${baseClassName} ${seatBgColor} ${textColor}`}
           onClick={() => {
-            if (!seat.selected) {
-              console.log(seat.priceBonusInterest);
+            if (!seatWithTypedColor.selected) {
               handleSeatSelection(
-                seat.seatId,
-                seat.class,
-                seat.priceBonusInterest
+                seatWithTypedColor.seatId,
+                seatWithTypedColor.color,
+                seatWithTypedColor.class,
+                seatWithTypedColor.priceBonusInterest
               );
             }
           }}
         >
-          {seat.seatId}
+          {seatWithTypedColor.seatId}
         </div>
       </div>
     );
@@ -652,7 +232,7 @@ const DetailPage = () => {
         className="seat-row flex w-full justify-between items-center"
       >
         {Array.from(
-          { length: alreadySelectedSeats.length / 6 },
+          { length: alreadySelectedSeats.length / numRows },
           (_, seatIndex) => {
             const seatNumber = seatIndex + 1;
             const seatLabel = String.fromCharCode(65 + rowIndex) + seatNumber;
@@ -687,7 +267,7 @@ const DetailPage = () => {
             <div className="my-4 grid grid-cols-3 gap-4">
               <div>
                 <h3 className="font-bold text-gray-600">CHUYẾN BAY/FLIGHT</h3>
-                <p className="text-xl font-bold">AIR2056</p>
+                <p className="text-xl font-bold">{flightId}</p>
               </div>
               <div>
                 <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
@@ -744,7 +324,6 @@ const DetailPage = () => {
               </div>
             ))}
           </div>
-
           <button
             onClick={handleChooseMoreSeat}
             className="btn btn-ghost flex justify-center items-center mb-5 w-full drop-shadow-md bg-white rounded-full "
@@ -766,24 +345,38 @@ const DetailPage = () => {
               </g>
             </svg>
           </button>
-
-          <Link
-            href={{
-              pathname: "/PayingPage",
-              query: {
-                logo: logo,
-                brand: brand,
-                date: date,
-                time: time,
-                departure: departure,
-                destination: destination,
-                chooseSeat: JSON.stringify(chooseSeats),
-              },
-            }}
-            className="btn bg-orange-500 text-white w-full rounded-full"
-          >
-            Tiếp tục thanh toán
-          </Link>
+          {/* {!(chooseSeats[0].seat === "") && (
+            <Link
+              href={{
+                pathname: "/PayingPage",
+                query: {
+                  logo: logo,
+                  brand: brand,
+                  date: date,
+                  time: time,
+                  departure: departure,
+                  destination: destination,
+                  chooseSeat: JSON.stringify(
+                    chooseSeats
+                      .filter((seat) => seat.seat !== "")
+                      .map((seat) => seat)
+                  ),
+                },
+              }}
+              className="btn bg-orange-500 text-white w-full rounded-full"
+            >
+              Tiếp tục thanh toán
+            </Link>
+          )} */}
+          {!(chooseSeats[0].seat === "") && (
+            <button className="btn bg-orange-500 text-white w-full rounded-full">
+              {!session ? (
+                <a href="/SignIn">Đăng nhập để tiếp tục</a>
+              ) : (
+                <a onClick={handlePaymentClick}>Tiếp tục thanh toán</a>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

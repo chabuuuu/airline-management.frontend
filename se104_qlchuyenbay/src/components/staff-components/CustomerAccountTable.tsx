@@ -10,21 +10,10 @@ import {
 } from "@nextui-org/react";
 import { Checkbox } from "@nextui-org/checkbox";
 import { toast } from "react-toastify";
-type Customer = {
-  customerId: string;
-  email: string;
-  phoneNumber: string;
-  fullname: string;
-  birthday: string;
-  address: string;
-  nationality: string;
-  emailValidated: boolean;
-  cccd: string;
-  cccdPicture: string;
-  profilePicture: string;
-  createAt: string;
-  updateAt: string;
-};
+import Image from "next/image";
+import { Autocomplete, TextField } from "@mui/material";
+import { Customer } from "@/type";
+
 const MAX_LENGTH_COL = 7;
 const MAX_PAGE_BUTTONS = 3;
 
@@ -45,6 +34,7 @@ const CustomerAccountTable = () => {
       };
       try {
         const response = await axios.request(config);
+        console.log(response.data.data);
         setCustomers(response.data.data);
       } catch (e) {
         console.log(e);
@@ -52,29 +42,17 @@ const CustomerAccountTable = () => {
     };
 
     getAllCustomer();
-  });
+  }, [session]);
 
   const [filterCustomer, setFilterCustomer] = useState<Customer[]>([]);
-  const [emailValidated, setEmailValidated] = useState<boolean | null>(false);
+  const [emailValidated, setEmailValidated] = useState<boolean | null>(null);
+
   useEffect(() => {
     setFilterCustomer(customers);
   }, [customers]);
 
-  const handleFilterAvailableFlight = () => {
-    setEmailValidated(!emailValidated);
-    setPage(1);
-  };
-  useEffect(() => {
-    if (emailValidated) {
-      setFilterCustomer(customers.filter((cus) => cus.emailValidated));
-    } else {
-      setFilterCustomer(customers);
-    }
-  }, [emailValidated, customers]);
-
   const [customerActivityModal, setCustomerActivityModal] =
     useState<boolean>(false);
-
   const [customerChangeRoleModal, setCustomerChangeRoleModal] =
     useState<boolean>(false);
 
@@ -97,21 +75,84 @@ const CustomerAccountTable = () => {
     birthday: "",
     role: "Staff_LV2",
   });
+
+  const [countryOptions, setCountryOptions] = useState<
+    {
+      name: string;
+      code: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    const get_all_country = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/country`,
+        headers: {},
+      };
+      try {
+        const response = await axios.request(config);
+        const responseData = response.data;
+        const options = responseData.map((country: any) => ({
+          name: country.name,
+          code: country.code,
+        }));
+        setCountryOptions(options);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    get_all_country();
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState<{
+    username: string;
+    countryCode: string;
+    emailValidated: boolean | null;
+  }>({ username: "", countryCode: "", emailValidated: null });
+
+  useEffect(() => {
+    const filtered = customers.filter((customer) => {
+      const matchesUsername = customer.fullname
+        .toLowerCase()
+        .includes(searchQuery.username.toLowerCase());
+      const matchesCountry = customer.nationality
+        .toLowerCase()
+        .includes(searchQuery.countryCode.toLowerCase());
+      const matchesEmailValidated =
+        searchQuery.emailValidated === null ||
+        customer.emailValidated === searchQuery.emailValidated;
+
+      return matchesUsername && matchesCountry && matchesEmailValidated;
+    });
+    setFilterCustomer(filtered);
+  }, [searchQuery, customers]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    console.log({ id, value });
+    setSearchQuery((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
+
   const changeCustomerRole = async () => {
     if (checkChangeRole) {
       let config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/staf`,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/staff`,
         headers: {
-          Authorization: "{{STAFF_LV1_TOKEN}}",
+          Authorization: session?.user.token,
         },
         data: JSON.stringify(selectCustomer),
       };
       try {
         const response = await axios.request(config);
         console.log(response);
-        toast.success("Update succesful", {
+        toast.success("Update successful", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -136,63 +177,113 @@ const CustomerAccountTable = () => {
       }
     }
   };
+
   const [checkChangeRole, setCheckChangeRole] = useState<boolean>(false);
 
-  //Page pavagation
+  // Page pagination
   const [page, setPage] = useState<number>(1);
   const totalPages = Math.ceil(filterCustomer.length / MAX_LENGTH_COL);
   const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
   const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
-
   return (
     <div className="flex flex-col collapse-content">
       <div className="flex justify-between h-full items-center mt-5">
         <div></div>
 
         <div className="flex justify-between">
-          <label className="input input-bordered flex items-center gap-2">
-            <p className=" ">City</p>
-            <input
-              type="text"
-              className="grow font-medium"
-              placeholder="HaNoi"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="w-4 h-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
+          <div className="flex flex-col justify-center">
+            <label className="input h-[40px] input-bordered flex items-center gap-2">
+              <p className="">Customer</p>
+              <input
+                type="text"
+                id="username"
+                className="grow font-medium"
+                placeholder="Nguyen Van A"
+                onChange={handleSearch}
               />
-            </svg>
-          </label>
-          <div className="flex rounded-md p-1 items-center justify-around h-12 bg-base-300 ml-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="w-4 h-4 opacity-70"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </label>
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <Autocomplete
+              disablePortal
+              className="bg-white w-[200px] mx-3"
+              id="countryCode"
+              options={countryOptions}
+              getOptionLabel={(option) => option.name}
+              onChange={(event, value) => {
+                setSearchQuery((prevState) => ({
+                  ...prevState,
+                  countryCode: value ? value.code : "",
+                }));
+              }}
+              renderInput={(params) => (
+                <TextField {...params} size="small" placeholder="Vietnam" />
+              )}
+            />
+          </div>
+
+          <div className="flex rounded-md p-2 items-center justify-around h-[40px]  bg-base-300">
             <div
               className={`${
-                emailValidated
-                  ? "flex justify-center rounded-md px-5 py-2  text-sm font-medium"
-                  : "bg-white flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                searchQuery.emailValidated === null
+                  ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
               }`}
-              onClick={handleFilterAvailableFlight}
+              onClick={() => {
+                setSearchQuery((prevState) => ({
+                  ...prevState,
+                  emailValidated: null,
+                }));
+              }}
             >
               All
             </div>
 
             <div
               className={`${
-                emailValidated
-                  ? "bg-white flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                searchQuery.emailValidated === true
+                  ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
                   : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
               }`}
-              onClick={handleFilterAvailableFlight}
+              onClick={() => {
+                setSearchQuery((prevState) => ({
+                  ...prevState,
+                  emailValidated: true,
+                }));
+              }}
             >
-              Available
+              Validated
             </div>
+
+            {/* <div
+              className={`${
+                searchQuery.emailValidated === false
+                  ? "bg-white flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                  : "flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+              }`}
+              onClick={() => {
+                setSearchQuery((prevState) => ({
+                  ...prevState,
+                  emailValidated: false,
+                }));
+              }}
+            >
+              Not Validated
+            </div> */}
           </div>
         </div>
       </div>
@@ -226,7 +317,8 @@ const CustomerAccountTable = () => {
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
                               <img
-                                src={customer.cccdPicture}
+                                src={customer?.cccdPicture}
+                                crossOrigin="anonymous"
                                 alt="Avatar Tailwind CSS Component"
                               />
                             </div>

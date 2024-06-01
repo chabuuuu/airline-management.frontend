@@ -5,30 +5,11 @@ import CreateAirportForm from "./CreateAirportForm";
 import CreateFlightForm from "./CreateFlightForm";
 import axios from "axios";
 import { PlanesData } from "@/planes";
-type RowType = {
-  flightId: string;
-  logo: string;
-  brand: string;
-  date: string;
-  time: string;
-  duration?: string;
-  departure: string;
-  airportStart?: string;
-  airportEnd?: string;
-  arrival: string;
-  seat: string;
-  placed?: string;
-  status: string;
-  price: string | number;
-  available: string;
-};
+import { FlightType } from "@/type";
+
 const FlightManage = () => {
-  const MAX_LENGTH_COL = 7;
-
-  const [allFlightInfo, setAllFlightInfo] = useState<RowType[]>([]);
-  const [filteredFlights, setFilteredFlights] = useState<RowType[]>([]);
-
-  const [page, setPage] = useState<number>(1);
+  const [allFlightInfo, setAllFlightInfo] = useState<FlightType[]>([]);
+  const [filteredFlights, setFilteredFlights] = useState<FlightType[]>([]);
   useEffect(() => {
     const searchForFlight = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
@@ -36,15 +17,12 @@ const FlightManage = () => {
       try {
         const response = await axios.get(url);
         const responseData = response.data;
-
+        console.log(responseData);
         const updatedFlightInfo = responseData.data.map((dt: any) => {
           const planeData = PlanesData.find(
             (plane) => plane.brand === dt.airlines
           );
-          //const logo = planeData ? planeData.logo : "";
-          const logo =
-            "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png";
-
+          const logo = planeData ? planeData.logo : "";
           return {
             flightId: dt.flightId,
             brand: dt.airlines,
@@ -72,11 +50,12 @@ const FlightManage = () => {
   }, []);
 
   const [searchQuery, setSearchQuery] = useState<{
+    id: string;
     departure: string;
     destination: string;
     date: string;
     status: string;
-  }>({ departure: "", destination: "", date: "", status: "" });
+  }>({ id: "", departure: "", destination: "", date: "", status: "" });
   const [filters, setFilters] = useState<string | null>(null);
 
   useEffect(() => {
@@ -89,7 +68,8 @@ const FlightManage = () => {
           .toLowerCase()
           .includes(searchQuery.destination.toLowerCase()) &&
         flight.date.includes(searchQuery.date) &&
-        flight.status.includes(searchQuery.status)
+        flight.status.includes(searchQuery.status) &&
+        flight.flightId.includes(searchQuery.id)
     );
     setFilteredFlights(filtered);
   }, [searchQuery, allFlightInfo]);
@@ -113,7 +93,6 @@ const FlightManage = () => {
     }));
     setFilters(filterValue.textContent);
   };
-
   const offFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
@@ -149,7 +128,17 @@ const FlightManage = () => {
             </div>
 
             <div className="flex justify-between">
-              <label className="input max-w-[250px] input-bordered flex items-center gap-2 ml-2">
+              <label className="input max-w-[130px] input-bordered flex items-center gap-2 ml-2">
+                <p className=" ">ID</p>
+                <input
+                  id="id"
+                  type="text"
+                  className=" font-medium"
+                  placeholder="BBA00"
+                  onChange={handleSearch}
+                />
+              </label>
+              <label className="input max-w-[240px] input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Departure</p>
                 <input
                   id="departure"
@@ -160,7 +149,7 @@ const FlightManage = () => {
                 />
               </label>
 
-              <label className="input max-w-[250px]  input-bordered flex items-center gap-2 ml-2">
+              <label className="input max-w-[240px]  input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Destination</p>
                 <input
                   id="destination"
@@ -182,7 +171,7 @@ const FlightManage = () => {
                   />
                 </svg>
               </label>
-              <label className="input input-bordered flex items-center gap-2 ml-2">
+              <label className="input max-w-[210px] input-bordered flex items-center gap-2 ml-2">
                 <p className=" ">Date</p>
                 <input
                   id="date"
@@ -237,7 +226,7 @@ const FlightManage = () => {
                   </div>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-5"
+                    className="dropdown-content z-[1] menu drop-shadow-lg bg-base-100 rounded-box w-40 mt-5"
                   >
                     <li>
                       <a id="Đã hoàn thành" onClick={handleFilter}>

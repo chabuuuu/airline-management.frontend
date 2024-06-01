@@ -2,20 +2,25 @@ import { NextResponse } from "next/server";
 
 import axios from "axios";
 import qs from "qs";
+import { getServerSession } from "next-auth";
+import { options } from "../[...nextauth]/options";
 
 export async function POST(request: Request) {
+  const session = await getServerSession(options);
   const body = await request.json();
-  console.log("register", body);
-  try {
-    const url = `${process.env.NEXT_PUBLIC_SERVER}/customer`;
-    const config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: url,
-      headers: {},
-      data: qs.stringify(body),
-    };
+  const jsondata = JSON.stringify(body);
+  //console.log("getServerSession", session);
+  let config = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: `${process.env.NEXT_PUBLIC_SERVER}/airport`,
+    headers: {
+      Authorization: session?.user.token,
+    },
+    data: jsondata,
+  };
 
+  try {
     const response = await axios.request(config);
     console.log("Here", response.data);
 

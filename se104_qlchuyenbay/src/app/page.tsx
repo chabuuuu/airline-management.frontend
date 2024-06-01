@@ -8,8 +8,8 @@ export default function Home() {
     <main className="main">
       <div className="flex justify-center items-center ">
         <div className="flex flex-row h-[500px] mt-10 ">
-          <div className="flex p-10 flex-col justify-between rounded-l-2xl h-full  bg-white w-[500px]">
-            <h2 className="text-2xl font-bold  text-indigo-900">
+          <div className="flex p-10 flex-col justify-around rounded-2xl lg:rounded-l-2xl lg:rounded-r-none h-full bg-white ">
+            <h2 className="text-2xl font-bold mb-10 text-indigo-900">
               Welcome {session?.user.name ?? "Guest"}, <br /> find the best
               flights with us!
             </h2>

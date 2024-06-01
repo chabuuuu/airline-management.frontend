@@ -1,18 +1,8 @@
+import { AirplaneType } from "@/type";
 import React from "react";
 
 const AirplaneTable = () => {
-  type inputType = {
-    airplaneModel: string;
-    airlinePicture: string;
-    airlines: string;
-    description?: string;
-    total_seat: string;
-    total_business_seat: string;
-
-    total_economy_seat: string;
-    status: string;
-  };
-  const cardsData: inputType[] = [
+  const cardsData: AirplaneType[] = [
     {
       airplaneModel: "AIR2056",
       airlinePicture:
