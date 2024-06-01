@@ -1,28 +1,20 @@
 import Card from "@/components/Card";
+import { FlightType } from "@/type";
 import React, { useState } from "react";
-type RowType = {
-  flightId: string;
-  logo: string;
-  brand: string;
-  date: string;
-  time: string;
-  duration?: string;
-  departure: string;
-  airportStart?: string;
-  airportEnd?: string;
-  arrival: string;
-  seat: string;
-  placed?: string;
-  status: string;
-  price: string | number;
-  available: string;
-};
-const MAX_LENGTH_COL = 9;
 
-const GridSearchingView: React.FC<{ allFlight: RowType[] }> = ({
+const MAX_LENGTH_COL = 9;
+const MAX_PAGE_BUTTONS = 3;
+
+const GridSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   allFlight,
 }) => {
+  //Page pavagation
   const [page, setPage] = useState<number>(1);
+  const totalPages = Math.ceil(allFlight.length / MAX_LENGTH_COL);
+  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
+  const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
+  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
+
   return (
     <div>
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
@@ -40,17 +32,32 @@ const GridSearchingView: React.FC<{ allFlight: RowType[] }> = ({
       <div className="flex justify-between p-3 mt-5">
         <p className="font-medium">Total flight: {allFlight.length} </p>
         <div className="join">
-          {[...Array(Math.ceil(allFlight.length / MAX_LENGTH_COL)).keys()].map(
-            (pageNumber) => (
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(1)}
+          >
+            «
+          </button>
+          {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
+            const pageNumber = adjustedStartPage + index;
+            return (
               <button
                 key={pageNumber}
-                className="join-item btn btn-xs"
-                onClick={() => setPage(pageNumber + 1)}
+                className={`join-item btn btn-xs ${
+                  pageNumber === page ? "btn-active" : ""
+                }`}
+                onClick={() => setPage(pageNumber)}
               >
-                {pageNumber + 1}
+                {pageNumber}
               </button>
-            )
-          )}
+            );
+          })}
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(totalPages)}
+          >
+            »
+          </button>
         </div>
       </div>
     </div>

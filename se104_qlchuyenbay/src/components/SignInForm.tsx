@@ -70,7 +70,7 @@ function SignInForm() {
 
   return (
     <form className="space-y-4 z-50 w-full " onSubmit={handleSubmit(onSubmit)}>
-      <div className="mt-10 mb-5">
+      <div className="mt-5 mb-5">
         <label
           htmlFor="email"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

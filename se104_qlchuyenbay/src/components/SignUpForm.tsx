@@ -5,6 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import FormData from "form-data";
+import { toast } from "react-toastify";
+import { GoogleSignUpButton } from "./GoogleSignUpButton";
 
 const schema = z.object({
   email: z.string().email(),
@@ -53,6 +55,9 @@ const SignUpForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [cccdPicture, setCccdPicture] = useState<string>("");
 
+  const [verifiedEmail, setVerifiedEmail] = useState<string>("");
+  const [createSuccess, setCreateSuccess] = useState<boolean>(false);
+
   const onSubmit: SubmitHandler<FormFields> = async (data, event) => {
     try {
       event?.preventDefault();
@@ -65,55 +70,81 @@ const SignUpForm = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
+      const mss = await response.json();
+      console.log(mss);
 
-      const verifyResponse = await fetch(`/api/auth/verify-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: data.email }),
-      });
-
-      const verifyData = await verifyResponse.json();
-
-      if (verifyData.message === "success") {
-        setShowModal(true);
+      if (!(mss.statusCode === 200)) {
+        toast.error(mss.message.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       } else {
-        console.error("Email verification failed:", verifyData);
+        setVerifiedEmail(data.email);
+        setCreateSuccess(true);
+        toast.success(
+          "Register succesful! Please verified your email to login.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
       }
-    } catch (error) {
-      console.error("An error occurred during form submission:", error);
-      // Handle other errors
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      console.log(e.response.data.message);
+      messages.map((m: any) => {
+        toast.error(m || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      });
+      console.log(e);
     }
   };
 
   useEffect(() => {
-    if (showModal) {
-      const modalElement = document.getElementById(
-        "my_modal_2"
-      ) as HTMLDialogElement;
-      if (modalElement) {
-        modalElement.showModal();
+    const verifiedEmailHandle = async () => {
+      console.log(JSON.stringify({ email: verifiedEmail }));
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/customer/send-verify-email`,
+        headers: {},
+        data: JSON.stringify({ email: verifiedEmail }),
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+        setCreateSuccess(false);
+        setVerifiedEmail("");
+      } catch (e: any) {
+        console.log(e);
       }
-    }
-  }, [showModal]);
+    };
+
+    if (createSuccess) verifiedEmailHandle();
+  }, [verifiedEmail, createSuccess]);
 
   return (
     <div>
-      {showModal && (
-        <dialog id="my_modal_2" className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Hello!</h3>
-            <p className="py-4">Please Verify your Email!</p>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={() => setShowModal(false)}>close</button>
-          </form>
-        </dialog>
-      )}
       <form
         className="grid grid-cols-2 gap-6 p-3"
         onSubmit={handleSubmit(onSubmit)}
@@ -246,12 +277,9 @@ const SignUpForm = () => {
         >
           {isSubmitting ? "Loading... " : " Create account"}
         </button>
-        <button
-          type="button"
-          className="col-span-2 py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none"
-        >
-          Create an account with Google
-        </button>
+        <div className="col-span-2">
+          <GoogleSignUpButton />
+        </div>
       </form>
     </div>
   );

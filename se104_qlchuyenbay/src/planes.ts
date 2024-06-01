@@ -9,8 +9,8 @@ export const PlanesData: inputType[] = [
     logo: "https://i.pinimg.com/originals/7a/ec/17/7aec17946661a88378269d0b642b61f3.png",
   },
   {
-    brand: "VietJet",
-    logo: "https://i.ibb.co/GM569xh/vietjet-01.png",
+    brand: "VietJet Air",
+    logo: "https://i.postimg.cc/Xqs1Zrwm/vietjet-01.png",
   },
   {
     brand: "Bamboo Airways",

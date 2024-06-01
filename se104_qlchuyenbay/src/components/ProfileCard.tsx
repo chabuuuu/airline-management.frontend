@@ -1,28 +1,13 @@
+import { Customer } from "@/type";
 import axios from "axios";
 import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
-
-interface Profile {
-  customerId: string;
-  email: string;
-  phoneNumber: string;
-  fullname: string;
-  birthday: string;
-  address: string;
-  nationality: string;
-  emailValidated: boolean;
-  cccd: string;
-  cccdPicture: string;
-  profilePicture: string;
-  createAt: string;
-  updateAt: string;
-}
 
 interface ProfileCardProps {
   CUSTOMER_TOKEN: string | undefined;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
-  const [profile, setProfile] = useState<Profile>({
+  const [profile, setProfile] = useState<Customer>({
     customerId: "",
     email: "",
     phoneNumber: "",

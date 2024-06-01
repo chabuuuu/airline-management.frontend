@@ -2,17 +2,20 @@ import axios from "axios";
 import Link from "next/link";
 import React, { FormEvent, useEffect, useState } from "react";
 import CreateClassForm from "./CreateClassForm";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 type Props = {
   flightId: string | null;
 };
 
 const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
-  const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
+  const { data: session } = useSession();
 
+  const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
   useEffect(() => {
     const getSeatOfAirplane = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=10`;
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
       let config = {
         method: "get",
         maxBodyLength: Infinity,
@@ -43,7 +46,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
       }
     };
     getSeatOfAirplane();
-  });
+  }, []);
 
   const [alreadySelectedSeats, setAlreadySelectedSeats] = useState<
     {
@@ -112,8 +115,8 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
         seatBgColor = chooseSeats.find(
           (selectedSeat) => selectedSeat.seat === seat.seatId
         )
-          ? "bg-yellow-500"
-          : "bg-yellow-200";
+          ? "bg-red-500"
+          : "bg-red-200";
       }
       textColor = "text-white";
     } else {
@@ -151,7 +154,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
             onClick={() => {
               if (changeCollapse) {
                 if (!seat.selected) {
-                  console.log(seat.priceBonusInterest);
+                  // console.log(seat.priceBonusInterest);
                   handleSeatSelection(
                     seat.seatId,
                     seat.class,
@@ -228,44 +231,60 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
   const [isChange, setIsChange] = useState<boolean>(false);
 
   const changeSeatClass = async () => {
-    const listSeat = [chooseSeats.map((s) => s.seat).toString()];
-    console.log(listSeat, classToChange);
-
-    const dt = {
-      flightId: 10,
-      seatIdList: listSeat,
+    let listSeat = [chooseSeats.map((s) => s.seat)];
+    let data = JSON.stringify({
+      flightId: flightId,
+      seatIdList: listSeat[0],
       class: classToChange,
-    };
-
+    });
+    console.log(data);
     let config = {
       method: "put",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/change-class`,
       headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNTA0NjAwOSwiZXhwIjoxNzE1MzcwMDA5fQ.ccBMjYTyD8BcgBZwrxl_XVqjz9Cj6CJSlnfqOcy8qB8",
+        Authorization: session?.user.token,
       },
-      data: dt,
+      data: data,
     };
+
     try {
       const response = await axios.request(config);
-      console.log(dt);
       console.log(response);
-    } catch (e) {
-      console.log(e);
+      setIsChange(false);
+      toast.success("Update succesful", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      setIsChange(false);
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 
   useEffect(() => {
     if (isChange && chooseSeats.length > 0 && classToChange) {
       changeSeatClass();
-      setIsChange(false);
-    } else {
-      setIsChange(false);
     }
   }, [isChange, chooseSeats, classToChange]);
   const [changeCollapse, setChangeCollapse] = useState<boolean>(false);
-  console.log(ticketColorClasses);
+
   return (
     <div>
       <div className="flex flex-col justify-between">
@@ -294,6 +313,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
               type="checkbox"
               onClick={() => {
                 setChangeCollapse(!changeCollapse);
+                setChooseSeats([]);
               }}
             />
             <div className="collapse-title text-xl font-semibold">

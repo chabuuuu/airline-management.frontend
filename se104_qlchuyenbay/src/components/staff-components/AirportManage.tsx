@@ -4,24 +4,18 @@ import React, { useEffect, useState } from "react";
 import AirportTable from "./AirportTable";
 import CreateAirportForm from "./CreateAirportForm";
 import axios from "axios";
-type AirportType = {
-  airportId?: string;
-  airportCode?: string;
-  time?: string;
-  airportName?: string;
-  city: string;
-  country: string;
-  description: string;
-  status: string;
-  available?: string;
-};
+import { AirportType } from "@/type";
+
 const AirportManage = () => {
   const [availableFlight, setAvailableFlight] = useState<boolean>(true);
   const [allFlightInfo, setAllFlightInfo] = useState<AirportType[]>([]);
   const [filteredFlights, setFilteredFlights] = useState<AirportType[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<{
+    country: string;
+    city: string;
+  }>({ country: "", city: "" });
 
-  //Fetch flight from api
+  // Fetch flight from API
   useEffect(() => {
     const searchForFlight = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/airport`;
@@ -33,9 +27,8 @@ const AirportManage = () => {
       };
       try {
         const response = await axios.request(config);
-        console.log(response.data);
         setAllFlightInfo(response.data.data);
-        setFilteredFlights(allFlightInfo);
+        setFilteredFlights(response.data.data);
       } catch (error) {
         console.error("Error fetching flight data:", error);
       }
@@ -45,28 +38,39 @@ const AirportManage = () => {
 
   // Filter available flight
   const handleFilterAvailableFlight = () => {
-    setAvailableFlight(!availableFlight);
+    setAvailableFlight((prev) => !prev);
   };
 
   useEffect(() => {
-    if (availableFlight) {
-      setFilteredFlights(
-        allFlightInfo.filter((flight) => flight.status === "Đang hoạt động")
-      );
-    } else {
-      setFilteredFlights(allFlightInfo);
-    }
-  }, [availableFlight, allFlightInfo]);
+    let filtered = allFlightInfo;
 
-  // Search query flight
-  useEffect(() => {
-    const filtered = allFlightInfo.filter((flight) =>
-      flight.city.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    if (availableFlight) {
+      filtered = filtered.filter(
+        (flight) => flight.status === "Đang hoạt động"
+      );
+    }
+
+    if (searchQuery.country || searchQuery.city) {
+      filtered = filtered.filter((flight) => {
+        const matchesCountry = flight.country
+          .toLowerCase()
+          .includes(searchQuery.country.toLowerCase());
+        const matchesCity = flight.city
+          .toLowerCase()
+          .includes(searchQuery.city.toLowerCase());
+        return matchesCountry && matchesCity;
+      });
+    }
+
     setFilteredFlights(filtered);
-  }, [searchQuery, allFlightInfo]);
+  }, [availableFlight, searchQuery, allFlightInfo]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const { id, value } = e.target;
+    setSearchQuery((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
   };
 
   return (
@@ -96,9 +100,33 @@ const AirportManage = () => {
 
             <div className="flex justify-between">
               <label className="input input-bordered flex items-center gap-2">
+                <p className=" ">Country</p>
+                <input
+                  type="text"
+                  id="country"
+                  className="grow font-medium"
+                  placeholder="Vietnam"
+                  onChange={handleSearch}
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="w-4 h-4 opacity-70"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </label>
+
+              <label className="input input-bordered flex items-center gap-2 mx-3">
                 <p className=" ">City</p>
                 <input
                   type="text"
+                  id="city"
                   className="grow font-medium"
                   placeholder="Ha Noi"
                   onChange={handleSearch}
@@ -116,7 +144,7 @@ const AirportManage = () => {
                   />
                 </svg>
               </label>
-              <div className="flex rounded-md p-1 items-center justify-around h-12 bg-base-300 ml-3">
+              <div className="flex rounded-md p-1 items-center justify-around h-12 bg-base-300">
                 <div
                   className={`${
                     availableFlight

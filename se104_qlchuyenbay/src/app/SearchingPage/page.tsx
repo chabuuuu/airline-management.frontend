@@ -1,13 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import Card from "@/components/Card";
 import SearchModal from "@/components/SearchModal";
-import { cardData } from "@/data";
 import axios from "axios";
 import { PlanesData } from "@/planes";
-import { tree } from "next/dist/build/templates/app-page";
-import FlightTable from "@/components/staff-components/FlightTable";
 import GridSearchingView from "@/components/GridSearchingView";
 import ListSearchingView from "@/components/ListSearchingView";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,6 +25,10 @@ type RowType = {
   price: string | number;
   available: string;
 };
+
+const MAX_LENGTH_COL = 7;
+const MAX_PAGE_BUTTONS = 3;
+
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
@@ -50,7 +50,7 @@ export default function SearchingPage() {
 
   useEffect(() => {
     const searchForFlight = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
+      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight/find-available-flight?departure=${departure}&arrival=${destination}&time=${date}`;
 
       try {
         const response = await axios.get(url);
@@ -62,7 +62,6 @@ export default function SearchingPage() {
             (plane) => plane.brand === dt.airlines
           );
           const logo = planeData ? planeData.logo : "";
-
           return {
             flightId: dt.flightId,
             brand: dt.airlines,
@@ -81,6 +80,7 @@ export default function SearchingPage() {
         });
 
         setAllFlightInfo(updatedFlightInfo);
+        setIsFetching(false);
       } catch (error) {
         console.error("Error fetching flight data:", error);
       }
@@ -89,46 +89,7 @@ export default function SearchingPage() {
     if (departure && destination) {
       searchForFlight();
     }
-  }, [departure, destination]);
-
-  useEffect(() => {
-    const searchForFlight = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
-
-      try {
-        const response = await axios.get(url);
-        const responseData = response.data;
-        console.log(responseData.data);
-        const updatedFlightInfo = responseData.data.map((dt: any) => {
-          const planeData = PlanesData.find(
-            (plane) => plane.brand === dt.airlines
-          );
-          const logo = planeData ? planeData.logo : "";
-
-          return {
-            flightId: dt.flightId,
-            brand: dt.airlines,
-            date: dt.departureTime.slice(0, 10),
-            time: dt.departureTime.slice(11, 16),
-            departure: dt.departureAirport.city,
-            arrival: dt.arrivalAirport.city,
-            duration: dt.flightDuration,
-            status: dt.status,
-            price: dt.price,
-            logo: logo,
-          };
-        });
-
-        setAllFlightInfo(updatedFlightInfo);
-      } catch (error) {
-        console.error("Error fetching flight data:", error);
-      }
-    };
-
-    if (departure && destination) {
-      searchForFlight();
-    }
-  }, [departure, destination]);
+  }, [departure, destination, date]);
 
   const [filters, setFilters] = useState<string | null>(null);
 
@@ -172,6 +133,9 @@ export default function SearchingPage() {
   const handleChangeViewStyle = () => {
     setGridView(!gridView);
   };
+
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+
   return (
     <main className="main  rounded-2xl p-5">
       {/* <ToastContainer
@@ -379,6 +343,11 @@ export default function SearchingPage() {
           </div>
         </div>
       </div>
+      {isFetching && (
+        <div className="flex justify-center w-full h-[300px] mt-20 ">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      )}
       {gridView ? (
         !filters ? (
           <GridSearchingView allFlight={allFlightInfo} />

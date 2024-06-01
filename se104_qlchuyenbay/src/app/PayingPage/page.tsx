@@ -186,7 +186,7 @@ const PayingPage = () => {
             </div>
           </div>
         ))}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mb-10">
           <div className="w-full  flex justify-between max-w-[850px] ">
             <button className="btn " onClick={router.back}>
               Back

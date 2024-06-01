@@ -8,6 +8,7 @@ import {
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 type AirportType = {
   airportId?: string;
@@ -21,11 +22,19 @@ type AirportType = {
   available?: string;
 };
 
+const MAX_LENGTH_COL = 9;
+const MAX_PAGE_BUTTONS = 3;
+
 const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
   allFlight,
 }) => {
-  const MAX_LENGTH_COL = 7;
+  const { data: session } = useSession();
+
   const [page, setPage] = useState<number>(1);
+  const totalPages = Math.ceil(allFlight.length / MAX_LENGTH_COL);
+  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
+  const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
+  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   const onDeleteAirport = async (airportId: any) => {
     let config = {
@@ -33,15 +42,14 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/airport/${airportId}`,
       headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM2NzIxOTQwLTNlMWYtNDUxYy1hNTQ1LWQxMjU1MWQyMzNjOSIsInVzZXJuYW1lIjoibmd1eWVudmFuYV9zdGFmZmx2MiIsInBhc3N3b3JkIjoiQDFUaGluaEhhIiwicm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTccm9sZSI6IlN0YWZmX0xWMiIsImlhdCI6MTcxNDYyMDQyMSwiZXhwIjoxNzE0OTQ0NDIxfQ.hlH3BzvJkvjdVr9Qi22x1UokRxktCvHHt8pHiadS52A",
+        Authorization: session?.user.token,
       },
     };
 
     try {
       const response = await axios.request(config);
       if (response)
-        toast.success("Create new Airport succesful", {
+        toast.success("Delete airport succesful", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -231,17 +239,32 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
       <div className="flex justify-between p-3">
         <p className="font-medium">Total airport: {allFlight.length} </p>
         <div className="join">
-          {[...Array(Math.ceil(allFlight.length / MAX_LENGTH_COL)).keys()].map(
-            (pageNumber) => (
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(1)}
+          >
+            «
+          </button>
+          {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
+            const pageNumber = adjustedStartPage + index;
+            return (
               <button
                 key={pageNumber}
-                className="join-item btn btn-xs"
-                onClick={() => setPage(pageNumber + 1)}
+                className={`join-item btn btn-xs ${
+                  pageNumber === page ? "btn-active" : ""
+                }`}
+                onClick={() => setPage(pageNumber)}
               >
-                {pageNumber + 1}
+                {pageNumber}
               </button>
-            )
-          )}
+            );
+          })}
+          <button
+            className="join-item btn btn-xs btn-ghost"
+            onClick={() => setPage(totalPages)}
+          >
+            »
+          </button>
         </div>
       </div>
     </div>

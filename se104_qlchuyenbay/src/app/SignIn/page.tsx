@@ -12,7 +12,7 @@ const SignIn = async () => {
   return (
     <>
       <div
-        className="hidden lg:block fixed w-2/3 h-48 bg-no-repeat top-40 right-0.5 rotate-12 "
+        className="hidden lg:block fixed w-2/3 h-48 bg-no-repeat top-30 right-0.5 rotate-12 "
         style={{
           backgroundImage:
             "url('https://i.postimg.cc/CxjRL1xY/plane-01-7-2.png')",
@@ -20,8 +20,8 @@ const SignIn = async () => {
       ></div>
 
       <div className="flex justify-center items-center h-fit">
-        <div className="flex flex-row h-full mt-10">
-          <div className="flex-grow max-w-md bg-white p-8 rounded-s-2xl shadow-lg ">
+        <div className="flex flex-row h-full">
+          <div className="flex p-10 flex-col justify-between rounded-2xl lg:rounded-l-2xl lg:rounded-r-none h-full bg-white ">
             <h2 className="text-2xl font-bold mb-5 text-indigo-900">
               Welcome, <br /> sign in to continue
             </h2>

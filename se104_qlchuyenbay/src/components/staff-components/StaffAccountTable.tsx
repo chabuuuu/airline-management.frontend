@@ -8,16 +8,7 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-type Staff = {
-  staffId: string;
-  username: string;
-  email: string;
-  phoneNumber: string;
-  birthday: string;
-  role: string;
-  createAt: string;
-  updateAt: string;
-};
+import { Staff } from "@/type";
 
 const StaffAccountTable = () => {
   const { data: session } = useSession();

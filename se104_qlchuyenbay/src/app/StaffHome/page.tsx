@@ -105,6 +105,24 @@ export default function StaffHome() {
 
           <input
             type="radio"
+            name="my_tabs_1"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Flight "
+            checked={activeTab === 4}
+            onChange={() => handleTabChange(4)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 4 ? "" : "hidden"
+            }`}
+          >
+            <FlightManage />
+          </div>
+
+          <input
+            type="radio"
             name="my_tabs_2"
             role="tab"
             className="tab font-semibold text-lg h-12"
