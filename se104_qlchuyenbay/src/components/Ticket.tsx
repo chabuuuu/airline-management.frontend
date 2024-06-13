@@ -9,10 +9,12 @@ interface Seat {
 }
 
 interface Params {
+  flightId: string;
   logo: string;
   brand: string;
   date: string;
   time: string;
+  duration: string;
   departure: string;
   destination: string;
   chooseSeat: Seat[];
@@ -64,8 +66,8 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
             <form onSubmit={handleSubmit} className="pl-10 pr-10 pb-10 pt-5">
               <div className="my-4 grid grid-cols-6 gap-6 max-w-[800px]">
                 <div>
-                  <h3 className="font-bold text-gray-600">CHUYẾN BAY/FLIGHT</h3>
-                  <p className="text-xl font-bold">AIR2056</p>
+                  <h3 className="font-bold text-gray-600">FLIGHT</h3>
+                  <p className="text-xl font-bold">{params.flightId}</p>
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-600">FROM:</h3>
@@ -76,8 +78,10 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
                   <p className="text-xl font-bold">{params.destination}</p>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
-                  <p className="text-lg">{params.time}</p>
+                  <h3 className="font-bold text-gray-600">DEPARTURE TIME</h3>
+                  <p className="text-lg">
+                    {params.time}- {params.duration}
+                  </p>
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>

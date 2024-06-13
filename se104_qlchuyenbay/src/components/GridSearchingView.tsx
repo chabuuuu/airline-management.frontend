@@ -18,12 +18,12 @@ const GridSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   return (
     <div>
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-        {allFlight?.map((carddata, index) => {
+        {allFlight?.map((flight, index) => {
           if (
             index >= MAX_LENGTH_COL * (page - 1) &&
             index < MAX_LENGTH_COL * page
           ) {
-            return <Card key={index} {...carddata} />;
+            return <Card key={index} flight={flight} />;
           } else {
             return null;
           }

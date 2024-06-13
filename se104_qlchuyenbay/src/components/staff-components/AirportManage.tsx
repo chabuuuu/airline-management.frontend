@@ -15,7 +15,6 @@ const AirportManage = () => {
     city: string;
   }>({ country: "", city: "" });
 
-  // Fetch flight from API
   useEffect(() => {
     const searchForFlight = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/airport`;
@@ -36,7 +35,6 @@ const AirportManage = () => {
     searchForFlight();
   }, []);
 
-  // Filter available flight
   const handleFilterAvailableFlight = () => {
     setAvailableFlight((prev) => !prev);
   };

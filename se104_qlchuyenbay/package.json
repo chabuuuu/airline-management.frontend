@@ -18,7 +18,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@types/qs": "^6.9.14",
     "axios": "^1.6.8",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.4.3",
     "cookies-next": "^4.1.1",
     "dayjs": "^1.11.6",
     "flowbite": "^2.3.0",

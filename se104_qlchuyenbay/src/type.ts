@@ -42,6 +42,9 @@ export type BookingType = {
   price: string;
   bookedAt: string;
   updateAt: string;
+  seatId: string;
+  flightId: string;
+  class: string;
 };
 
 export type FlightType = {
@@ -59,7 +62,10 @@ export type FlightType = {
   placed?: string;
   status: string;
   price: string | number;
-  available: string;
+  seatsTotal: number;
+  seatsAvailable: number;
+  createAt?: string;
+  updateAt?: string;
 };
 
 export type AirplaneType = {
@@ -83,4 +89,12 @@ export type AirportType = {
   description: string;
   status: string;
   available?: string;
+};
+
+export type chart = {
+  tittle: string;
+  indicate?: string;
+  unit: string;
+  datas: number[];
+  labels: string[];
 };

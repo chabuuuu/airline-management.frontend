@@ -4,6 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import { PlanesData } from "@/planes";
 
 type IntermediateAirport = {
   airport: string;
@@ -12,29 +13,29 @@ type IntermediateAirport = {
 };
 
 type FormFields = {
+  flightId: string;
   airlines: string;
-  airplaneModel: string;
+  flightDuration: GLfloat;
   price: string;
   departureAirportId: string;
   arrivalAirportId: string;
-  totalBusinessSeat: string;
-  totalEconomySeat: string;
-  date: string;
+  departureTime: string;
 };
 
 const CreateFlightForm: React.FC = () => {
   const { data: session } = useSession();
 
   const [formData, setFormData] = useState<FormFields>({
+    flightId: "",
     airlines: "",
-    airplaneModel: "",
+    flightDuration: 0,
     price: "",
     departureAirportId: "",
     arrivalAirportId: "",
-    totalBusinessSeat: "",
-    totalEconomySeat: "",
-    date: "",
+    departureTime: "",
   });
+
+  const [planes, setPlanes] = useState<string | null>(null);
 
   const [departure, setDeparture] = useState<string | null>(null);
   const [destination, setDestination] = useState<string | null>(null);
@@ -71,33 +72,47 @@ const CreateFlightForm: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const data = { ...formData, intermediateAirports };
-    console.log(data);
-    const config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/flight`,
-      headers: {
-        Authorization: session?.user.token,
-      },
-      data: JSON.stringify(data),
-    };
+
     try {
-      const response = await axios.request(config);
-      console.log(response);
-      toast.success("Create new flight succesful!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      const response = await fetch(`/api/auth/CreateFlight`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+      const mss = await response.json();
+      console.log(mss);
+      if (!(mss.message === "success")) {
+        toast.error(mss.message.message[0], {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.success("Create new Flight succesful", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
+      }
     } catch (e: any) {
-      const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
+      toast.error("Wrong api's client method", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -152,7 +167,7 @@ const CreateFlightForm: React.FC = () => {
         </svg>
       </button>
       {showModal && (
-        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <form
             onSubmit={onSubmit}
             className="min-w-[900px] p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"
@@ -163,6 +178,25 @@ const CreateFlightForm: React.FC = () => {
               <h2 className="text-xl font-semibold mb-6">
                 Thông tin chuyến bay
               </h2>
+              <div className="mb-5">
+                <div>
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="flightId"
+                  >
+                    Mã máy bay
+                  </label>
+                  <input
+                    id="flightId"
+                    name="flightId"
+                    className="border rounded w-full py-2 px-3 text-gray-700"
+                    type="text"
+                    placeholder="BBA00"
+                    value={formData.flightId}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label
@@ -171,30 +205,46 @@ const CreateFlightForm: React.FC = () => {
                   >
                     Hãng máy bay
                   </label>
-                  <input
+                  {/* <input
                     id="airlines"
                     name="airlines"
                     className="border rounded w-full py-2 px-3 text-gray-700"
                     type="text"
-                    placeholder="Hãng máy bay"
+                    placeholder="VietNam Airlines"
                     value={formData.airlines}
                     onChange={handleInputChange}
+                  /> */}
+                  <Autocomplete
+                    onChange={(_, value) => {
+                      setPlanes(value);
+                    }}
+                    options={PlanesData.map((op) => op.brand)}
+                    value={planes}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        id="airlines"
+                        name="airlines"
+                        size="small"
+                        placeholder="VietNam Airlines"
+                      />
+                    )}
                   />
                 </div>
                 <div>
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="airplaneModel"
+                    htmlFor="flightDuration"
                   >
-                    Loại máy bay
+                    Thời gian bay
                   </label>
                   <input
-                    id="airplaneModel"
-                    name="airplaneModel"
+                    id="flightDuration"
+                    name="flightDuration"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                     type="text"
-                    placeholder="Loại máy bay"
-                    value={formData.airplaneModel}
+                    placeholder="02/12/2024 4:20"
+                    value={formData.flightDuration}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -214,7 +264,7 @@ const CreateFlightForm: React.FC = () => {
                     name="price"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                     type="text"
-                    placeholder="Giá vé"
+                    placeholder="1500000 VND"
                     value={formData.price}
                     onChange={handleInputChange}
                   />
@@ -227,12 +277,12 @@ const CreateFlightForm: React.FC = () => {
                     Ngày giờ
                   </label>
                   <input
-                    id="date"
-                    name="date"
+                    id="departureTime"
+                    name="departureTime"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                     type="datetime-local"
                     placeholder="Ngày giờ"
-                    value={formData.date}
+                    value={formData.departureTime}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -265,7 +315,8 @@ const CreateFlightForm: React.FC = () => {
                         {...params}
                         id="departure"
                         name="departure"
-                        placeholder="Sân bay đi"
+                        size="small"
+                        placeholder="Tân Sơn Nhất"
                       />
                     )}
                   />
@@ -292,51 +343,15 @@ const CreateFlightForm: React.FC = () => {
                         {...params}
                         id="destination"
                         name="destination"
-                        placeholder="Sân bay đến"
+                        size="small"
+                        placeholder="Nội Bài"
                       />
                     )}
                   />
                 </div>
               </div>
             </div>
-            {/* <div className="mb-3">
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="totalBusinessSeat"
-                  >
-                    Số ghế hạng thương gia
-                  </label>
-                  <input
-                    id="totalBusinessSeat"
-                    name="totalBusinessSeat"
-                    className="border rounded w-full py-2 px-3 text-gray-700"
-                    type="text"
-                    placeholder="Số ghế hạng thương gia"
-                    value={formData.totalBusinessSeat}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="totalEconomySeat"
-                  >
-                    Số ghế hạng phổ thông
-                  </label>
-                  <input
-                    id="totalEconomySeat"
-                    name="totalEconomySeat"
-                    className="border rounded w-full py-2 px-3 text-gray-700"
-                    type="text"
-                    placeholder="Số ghế hạng phổ thông"
-                    value={formData.totalEconomySeat}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            </div> */}
+
             <div className="mb-3">
               <h2 className="text-xl font-semibold mb-6">Sân bay trung gian</h2>
               <div className="flex">

@@ -30,7 +30,6 @@ export default async function RootLayout({
         <CookiesProvider>
           <NextAuthProvider>
             <ToastContainer />
-
             {!!session && <Navbar />}
             {!session && <Navbar />}
             <div className="container h-full pt-12">{children}</div>

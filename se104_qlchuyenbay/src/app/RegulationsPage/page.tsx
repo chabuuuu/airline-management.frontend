@@ -1,5 +1,4 @@
 "use client";
-import CreateClassForm from "@/components/staff-components/CreateClassForm";
 import axios from "axios";
 import { useEffect, useState } from "react";
 const RegulationsPage = () => {
@@ -13,7 +12,6 @@ const RegulationsPage = () => {
       };
       try {
         const response = await axios.request(config);
-        console.log(response);
         const responseData = response.data.data;
         const newClass = responseData.map((dt: any) => ({
           ticketClass: dt.className,

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 interface Seat {
   seat: string;
@@ -10,10 +11,12 @@ interface Seat {
 }
 
 interface Params {
+  flightId: string;
   logo: string;
   brand: string;
   date: string;
   time: string;
+  duration: string;
   departure: string;
   destination: string;
   chooseSeat: Seat[];
@@ -32,10 +35,12 @@ const PayingPage = () => {
   const searchParams = useSearchParams();
   const params = Object.fromEntries(searchParams.entries());
   const filteredParams: Params = {
+    flightId: params.flightId,
     logo: params.logo,
     brand: params.brand,
     date: params.date,
     time: params.time,
+    duration: params.duration,
     departure: params.departure,
     destination: params.destination,
     chooseSeat: params.chooseSeat ? JSON.parse(params.chooseSeat) : [],
@@ -62,6 +67,61 @@ const PayingPage = () => {
     router.push(`/iPayPage?total=${totalMoney.toString()}`);
   };
 
+  const handleBooking = async () => {
+    const data = {
+      flightId: filteredParams.flightId,
+      seatIdList: filteredParams.chooseSeat.map((s) => s.seat),
+    };
+
+    try {
+      const response = await fetch(`/api/auth/Booking/Create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const mss = await response.json();
+      console.log(mss);
+      if (!(mss.message === "success")) {
+        toast.error(mss.message.message[0], {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.success("Booking succesful", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
+      }
+    } catch (e: any) {
+      toast.error("An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -86,10 +146,10 @@ const PayingPage = () => {
               <div className="pl-10 pr-10 pb-10 pt-5">
                 <div className="my-4 grid grid-cols-6 gap-6 max-w-[800px]">
                   <div>
-                    <h3 className="font-bold text-gray-600">
-                      CHUYẾN BAY/FLIGHT
-                    </h3>
-                    <p className="text-xl font-bold">AIR2056</p>
+                    <h3 className="font-bold text-gray-600">FLIGHT ID</h3>
+                    <p className="text-xl font-bold">
+                      {filteredParams.flightId}
+                    </p>
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-600">FROM:</h3>
@@ -104,21 +164,21 @@ const PayingPage = () => {
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
+                    <h3 className="font-bold text-gray-600">DEPARTURE TIME</h3>
                     <p className="text-lg">{filteredParams.time}</p>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>
+                    <h3 className="font-bold text-gray-600">DATE</h3>
                     <p className="text-lg">{filteredParams.date}</p>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-600">GHẾ/SEAT</h3>
+                    <h3 className="font-bold text-gray-600">SEAT</h3>
                     <p className="text-4xl font-bold">{param.seat}</p>
                   </div>
                 </div>
 
                 <div className="my-4">
-                  <h3 className="font-bold text-gray-600">HỌ TÊN/FULL NAME</h3>
+                  <h3 className="font-bold text-gray-600">FULL NAME</h3>
                   <input
                     type="text"
                     name="fullName"
@@ -131,7 +191,7 @@ const PayingPage = () => {
 
                 <div className=" grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="font-bold text-gray-600">SỐ ĐIỆN THOẠI</h3>
+                    <h3 className="font-bold text-gray-600">PHONE NUMBER</h3>
                     <input
                       type="text"
                       name="phoneNumber"
@@ -193,7 +253,8 @@ const PayingPage = () => {
             </button>
 
             <button
-              type="submit"
+              onClick={handleBooking}
+              //type="submit"
               className="btn btn-active bg-orange-400 text-white min-w-[200px] hover:text-black "
             >
               Pay

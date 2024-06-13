@@ -2,19 +2,9 @@ import React from "react";
 import Button from "./Button";
 import Link from "next/link";
 import { FlightType } from "@/type";
+import { duration } from "@mui/material";
 
-const Card: React.FC<FlightType> = ({
-  flightId,
-  logo,
-  brand,
-  date,
-  time,
-  duration,
-  departure,
-  arrival,
-  status,
-  price,
-}) => {
+const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
   const statusColor = (status: any) => {
     switch (status) {
       case "Đã hủy chuyến":
@@ -28,25 +18,32 @@ const Card: React.FC<FlightType> = ({
     }
   };
   return (
-    <div className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5">
+    <div
+      key={flight.flightId}
+      className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5"
+    >
       <div className="flex items-center">
-        <img src={logo} alt={brand} className=" h-8 object-cover mr-4" />
+        <img
+          src={flight.logo}
+          alt={flight.brand}
+          className=" h-8 object-cover mr-4"
+        />
         <div className="flex  w-full  justify-between">
-          <h2 className="text-xl  font-medium">{brand}</h2>
-          <h2 className="text-2xl  font-semibold">{flightId}</h2>
+          <h2 className="text-xl  font-medium">{flight?.brand}</h2>
+          <h2 className="text-2xl  font-semibold">{flight.flightId}</h2>
         </div>
       </div>
       <div className="flex justify-end -mt-4">
-        <p className="text-sm text-gray-600">{time + ","}</p>
-        <p className="text-sm text-gray-600">{date}</p>
+        <p className="text-sm text-gray-600">{flight.time + ","}</p>
+        <p className="text-sm text-gray-600">{flight.date}</p>
       </div>
 
       <div className="grid grid-cols-3 grid-cen items-center ">
         <a className="text-blue-500 font-medium text-lg flex justify-center">
-          {departure}
+          {flight.departure}
         </a>
         <div className="flex flex-col items-center">
-          <div>{duration}h </div>
+          <div>{flight.duration}h </div>
           <svg
             className="w-20 h-2"
             viewBox="0 0 100 10"
@@ -59,31 +56,39 @@ const Card: React.FC<FlightType> = ({
           </svg>
         </div>
         <a className="text-blue-500 font-medium text-lg flex justify-center">
-          {arrival}
+          {flight.arrival}
         </a>
       </div>
 
       <div className="-mb-3 ">
-        <div className={statusColor(status)}>{status}</div>
+        {flight.seatsAvailable > 0 ? (
+          <div className="font-medium text-green-400">Seat Available</div>
+        ) : (
+          <div className="font-medium text-rose-400">Sold Out</div>
+        )}
       </div>
 
       <div className="flex justify-between items-center ">
         <div className="text-2xl  font-semibold">
-          {typeof price === "number" ? `${price} VND/NG` : price}
+          {typeof flight.price === "number"
+            ? `${flight.price} VND/NG`
+            : flight.price}
         </div>
         <Link
           href={{
             pathname: "/DetailPage",
             query: {
-              flightId: flightId,
-              logo: logo,
-              brand: brand,
-              date: date,
-              time: time,
-              departure: departure,
-              destination: arrival,
-              status: status,
-              price: price,
+              flightId: flight.flightId,
+              logo: flight.logo,
+              brand: flight.brand,
+              date: flight.date,
+              time: flight.time,
+              departure: flight.departure,
+              destination: flight.arrival,
+              airportStart: flight.airportStart,
+              airportEnd: flight.airportEnd,
+              price: flight.price,
+              duration: flight.duration,
             },
           }}
           className="w-20 h-8 p-3 font-semibold bg-opacity-80 hover:bg-opacity-100 active:btn-active flex items-center justify-center bg-primary rounded-xl text-white"

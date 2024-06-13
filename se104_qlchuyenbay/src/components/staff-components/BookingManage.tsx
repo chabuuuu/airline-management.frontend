@@ -1,12 +1,10 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import BookingTable from "./BookingTable";
 import { BookingType } from "@/type";
 
 const BookingManage = () => {
-  const router = useRouter();
   const { data: session } = useSession();
 
   const [bookings, setBookings] = useState<BookingType[]>([]);
@@ -24,7 +22,6 @@ const BookingManage = () => {
       };
       try {
         const response = await axios.request(config);
-        console.log(response);
         setBookings(response.data);
       } catch (e) {
         console.log(e);

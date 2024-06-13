@@ -1,63 +1,33 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import InformationCard from "../InformationCard";
-import { BookingType, Customer } from "@/type";
+import { BookingType } from "@/type";
 
-const MAX_LENGTH_COL = 5;
-const MAX_PAGE_BUTTONS = 3;
+const MAX_LENGTH_COL = 9;
+const MAX_PAGE_BUTTONS = 5;
 
 const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
   allBooking,
 }) => {
-  const { data: session } = useSession();
   const [page, setPage] = useState<number>(1);
-  const [customers, setCustomers] = useState<{ [key: string]: Customer }>({});
+
+  const statusColor = (status: any) => {
+    switch (status) {
+      case "BOOKED":
+        return `btn btn-ghost text-green-400 btn-xs`;
+      case "NotBooked":
+        return `btn btn-ghost text-yellow-400 btn-xs`;
+      case "Cancelled":
+        return `btn btn-ghost text-red-400 btn-xs`;
+      default:
+        return `btn btn-ghost text-blue-400 btn-xs`;
+    }
+  };
 
   const totalPages = Math.ceil(allBooking.length / MAX_LENGTH_COL);
   const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
   const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
-  useEffect(() => {
-    const fetchCustomerData = async () => {
-      for (let booking of allBooking) {
-        const url = `${process.env.NEXT_PUBLIC_SERVER}/customer/${booking.passengerId}`;
-        const config = {
-          method: "get",
-          maxBodyLength: Infinity,
-          url: url,
-          headers: {
-            Authorization: session?.user.token,
-          },
-        };
-        try {
-          const response = await axios.request(config);
-          setCustomers((prev) => ({
-            ...prev,
-            [booking.passengerId]: response.data,
-          }));
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    };
-    fetchCustomerData();
-  }, [allBooking, session]);
-
-  const statusColor = (status: string) => {
-    switch (status) {
-      case "Đã hủy chuyến":
-        return `btn btn-ghost text-red-400 btn-xs`;
-      case "Đang bay":
-        return `btn btn-ghost text-green-400 btn-xs`;
-      case "Chưa khởi hành":
-        return `btn btn-ghost text-yellow-400 btn-xs`;
-      default:
-        return `btn btn-ghost text-blue-400 btn-xs`;
-    }
-  };
-  const [informationDetail, setInformationDetail] = useState<boolean>(false);
   return (
     <div>
       <div className="overflow-x-auto">
@@ -66,7 +36,7 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
             <tr>
               <th></th>
               <th>BookingId</th>
-              <th>PassengerId</th>
+              <th>Passenger</th>
               <th>Price</th>
               <th>Date</th>
               <th>Payment</th>
@@ -114,7 +84,7 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                     </td>
                     <td>
                       <div className="tooltip" data-tip="Detail seats ">
-                        <button className="btn btn-ghost text-rose-400 btn-xs font-medium">
+                        <button className={statusColor(cardData.bookingStatus)}>
                           {cardData.bookingStatus}
                         </button>
                       </div>

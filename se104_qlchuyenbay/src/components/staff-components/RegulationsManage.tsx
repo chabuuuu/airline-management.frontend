@@ -14,7 +14,6 @@ const RegulationsManage = () => {
       };
       try {
         const response = await axios.request(config);
-        console.log(response);
         const responseData = response.data.data;
         const newClass = responseData.map((dt: any) => ({
           ticketClass: dt.className,
@@ -59,7 +58,6 @@ const RegulationsManage = () => {
   const [thirdRegulation, setThirdRegulation] = useState<{
     timeBookedAtLeast: string;
   }>();
-  console.log(secondRegulation);
 
   return (
     <div className="overflow-x-auto mt-10 p-10">
@@ -153,7 +151,7 @@ const RegulationsManage = () => {
         </tbody>
       </table>
       {secondRegulationModal && (
-        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <div className="bg-white max-w-2xl p-10 rounded-2xl">
             <h3 className="font-bold text-2xl">Update Seat Flight</h3>
 

@@ -1,8 +1,7 @@
 "use client";
+
 import { useSession } from "next-auth/react";
-import SearchForm from "@/components/SearchForm";
 import StaffLoginForm from "@/components/staff-components/StaffLoginForm";
-import { getServerSession } from "next-auth";
 import { useRouter } from "next/navigation";
 
 export default function StaffLogin() {
