@@ -1,18 +1,12 @@
 import axios from "axios";
-import Link from "next/link";
-import React, { FormEvent, useEffect, useState } from "react";
-import CreateClassForm from "./CreateClassForm";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
 
 type Props = {
-  flightId: string | null;
+  flightId: string;
 };
 
 const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
-  const { data: session } = useSession();
-
-  const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
   useEffect(() => {
     const getSeatOfAirplane = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
@@ -154,7 +148,6 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
             onClick={() => {
               if (changeCollapse) {
                 if (!seat.selected) {
-                  // console.log(seat.priceBonusInterest);
                   handleSeatSelection(
                     seat.seatId,
                     seat.class,
@@ -231,41 +224,52 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
   const [isChange, setIsChange] = useState<boolean>(false);
 
   const changeSeatClass = async () => {
-    let listSeat = [chooseSeats.map((s) => s.seat)];
-    let data = JSON.stringify({
+    let listSeat = chooseSeats.map((s) => s.seat);
+    let data = {
       flightId: flightId,
-      seatIdList: listSeat[0],
+      seatIdList: listSeat,
       class: classToChange,
-    });
-    console.log(data);
-    let config = {
-      method: "put",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/change-class`,
-      headers: {
-        Authorization: session?.user.token,
-      },
-      data: data,
     };
 
     try {
-      const response = await axios.request(config);
-      console.log(response);
-      setIsChange(false);
-      toast.success("Update succesful", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      const response = await fetch(`/api/auth/change-class`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+      const mss = await response.json();
+      console.log(mss);
+
+      if (response.status !== 200) {
+        toast.error(mss.message.message[0], {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.success("Changed successful", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
+      }
     } catch (e: any) {
-      const messages = e.response.data.message;
-      setIsChange(false);
-      toast.error(messages || "An error occurred", {
+      toast.error("An error occurred", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -278,11 +282,11 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
     }
   };
 
-  useEffect(() => {
-    if (isChange && chooseSeats.length > 0 && classToChange) {
-      changeSeatClass();
-    }
-  }, [isChange, chooseSeats, classToChange]);
+  // useEffect(() => {
+  //   if (isChange && chooseSeats.length > 0 && classToChange) {
+  //     changeSeatClass();
+  //   }
+  // }, [isChange, chooseSeats, classToChange]);
   const [changeCollapse, setChangeCollapse] = useState<boolean>(false);
 
   return (
@@ -345,7 +349,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
 
                   <button
                     onClick={() => {
-                      setIsChange(true);
+                      changeSeatClass();
                     }}
                     className="btn"
                   >

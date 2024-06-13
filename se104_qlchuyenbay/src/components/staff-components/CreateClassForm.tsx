@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 const CreateClassForm = () => {
   const [className, setClassName] = useState("");
   const [color, setColor] = useState("");
   const [priceBonusInterest, setPriceBonusInterest] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { data: session } = useSession();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     let data = {
       className: className,
@@ -25,8 +25,7 @@ const CreateClassForm = () => {
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/create`,
       headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIzMTEiLCJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJAMVRoaW5oSGEiLCJyb2xlIjoiU3RhZmZfTFYxIiwiaWF0IjoxNzE1MDQ2NTAyLCJleHAiOjE3MTUzNzA1MDJ9.jIpNTIColQSM4rY5D7jJVPlMHllHZtGABkO3TxqMJC8",
+        Authorization: session?.user.token,
       },
       data: data,
     };
@@ -46,6 +45,9 @@ const CreateClassForm = () => {
           progress: undefined,
           theme: "light",
         });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (e) {
       console.log(e);

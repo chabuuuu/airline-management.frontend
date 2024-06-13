@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AirPlaneDetail from "@/components/AirPlaneDetail";
@@ -8,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { SeatColor } from "@/type";
 
 const DetailPage = () => {
   const router = useRouter();
@@ -20,12 +20,16 @@ const DetailPage = () => {
   };
   const handlePaymentClick = () => {
     const query = buildQuery({
+      flightId,
       logo,
       brand,
       date,
       time,
       departure,
       destination,
+      airportStart,
+      airportEnd,
+      duration,
       chooseSeat: JSON.stringify(
         chooseSeats.filter((seat) => seat.seat !== "")
       ),
@@ -33,7 +37,6 @@ const DetailPage = () => {
     router.push(`/PayingPage?${query}`);
   };
   const { data: session } = useSession();
-  //const roleSession = session?.user.role;
 
   const [flightId, setFlightId] = useState<string>("");
   const [departure, setDeparture] = useState<string>("");
@@ -43,13 +46,16 @@ const DetailPage = () => {
   const [brand, setBrand] = useState<string>("");
   const [logo, setLogo] = useState<string>("");
   const [price, setPrice] = useState<string>("");
+  const [duration, setDuration] = useState<string>("");
+  const [airportStart, setAirportStart] = useState<string>("");
+  const [airportEnd, setAirportEnd] = useState<string>("");
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
 
-    setFlightId(params.flightId || "");
+    setFlightId(params.flightId);
     setDeparture(params.departure || "");
     setDestination(params.destination || "");
     setDate(params.date || "");
@@ -57,6 +63,9 @@ const DetailPage = () => {
     setBrand(params.brand || "");
     setLogo(params.logo || "");
     setPrice(params.price || "");
+    setDuration(params.duration || "");
+    setAirportStart(params.airportStart || "");
+    setAirportEnd(params.airportEnd || " ");
   }, [searchParams]);
 
   const baseSeatChoose = {
@@ -100,7 +109,6 @@ const DetailPage = () => {
   };
 
   const handleChooseMoreSeat = () => {
-    console.log(chooseSeats[chooseSeats.length - 1]);
     if (chooseSeats[chooseSeats.length - 1].seat === "") {
       toast.error("You must choose one", {
         position: "top-right",
@@ -130,7 +138,7 @@ const DetailPage = () => {
   useEffect(() => {
     const getSeatOfAirplane = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
-      console.log(url);
+
       let config = {
         method: "get",
         maxBodyLength: Infinity,
@@ -140,6 +148,7 @@ const DetailPage = () => {
       try {
         const response = await axios.request(config);
         const seatData = response.data.data;
+        console.log(seatData);
 
         setAlreadySelectedSeats((prevSeats) => {
           const newSeats = seatData.map((seat: any) => ({
@@ -158,15 +167,13 @@ const DetailPage = () => {
 
           return [...prevSeats, ...uniqueSeats];
         });
-      } catch (error) {
-        console.error("Error fetching flight data:", error);
+      } catch (e: any) {
+        console.error("Error fetching flight data:", e);
       }
     };
 
     getSeatOfAirplane();
   }, [flightId]);
-
-  type SeatColor = "green" | "red" | "blue" | "yellow";
 
   const colorVariants: Record<SeatColor, string[]> = {
     green: ["bg-green-100", "bg-green-500"],
@@ -181,13 +188,12 @@ const DetailPage = () => {
     color: string;
     selected: boolean;
   }) => {
-    // Cast color to SeatColor
     const seatWithTypedColor = { ...seat, color: seat.color as SeatColor };
 
     const baseClassName =
       "seat text-base font-light w-10 h-6 flex justify-center items-center rounded-lg m-2 cursor-pointer";
     let seatBgColor;
-    let textColor = "text-black";
+    let textColor = "text-white";
 
     if (!seatWithTypedColor.selected) {
       const isSeatChosen = chooseSeats.find(
@@ -198,12 +204,12 @@ const DetailPage = () => {
         : colorVariants[seatWithTypedColor.color][0];
       textColor = "text-white";
     } else {
-      seatBgColor = "bg-indigo-500";
-      textColor = "text-black";
+      seatBgColor = "bg-slate-500";
+      textColor = "text-white";
     }
 
     return (
-      <div className="flex  justify-between" key={seatWithTypedColor.seatId}>
+      <div className="flex justify-between" key={seatWithTypedColor.seatId}>
         <div
           className={`${baseClassName} ${seatBgColor} ${textColor}`}
           onClick={() => {
@@ -264,17 +270,21 @@ const DetailPage = () => {
                 <h2 className="text-2xl font-semibold">{brand}</h2>
               </div>
             </div>
-            <div className="my-4 grid grid-cols-3 gap-4">
+            <div className="my-4 grid grid-cols-4 gap-4">
               <div>
-                <h3 className="font-bold text-gray-600">CHUYẾN BAY/FLIGHT</h3>
+                <h3 className="font-bold text-gray-600">FLIGHT CODE</h3>
                 <p className="text-xl font-bold">{flightId}</p>
               </div>
               <div>
-                <h3 className="font-bold text-gray-600">THỜI GIAN/TIME</h3>
+                <h3 className="font-bold text-gray-600">DEPARTURE TIME</h3>
                 <p className="text-xl">{time}</p>
               </div>
               <div>
-                <h3 className="font-bold text-gray-600">NGÀY/DATE</h3>
+                <h3 className="font-bold text-gray-600">DURATION</h3>
+                <p className="text-xl">{duration} hours</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-600">DATE</h3>
                 <p className="text-xl">{date}</p>
               </div>
             </div>
@@ -283,7 +293,7 @@ const DetailPage = () => {
                 {departure} - {destination}
               </div>
               <div className="text-base text-gray-500">
-                Duration: 2 hours 15 minutes
+                {airportStart} - {airportEnd}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -373,7 +383,7 @@ const DetailPage = () => {
               {!session ? (
                 <a href="/SignIn">Đăng nhập để tiếp tục</a>
               ) : (
-                <a onClick={handlePaymentClick}>Tiếp tục thanh toán</a>
+                <a onClick={() => handlePaymentClick()}>Tiếp tục thanh toán</a>
               )}
             </button>
           )}

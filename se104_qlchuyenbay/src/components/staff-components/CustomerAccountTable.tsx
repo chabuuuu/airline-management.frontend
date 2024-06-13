@@ -8,44 +8,19 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-import { Checkbox } from "@nextui-org/checkbox";
 import { toast } from "react-toastify";
-import Image from "next/image";
 import { Autocomplete, TextField } from "@mui/material";
 import { Customer } from "@/type";
 
 const MAX_LENGTH_COL = 7;
 const MAX_PAGE_BUTTONS = 3;
 
-const CustomerAccountTable = () => {
+const CustomerAccountTable: React.FC<{ customers: Customer[] }> = ({
+  customers,
+}) => {
   const { data: session } = useSession();
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  useEffect(() => {
-    const getAllCustomer = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/customer`;
-      const config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: url,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        console.log(response.data.data);
-        setCustomers(response.data.data);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    getAllCustomer();
-  }, [session]);
-
   const [filterCustomer, setFilterCustomer] = useState<Customer[]>([]);
-  const [emailValidated, setEmailValidated] = useState<boolean | null>(null);
 
   useEffect(() => {
     setFilterCustomer(customers);
@@ -131,7 +106,6 @@ const CustomerAccountTable = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    console.log({ id, value });
     setSearchQuery((prevState) => ({
       ...prevState,
       [id]: value,
@@ -151,10 +125,9 @@ const CustomerAccountTable = () => {
       };
       try {
         const response = await axios.request(config);
-        console.log(response);
         toast.success("Update successful", {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -162,6 +135,9 @@ const CustomerAccountTable = () => {
           progress: undefined,
           theme: "light",
         });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
       } catch (e: any) {
         const messages = e.response.data.message;
         toast.error(messages || "An error occurred", {
@@ -180,6 +156,44 @@ const CustomerAccountTable = () => {
 
   const [checkChangeRole, setCheckChangeRole] = useState<boolean>(false);
 
+  const deleteUserById = async (id: string) => {
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${id}`,
+      headers: {
+        Authorization: session?.user.token,
+      },
+    };
+    try {
+      const response = await axios.request(config);
+      toast.success("Delete successful", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setInterval(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
   // Page pagination
   const [page, setPage] = useState<number>(1);
   const totalPages = Math.ceil(filterCustomer.length / MAX_LENGTH_COL);
@@ -444,6 +458,9 @@ const CustomerAccountTable = () => {
                               key={`delete-${customer.customerId}`}
                               className="btn btn-sm btn-ghost text-red-600"
                               value={customer.customerId}
+                              onClick={() =>
+                                deleteUserById(customer.customerId)
+                              }
                             >
                               <div className="flex justify-between">
                                 <p> Delete user</p>
@@ -506,7 +523,7 @@ const CustomerAccountTable = () => {
         </div>
       </div>
       {customerActivityModal && (
-        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-black backdrop-blur-sm bg-opacity-15 inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-10 rounded-2xl">
             <h3 className="font-bold text-2xl">Update Seat Flight </h3>
 
@@ -531,7 +548,7 @@ const CustomerAccountTable = () => {
         </div>
       )}
       {customerChangeRoleModal && (
-        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-10 rounded-2xl">
             <h3 className="font-bold text-2xl">Change role</h3>
             <label className="inline-flex items-center  mt-5">

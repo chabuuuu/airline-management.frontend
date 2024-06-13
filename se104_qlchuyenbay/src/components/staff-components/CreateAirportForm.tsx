@@ -3,7 +3,6 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useEffect, useState } from "react";
-import Cities from "@/cities.json";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +61,6 @@ const CreateAirportForm = () => {
     };
     get_all_country();
   }, []);
-  const { data: session } = useSession();
 
   useEffect(() => {
     const get_all_city_by_code = async () => {
@@ -113,7 +111,7 @@ const CreateAirportForm = () => {
       } else {
         toast.success("Create new Airport succesful", {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -121,6 +119,9 @@ const CreateAirportForm = () => {
           progress: undefined,
           theme: "light",
         });
+        setInterval(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (e: any) {
       const messages = e.response.data.message;
@@ -160,7 +161,7 @@ const CreateAirportForm = () => {
         </svg>
       </button>
       {showModal && (
-        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className=" min-w-[700px]  p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"

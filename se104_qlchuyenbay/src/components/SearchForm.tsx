@@ -10,6 +10,7 @@ import axios from "axios";
 
 const schema = z.object({
   country: z.string().nonempty("Country is required"),
+  countryArrival: z.string().nonempty("Required"),
   departure: z.string().nonempty("Departure is required"),
   destination: z.string().nonempty("Destination is required"),
   date: z.string().nonempty("Date is required"),
@@ -29,8 +30,12 @@ const SearchForm = () => {
   const [departure, setDeparture] = useState<string | null>(null);
   const [destination, setDestination] = useState<string | null>(null);
   const [cityOptions, setCityOptions] = useState<string[]>([]);
+  const [cityArrivalOptions, setCityArrivalOptions] = useState<string[]>([]);
+
   const [country, setCountry] = useState<string | null>(null);
-  const [countryCode, setCountryCode] = useState<string | null>(null);
+  const [countryCode, setCountryCode] = useState<string>("VN");
+  const [countryArrival, setCountryArrival] = useState<string | null>(null);
+  const [countryArrivalCode, setCountryArrivalCode] = useState<string>("VN");
 
   const [countryOptions, setCountryOptions] = useState<
     {
@@ -55,6 +60,7 @@ const SearchForm = () => {
           code: country.code,
         }));
         setCountryOptions(options);
+        console.log(options);
       } catch (e) {
         console.log(e);
       }
@@ -75,7 +81,7 @@ const SearchForm = () => {
       try {
         const response = await axios.request(config);
         const responseData = response.data;
-        console.log(responseData);
+
         setCityOptions(responseData);
       } catch (e) {
         console.log(e);
@@ -83,6 +89,28 @@ const SearchForm = () => {
     };
     get_all_city_by_code();
   }, [countryCode]);
+
+  useEffect(() => {
+    const get_all_city_by_code = async () => {
+      if (!countryArrivalCode) return;
+
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/city?country=${countryArrivalCode}`,
+        headers: {},
+      };
+      try {
+        const response = await axios.request(config);
+        const responseData = response.data;
+        console.log(responseData);
+        setCityArrivalOptions(responseData);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    get_all_city_by_code();
+  }, [countryArrivalCode]);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     console.log("Form data:", data);
@@ -95,7 +123,7 @@ const SearchForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="flex justify-between items-center gap-5">
         <div className="flex-1 min-w-[200px]">
           <label
@@ -111,17 +139,18 @@ const SearchForm = () => {
               const selectedCountryCode = countryOptions.find(
                 (option) => option.name === value
               )?.code;
-              setCountryCode(selectedCountryCode || null);
+              if (!!selectedCountryCode) setCountryCode(selectedCountryCode);
             }}
             disabled={isSubmitting}
             options={countryOptions.map((option) => option.name)}
             value={country}
+            defaultValue="Vietnam"
             renderInput={(params) => (
               <TextField
                 {...params}
                 size="small"
                 {...register("country")}
-                placeholder="Country"
+                placeholder="Vietnam"
               />
             )}
           />
@@ -131,19 +160,35 @@ const SearchForm = () => {
         </div>
         <div className="flex-1 min-w-[200px]">
           <label
-            htmlFor="date"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="country"
           >
-            Date
+            Arrival Country
           </label>
-          <input
-            {...register("date")}
-            id="date"
-            type="date"
-            className="w-full p-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+          <Autocomplete
+            className="w-full"
+            onChange={(_, value) => {
+              setCountryArrival(value);
+              const selectedCountryCode = countryOptions.find(
+                (option) => option.name === value
+              )?.code;
+              if (!!selectedCountryCode)
+                setCountryArrivalCode(selectedCountryCode);
+            }}
+            disabled={isSubmitting}
+            options={countryOptions.map((option) => option.name)}
+            value={countryArrival}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                size="small"
+                {...register("countryArrival")}
+                placeholder="Vietnam"
+              />
+            )}
           />
-          {errors.date && (
-            <div className="text-red-500">{errors.date.message}</div>
+          {errors.country && (
+            <div className="text-red-500">{errors.country.message}</div>
           )}
         </div>
       </div>
@@ -186,7 +231,7 @@ const SearchForm = () => {
             className="w-full"
             onChange={(_, value) => setDestination(value)}
             disabled={isSubmitting || !countryCode}
-            options={cityOptions}
+            options={cityArrivalOptions}
             value={destination}
             renderInput={(params) => (
               <TextField
@@ -203,11 +248,28 @@ const SearchForm = () => {
         </div>
       </div>
 
-      <div className="flex justify-end w-full mt-10">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex-1 min-w-[200px] max-w-[300px]">
+          <label
+            htmlFor="date"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Date
+          </label>
+          <input
+            {...register("date")}
+            id="date"
+            type="date"
+            className="w-full p-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+          />
+          {errors.date && (
+            <div className="text-red-500">{errors.date.message}</div>
+          )}
+        </div>
         <button
           disabled={isSubmitting}
           type="submit"
-          className="btn btn-ghost w-14 rounded-full"
+          className="btn btn-ghost w-14 rounded-full mt-6"
         >
           {isSubmitting ? (
             <span className="loading loading-spinner loading-lg"></span>

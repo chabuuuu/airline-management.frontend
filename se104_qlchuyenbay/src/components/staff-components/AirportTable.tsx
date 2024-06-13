@@ -9,18 +9,7 @@ import {
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-
-type AirportType = {
-  airportId?: string;
-  airportCode?: string;
-  time?: string;
-  airportName?: string;
-  city: string;
-  country: string;
-  description: string;
-  status: string;
-  available?: string;
-};
+import { AirportType } from "@/type";
 
 const MAX_LENGTH_COL = 9;
 const MAX_PAGE_BUTTONS = 3;
@@ -51,7 +40,7 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
       if (response)
         toast.success("Delete airport succesful", {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -59,6 +48,9 @@ const AirportTable: React.FC<{ allFlight: AirportType[] }> = ({
           progress: undefined,
           theme: "light",
         });
+      setInterval(() => {
+        window.location.reload();
+      }, 3000);
     } catch (e: any) {
       const messages = e.response.data.message;
       toast.error(messages || "An error occurred", {

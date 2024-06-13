@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import FlightTable from "./staff-components/FlightTable";
 import Link from "next/link";
 import { FlightType } from "@/type";
 
@@ -81,10 +80,17 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                     </div>
                     <div className="col-span-1">
                       <div className="tooltip" data-tip="Detail seats ">
-                        <button className="btn btn-ghost text-rose-400 btn-xs font-medium">
-                          {/* {cardData.placed}/{cardData.seat} */}
-                          30/48
-                        </button>
+                        {cardData.seatsAvailable > 0 ? (
+                          <button className="font-medium text-green-400">
+                            {cardData.seatsAvailable +
+                              "/" +
+                              cardData.seatsTotal}
+                          </button>
+                        ) : (
+                          <button className="font-medium text-rose-400">
+                            Sold Out
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="col-span-1">
@@ -93,7 +99,7 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                     <div className="col-span-1">
                       <div className="tooltip" data-tip="Change status">
                         <button
-                          className={`btn btn-ghost btn-xs font-medium ${statusColor(
+                          className={` btn-xs font-medium ${statusColor(
                             cardData.status
                           )}`}
                         >
@@ -113,6 +119,8 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                             time: cardData.time,
                             departure: cardData.departure,
                             destination: cardData.arrival,
+                            airportStart: cardData.airportStart,
+                            airportEnd: cardData.airportEnd,
                             status: cardData.status,
                             price: cardData.price,
                           },

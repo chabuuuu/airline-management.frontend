@@ -7,27 +7,7 @@ import { PlanesData } from "@/planes";
 import GridSearchingView from "@/components/GridSearchingView";
 import ListSearchingView from "@/components/ListSearchingView";
 import "react-toastify/dist/ReactToastify.css";
-
-type RowType = {
-  flightId: string;
-  logo: string;
-  brand: string;
-  date: string;
-  time: string;
-  duration?: string;
-  departure: string;
-  airportStart?: string;
-  airportEnd?: string;
-  arrival: string;
-  seat: string;
-  placed?: string;
-  status: string;
-  price: string | number;
-  available: string;
-};
-
-const MAX_LENGTH_COL = 7;
-const MAX_PAGE_BUTTONS = 3;
+import { FlightType } from "@/type";
 
 export default function SearchingPage() {
   const [departure, setDeparture] = useState<string>("");
@@ -36,9 +16,12 @@ export default function SearchingPage() {
 
   const searchParams = useSearchParams();
 
-  const [allFlightInfo, setAllFlightInfo] = useState<RowType[]>([]);
-
-  const [filterFlight, setFilterFlight] = useState<RowType[]>([]);
+  const [allFlightInfo, setAllFlightInfo] = useState<FlightType[]>([]);
+  const [filterFlight, setFilterFlight] = useState<FlightType[]>([]);
+  const [availableFlight, setAvailableFlight] = useState<boolean>(false);
+  const [filters, setFilters] = useState<string | null>(null);
+  const [gridView, setGridView] = useState<boolean>(true);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -56,8 +39,10 @@ export default function SearchingPage() {
         const response = await axios.get(url);
         const responseData = response.data;
         console.log(responseData.data);
-
-        const updatedFlightInfo = responseData.data.map((dt: any) => {
+        const notStartedFlight = responseData.data.filter(
+          (dt: any) => dt.status === "Chưa khởi hành"
+        );
+        const updatedFlightInfo = notStartedFlight.map((dt: any) => {
           const planeData = PlanesData.find(
             (plane) => plane.brand === dt.airlines
           );
@@ -75,11 +60,15 @@ export default function SearchingPage() {
             duration: dt.flightDuration,
             status: dt.status,
             price: dt.price,
-            seat: dt.seatsAvailable,
+            seatsTotal: dt.seatsTotal,
+            seatsAvailable: dt.seatsAvailable,
+            updateAt: dt.updateAt,
+            createAt: dt.createAt,
           };
         });
 
         setAllFlightInfo(updatedFlightInfo);
+        setFilterFlight(updatedFlightInfo); // Set initial filtered flights
         setIsFetching(false);
       } catch (error) {
         console.error("Error fetching flight data:", error);
@@ -91,8 +80,6 @@ export default function SearchingPage() {
     }
   }, [departure, destination, date]);
 
-  const [filters, setFilters] = useState<string | null>(null);
-
   const handleFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
@@ -100,16 +87,12 @@ export default function SearchingPage() {
 
     if (filterValue) {
       setFilters(filterValue);
-      let filteredFlights = allFlightInfo;
+      let filteredFlights = [...allFlightInfo]; // Create a copy of allFlightInfo
 
       if (filterValue.includes("Pricesb")) {
-        filteredFlights = filteredFlights.sort(
-          (a: any, b: any) => a.price - b.price
-        );
+        filteredFlights.sort((a: any, b: any) => a.price - b.price);
       } else if (filterValue.includes("Prices")) {
-        filteredFlights = filteredFlights.sort(
-          (a: any, b: any) => b.price - a.price
-        );
+        filteredFlights.sort((a: any, b: any) => b.price - a.price);
       }
 
       setFilterFlight(filteredFlights);
@@ -120,38 +103,44 @@ export default function SearchingPage() {
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     setFilters(null);
-    let filteredFlights = allFlightInfo;
-    setFilterFlight(filteredFlights);
+    setFilterFlight([...allFlightInfo]); // Reset to all flights
   };
-  const [availableFlight, setAvailableFlight] = useState<boolean>(false);
 
   const handleFilterAvailableFlight = () => {
     setAvailableFlight(!availableFlight);
   };
 
-  const [gridView, setGridView] = useState<boolean>(true);
+  useEffect(() => {
+    let filteredFlights = [...allFlightInfo]; // Create a copy of allFlightInfo
+
+    if (availableFlight) {
+      filteredFlights = filteredFlights.filter((f) => f.seatsAvailable === 46);
+    }
+
+    if (filters) {
+      if (filters.includes("Pricesb")) {
+        filteredFlights.sort((a: any, b: any) => a.price - b.price);
+      } else if (filters.includes("Prices")) {
+        filteredFlights.sort((a: any, b: any) => b.price - a.price);
+      }
+    }
+
+    setFilterFlight(filteredFlights);
+  }, [availableFlight, allFlightInfo, filters]);
+
   const handleChangeViewStyle = () => {
     setGridView(!gridView);
   };
 
-  const [isFetching, setIsFetching] = useState<boolean>(true);
+  let content;
+  if (gridView) {
+    content = <GridSearchingView allFlight={filterFlight} />;
+  } else {
+    content = <ListSearchingView allFlight={filterFlight} />;
+  }
 
   return (
     <main className="main  rounded-2xl p-5">
-      {/* <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <ToastContainer /> */}
-
       <div className="flex justify-center items-center mb-10  p-5 ">
         <>
           <p className="text-4xl font-bold  text-slate-800">{departure}</p>
@@ -181,10 +170,12 @@ export default function SearchingPage() {
             <div
               className={`${
                 availableFlight
-                  ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
-                  : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  ? "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  : "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
               }`}
-              onClick={handleFilterAvailableFlight}
+              onClick={() => {
+                handleFilterAvailableFlight();
+              }}
             >
               All flight
             </div>
@@ -192,10 +183,12 @@ export default function SearchingPage() {
             <div
               className={`${
                 availableFlight
-                  ? "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
-                  : "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  ? "bg-white flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                  : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
               }`}
-              onClick={handleFilterAvailableFlight}
+              onClick={() => {
+                handleFilterAvailableFlight();
+              }}
             >
               Available flight
             </div>
@@ -348,17 +341,7 @@ export default function SearchingPage() {
           <span className="loading loading-spinner loading-lg"></span>
         </div>
       )}
-      {gridView ? (
-        !filters ? (
-          <GridSearchingView allFlight={allFlightInfo} />
-        ) : (
-          <GridSearchingView allFlight={filterFlight} />
-        )
-      ) : !filters ? (
-        <ListSearchingView allFlight={allFlightInfo} />
-      ) : (
-        <ListSearchingView allFlight={filterFlight} />
-      )}
+      {content}
     </main>
   );
 }

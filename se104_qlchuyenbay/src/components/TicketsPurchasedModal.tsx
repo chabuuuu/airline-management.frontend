@@ -1,37 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import SearchForm from "./SearchForm";
 import TicketCard from "./TIcketCard";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { BookingType } from "@/type";
 
-const TicketsPurchasedModal: React.FC = () => {
+const TicketsPurchasedModal: React.FC<{ allBookings: BookingType[] }> = ({
+  allBookings,
+}) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const { data: session } = useSession();
-  const [bookings, setBookings] = useState<BookingType[]>([]);
 
-  useEffect(() => {
-    const getBookingTicket = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/booking/me`,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        console.log(response);
-        setBookings(response.data);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getBookingTicket();
-  });
   return (
     <div className="w-full">
       <div className="w-full">
@@ -43,11 +23,11 @@ const TicketsPurchasedModal: React.FC = () => {
         </button>
 
         {showModal && (
-          <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 min-w-[600px] min-h-[600px] shadow-lg transform transition-all duration-300">
+          <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 ">
               <div className="flex justify-between items-center border-b-2 border-gray-200 pb-4 mb-5">
                 <h2 className="text-2xl font-semibold">
-                  Your purchased ticket
+                  My purchased ticket list
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
@@ -70,35 +50,18 @@ const TicketsPurchasedModal: React.FC = () => {
                   </svg>
                 </button>
               </div>
-
-              <TicketCard
-                airline="VietNamAirlines"
-                date="2024-04-15"
-                time="08:30 AM"
-                departure="HoChiMinh SGN"
-                arrival="Vinh VII"
-                duration="1 hours 30 minutes"
-                price="$350.00"
-              />
-
-              <TicketCard
-                airline="VietNamAirlines"
-                date="2024-04-15"
-                time="08:30 AM"
-                departure="HoChiMinh SGN"
-                arrival="Vinh VII"
-                duration="1 hours 30 minutes"
-                price="$350.00"
-              />
-              <TicketCard
-                airline="VietNamAirlines"
-                date="2024-04-15"
-                time="08:30 AM"
-                departure="HoChiMinh SGN"
-                arrival="Vinh VII"
-                duration="1 hours 30 minutes"
-                price="$350.00"
-              />
+              <div className="p-5 max-h-[600px] overflow-y-auto bg-base-200 rounded-lg">
+                {allBookings.map((book) => (
+                  <TicketCard
+                    flightId={book.flightId}
+                    bookedAt={book.bookedAt}
+                    paymentStatus={book.paymentStatus}
+                    seatId={book.seatId}
+                    seatClass={book.class}
+                    price={book.price}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}

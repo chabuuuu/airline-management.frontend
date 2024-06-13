@@ -10,30 +10,8 @@ import {
 } from "@nextui-org/react";
 import { Staff } from "@/type";
 
-const StaffAccountTable = () => {
+const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
   const { data: session } = useSession();
-  const [staffs, setStaffs] = useState<Staff[]>([]);
-  useEffect(() => {
-    const getAllStaff = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/staff`;
-      const config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: url,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        setStaffs(response.data.data);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    getAllStaff();
-  }, [session]);
 
   const [filtersStaffs, setFiltersStaffs] = useState<Staff[]>([]);
   const [filterRole, setFilterRole] = useState<string>("");

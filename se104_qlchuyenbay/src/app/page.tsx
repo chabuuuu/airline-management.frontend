@@ -9,7 +9,7 @@ export default function Home() {
       <div className="flex justify-center items-center ">
         <div className="flex flex-row h-[500px] mt-10 ">
           <div className="flex p-10 flex-col justify-around rounded-2xl lg:rounded-l-2xl lg:rounded-r-none h-full bg-white ">
-            <h2 className="text-2xl font-bold mb-10 text-indigo-900">
+            <h2 className="text-2xl font-bold mb-5 text-indigo-900">
               Welcome {session?.user.name ?? "Guest"}, <br /> find the best
               flights with us!
             </h2>
