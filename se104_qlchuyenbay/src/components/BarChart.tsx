@@ -50,7 +50,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, orientation }) => {
               style={{ bottom: `${tooltipY}px`, left: `${tooltipX}px` }}
             >
               <div className="flex items-center justify-between text-sm">
-                <div>Sales:</div>
+                <div>{data.unit}:</div>
                 <div className="font-bold ml-2">
                   <span>{tooltipContent}</span>
                 </div>
@@ -58,7 +58,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, orientation }) => {
             </div>
           )}
 
-          <div className="flex -mx-2 items-end mb-2">
+          <div className="flex -mx-2 items-end mb-1">
             {data?.datas.map((dt, index) => (
               <div key={index} className="px-2 w-1/6">
                 <div
@@ -109,7 +109,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, orientation }) => {
                 {data?.labels[index]}
 
                 <div className="gap-2 flex items-center">
-                  <p className="text-gray-700 text-sm"> {dt}</p>
+                  <p className="text-black-700 text-sm"> {dt}</p>
                   <div
                     className={"bg-blue-600 hover:bg-blue-400 h-3"}
                     style={{ width: `${dt * 1}px` }}

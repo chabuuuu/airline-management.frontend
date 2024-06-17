@@ -7,8 +7,9 @@ import TicketCard from "@/components/TIcketCard";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import TicketsPurchasedModal from "@/components/TicketsPurchasedModal";
-import { BookingType } from "@/type";
+import { BookingType, chart } from "@/type";
 import axios from "axios";
+import LineChart from "@/components/LineChart";
 
 function ProfilePage() {
   const { data: session } = useSession();
@@ -62,13 +63,77 @@ function ProfilePage() {
     setTotalMoneySpent(total);
   }, [bookings]);
 
+  const [topDestination, setTopDestination] = useState<
+    {
+      country: string;
+      count: number;
+    }[]
+  >([]);
+  const pieData: chart = {
+    tittle: "Top 5 country have been created the most",
+    unit: "Count",
+    datas: topDestination.map((d) => d.count),
+    labels: topDestination.map((d) => d.country),
+  };
+
+  // const brandChartData: chart = {
+  //   tittle: "Brand Average",
+  //   unit: "Count",
+  //   indicate: "Count",
+  //   datas: brandData.map((d) => d.count),
+  //   labels: brandData.map((d) => d.brand),
+  // };
+  const [flightInMonth, setFlightInMonth] = useState<number[]>(
+    Array(12).fill(0)
+  );
+  const barData: chart = {
+    tittle: "Number booking during the year",
+    indicate: "Monthly Average",
+    unit: "Book",
+    datas: flightInMonth,
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oc",
+      "Nov",
+      "Dec",
+    ],
+  };
+  useEffect(() => {
+    const monthCounts = Array(12).fill(0);
+    const countryCounts: { [key: string]: number } = {};
+    const brandCounts: { [key: string]: number } = {};
+
+    bookings.forEach((book) => {
+      const createDay = book.bookedAt?.slice(3, 5);
+      if (createDay) {
+        const monthIndex = Number(createDay) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) {
+          monthCounts[monthIndex]++;
+        }
+      }
+
+      setFlightInMonth(monthCounts);
+    });
+  }, [bookings]);
+
   return (
     <div className="container ">
       <div className="flex flex-row justify-between ">
         <ProfileCard CUSTOMER_TOKEN={session?.user.token} />
         <div className="flex flex-col justify-between w-full ml-5">
-          <div className="  mb-5 flex justify-between items-center">
+          <div className="  mb-5 flex justify-between h-full  items-center gap-5">
             {/* <PieChart /> */}
+            <LineChart props={barData} />
+            <BarChart data={barData} orientation={"vertical"} />
+
             {/* <BarChart /> */}
           </div>
 

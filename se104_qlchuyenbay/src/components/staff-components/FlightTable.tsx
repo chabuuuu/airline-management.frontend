@@ -87,17 +87,20 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
     }
   };
 
+  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+
   const deleteFlightById = async (id: string) => {
     let config = {
       method: "delete",
       maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${id}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/flight/${id}`,
       headers: {
         Authorization: session?.user.token,
       },
     };
     try {
       const response = await axios.request(config);
+      console.log(response);
       toast.success("Delete successful", {
         position: "top-right",
         autoClose: 3000,
@@ -108,9 +111,9 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
         progress: undefined,
         theme: "light",
       });
-      setInterval(() => {
-        window.location.reload();
-      }, 3000);
+      // setInterval(() => {
+      //   window.location.reload();
+      // }, 3000);
     } catch (e: any) {
       const messages = e.response.data.message;
       toast.error(messages || "An error occurred", {
@@ -125,6 +128,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
       });
     }
   };
+
   return (
     <div>
       <div className="overflow-x-auto ">
@@ -261,7 +265,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
                               className="btn btn-sm btn-ghost "
                               value={cardData.flightId}
                               // onClick={() =>
-                              //   deleteFlightById(customer.customerId)
+                              //   deleteFlightById(cardData.flightId)
                               // }
                             >
                               <div className="flex justify-between">
@@ -284,9 +288,9 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
                               key={`delete-${cardData.flightId}`}
                               className="btn btn-sm btn-ghost text-red-600"
                               value={cardData.flightId}
-                              // onClick={() =>
-                              //   deleteFlightById(customer.customerId)
-                              // }
+                              onClick={() =>
+                                deleteFlightById(cardData.flightId)
+                              }
                             >
                               <div className="flex justify-between">
                                 <p>Delete Flight</p>

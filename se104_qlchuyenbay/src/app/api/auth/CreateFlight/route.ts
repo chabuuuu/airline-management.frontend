@@ -10,6 +10,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+
     if (!body)
       return NextResponse.json({ message: "Body not found" }, { status: 400 });
 

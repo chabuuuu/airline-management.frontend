@@ -143,7 +143,7 @@ const SearchForm = () => {
             }}
             disabled={isSubmitting}
             options={countryOptions.map((option) => option.name)}
-            value={country}
+            value={country || "Vietnam"}
             defaultValue="Vietnam"
             renderInput={(params) => (
               <TextField
@@ -177,7 +177,7 @@ const SearchForm = () => {
             }}
             disabled={isSubmitting}
             options={countryOptions.map((option) => option.name)}
-            value={countryArrival}
+            value={countryArrival || "Vietnam"}
             renderInput={(params) => (
               <TextField
                 {...params}
