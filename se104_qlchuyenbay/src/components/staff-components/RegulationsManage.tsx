@@ -2,8 +2,15 @@ import React from "react";
 import CreateClassForm from "@/components/staff-components/CreateClassForm";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Rules } from "@/type";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 const RegulationsManage = () => {
+  const { data: session } = useSession();
+
+  const [rules, setRules] = useState<Rules>();
+
   useEffect(() => {
     const getAllTicketClass = async () => {
       let config = {
@@ -25,13 +32,38 @@ const RegulationsManage = () => {
       }
     };
     getAllTicketClass();
+
+    const getRules = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/rules`,
+        headers: {},
+      };
+      try {
+        const response = await axios.request(config);
+
+        const rd = response.data;
+        setRules({
+          minFlightDuration: rd.airportRules.minFlightDuration,
+          maxIntermediateAirport: rd.airportRules.maxIntermediateAirport,
+          minIntermediateAirportStopDelay:
+            rd.airportRules.minIntermediateAirportStopDelay,
+          maxIntermediateAirportStopDelay:
+            rd.airportRules.maxIntermediateAirportStopDelay,
+          minBookingTime: rd.bookingRules.minBookingTime,
+          minCancelBookingTime: rd.bookingRules.minCancelBookingTime,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getRules();
   }, []);
 
-  const [firstRegulation, setFirstRegulation] = useState<{
-    miniumDuration: string;
-    miniumMediateAiport: string;
-  }>();
-
+  useEffect(() => {
+    setUpdateRulesData(rules);
+  }, [rules]);
   const [secondRegulation, setSecondRegulation] = useState<
     {
       ticketClass: string;
@@ -54,10 +86,69 @@ const RegulationsManage = () => {
 
   const [secondRegulationModal, setSecondRegulationModal] =
     useState<boolean>(false);
+  const [firstRegulationModal, setFirstRegulationModal] =
+    useState<boolean>(false);
+  const [thirdRegulationModal, setThirdRegulationModal] =
+    useState<boolean>(false);
 
   const [thirdRegulation, setThirdRegulation] = useState<{
     timeBookedAtLeast: string;
   }>();
+
+  const [updateRulesData, setUpdateRulesData] = useState<Rules>();
+
+  const handleChangeInputRules = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (changeMode || changeModeRule3) {
+      const { name, value } = e.target;
+      setUpdateRulesData((prevRules: any) => ({
+        ...prevRules,
+        [name]: Number(value),
+      }));
+    }
+  };
+
+  const [changeMode, setChangeMode] = useState<boolean>(false);
+  const [changeModeRule3, setChangeModeRule3] = useState<boolean>(false);
+
+  const handleChangeRules = async () => {
+    let config = {
+      method: "put",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/rules/modify`,
+      headers: {
+        Authorization: session?.user.token,
+      },
+      data: JSON.stringify(updateRulesData),
+    };
+    console.log(config);
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+      toast.success("Update succesful", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setChangeMode(!changeMode);
+    } catch (e: any) {
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
 
   return (
     <div className="overflow-x-auto mt-10 p-10">
@@ -75,11 +166,13 @@ const RegulationsManage = () => {
           <tr>
             <td className="text-base font-semibold">Quy Định 1</td>
             <td className="text-base">
-              Có 10 sân bay. Thời gian bay tối thiểu là 30 phút. Có tối đa 2 sân
-              bay trung gian với thời gian dừng từ 10 đến 20 phút.
+              Thời gian bay tối thiểu là {rules?.minFlightDuration} giờ. Có tối
+              đa {rules?.maxIntermediateAirport} sân bay trung gian với thời
+              gian dừng từ {rules?.minIntermediateAirportStopDelay} đến{" "}
+              {rules?.maxIntermediateAirportStopDelay} phút.
             </td>
             <td>
-              <button>
+              <button onClick={() => setFirstRegulationModal(true)}>
                 <svg
                   className="w-4 h-4 hover:opacity-50 cursor-pointer"
                   xmlns="http://www.w3.org/2000/svg"
@@ -130,11 +223,15 @@ const RegulationsManage = () => {
           <tr>
             <td className="text-base font-semibold">Quy Định 3</td>
             <td className="text-base">
-              Chỉ cho đặt vé chậm nhất 1 ngày trước khi khởi hành. Vào ngày khởi
-              hành tất cả các phiếu đặt sẽ bị hủy
+              Chỉ cho đặt vé chậm nhất {rules?.minBookingTime} ngày trước khi
+              khởi hành. Vào ngày khởi hành tất cả các phiếu đặt sẽ bị hủy. Chỉ
+              cho hủy vé {rules?.minCancelBookingTime} ngày trước ngày khởi
+              hành.
             </td>
             <td>
-              <button>
+              <button
+                onClick={() => setThirdRegulationModal(!thirdRegulationModal)}
+              >
                 <svg
                   className="w-4 h-4 hover:opacity-50 cursor-pointer"
                   xmlns="http://www.w3.org/2000/svg"
@@ -150,107 +247,275 @@ const RegulationsManage = () => {
           </tr>
         </tbody>
       </table>
+      {firstRegulationModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white max-w-2xl p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Update Airport Rules</h3>
+
+            <table className="table flex justify-center ">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Thời gian bay tối thiểu:</td>
+                  <td>
+                    <input
+                      type="text"
+                      name="minFlightDuration"
+                      value={updateRulesData?.minFlightDuration}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+                    <span className="ml-3">giờ</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Số sân bay trung gian tối đa:</td>
+                  <td>
+                    <input
+                      type="text"
+                      name="maxIntermediateAirport"
+                      value={updateRulesData?.maxIntermediateAirport}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+                    <span className="ml-3">sân bay</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Thời gian dừng tối thiểu:</td>
+                  <td>
+                    <input
+                      type="text"
+                      name="minIntermediateAirportStopDelay"
+                      value={updateRulesData?.minIntermediateAirportStopDelay}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+                    <span className="ml-3">giờ</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Thời gian dừng tối đa:</td>
+                  <td>
+                    <input
+                      type="text"
+                      name="maxIntermediateAirportStopDelay"
+                      value={updateRulesData?.maxIntermediateAirportStopDelay}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+                    <span className="ml-3">giờ</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="modal-action">
+              {!changeMode ? (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => setChangeMode(!changeMode)}
+                >
+                  Change Rule
+                </button>
+              ) : (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleChangeRules()}
+                >
+                  Save
+                </button>
+              )}
+
+              <button
+                className="btn btn-sm"
+                onClick={() => {
+                  setFirstRegulationModal(false);
+                  setUpdateRulesData(rules);
+                  setChangeMode(false);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {secondRegulationModal && (
         <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <div className="bg-white max-w-2xl p-10 rounded-2xl">
-            <h3 className="font-bold text-2xl">Update Seat Flight</h3>
+            <h3 className="font-bold text-2xl mb-10">Update Booking Rules</h3>
 
-            <p className="mt-6">
-              Chỉ bán vé khi còn chỗ. Có {secondRegulation.length} hạng vé (
-              {secondRegulation
-                .map((regulation) => regulation.ticketClass)
-                .join(", ")}
-              ) . Vé{" "}
-              {secondRegulation.map((regulation, index) => (
-                <span key={index}>
-                  <span className="font-bold">{regulation.ticketClass}</span>{" "}
-                  bằng{" "}
-                  <span className="font-bold">
-                    {regulation.ticketPriceInterest}
-                  </span>{" "}
-                  giá vé gốc
-                  {index !== secondRegulation.length - 1 && ", "}
-                </span>
-              ))}{" "}
-              . Mỗi chuyến bay có một giá vé riêng.
-            </p>
-            <div className="mt-5 collapse bg-base-200">
-              <input type="checkbox" />
-              <div className="collapse-title text-xl font-semibold">
-                Change ticket class
-              </div>
-              <div className="collapse-content ">
-                <div className="overflow-x-auto">
-                  <table className="table flex justify-center ">
-                    {/* head */}
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>Class</th>
-                        <th>Price Bonus Interest</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tmpSecondR.map((regulation, index) => (
-                        <tr key={index}>
-                          <td>{index}</td>
-                          <td>{regulation.ticketClass}</td>
-                          <td>
-                            <input
-                              type="text"
-                              value={regulation.ticketPriceInterest}
-                              onChange={(e) => {
-                                const updatedRegulations = [
-                                  ...secondRegulation,
-                                ];
-                                updatedRegulations[index].ticketPriceInterest =
-                                  e.target.value;
-                                setTmpSecondR(updatedRegulations);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <button
-                              className="text-sm btn-xs btn btn-ghost font-medium"
-                              onClick={() => console.log(index)}
-                            >
-                              {" "}
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            <CreateClassForm />
+            <div className="flex">
+              <p className="mt-6 w-[300px]">
+                Chỉ bán vé khi còn chỗ. Có {secondRegulation.length} hạng vé (
+                {secondRegulation
+                  .map((regulation) => regulation.ticketClass)
+                  .join(", ")}
+                ) . Vé{" "}
+                {secondRegulation.map((regulation, index) => (
+                  <span key={index}>
+                    <span className="font-bold">{regulation.ticketClass}</span>{" "}
+                    bằng{" "}
+                    <span className="font-bold">
+                      {regulation.ticketPriceInterest}
+                    </span>{" "}
+                    giá vé gốc
+                    {index !== secondRegulation.length - 1 && ", "}
+                  </span>
+                ))}{" "}
+                . Mỗi chuyến bay có một giá vé riêng.
+              </p>
+              <div className="mt-5 w-[300px] collapse bg-base-200">
+                <input type="checkbox" />
+                <div className="collapse-title text-xl font-semibold">
+                  Change ticket class
                 </div>
-                <div className="flex justify-end gap-3">
-                  <button
-                    className="btn btn-ghost "
-                    onClick={() => {
-                      handleCancel;
-                      setSecondRegulationModal(false);
-                    }}
-                  >
-                    Cancel
-                  </button>
+                <div className="collapse-content ">
+                  <div className="overflow-x-auto">
+                    <table className="table flex justify-center ">
+                      {/* head */}
+                      <thead>
+                        <tr>
+                          <th>Class</th>
+                          <th>Price Bonus Interest</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tmpSecondR.map((regulation, index) => (
+                          <tr key={index}>
+                            <td> {regulation.ticketClass}</td>
 
-                  <button
-                    className="btn btn-ghost"
-                    onClick={() => setSecondRegulationModal(false)}
-                  >
-                    Save
-                  </button>
+                            <td>
+                              <input
+                                type="text"
+                                value={regulation.ticketPriceInterest}
+                                className="input input-bordered input-sm w-[100px] max-w-xs"
+                                onChange={(e) => {
+                                  const updatedRegulations = [
+                                    ...secondRegulation,
+                                  ];
+                                  updatedRegulations[
+                                    index
+                                  ].ticketPriceInterest = e.target.value;
+                                  setTmpSecondR(updatedRegulations);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      className="btn btn-ghost "
+                      onClick={() => {
+                        handleCancel;
+                        setSecondRegulationModal(false);
+                      }}
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      className="btn btn-ghost"
+                      onClick={() => setSecondRegulationModal(false)}
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <CreateClassForm />
 
             <div className="modal-action">
               <button
                 className="btn"
                 onClick={() => setSecondRegulationModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {thirdRegulationModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white max-w-2xl p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Update Airport Rules</h3>
+
+            <table className="table flex justify-center ">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Thời gian đặt vé chậm nhất trước khi cất cánh: </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="minBookingTime"
+                      value={updateRulesData?.minBookingTime}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+                    <span className="ml-3">ngày</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Thời gian hủy vé chậm nhất trước khi cất cánh: </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="minCancelBookingTime"
+                      value={updateRulesData?.minCancelBookingTime}
+                      className="input input-bordered input-sm w-[100px] max-w-xs"
+                      onChange={handleChangeInputRules}
+                    />
+
+                    <span className="ml-3">ngày</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="modal-action">
+              {!changeModeRule3 ? (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => setChangeModeRule3(!changeModeRule3)}
+                >
+                  Change Rule
+                </button>
+              ) : (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleChangeRules()}
+                >
+                  Save
+                </button>
+              )}
+
+              <button
+                className="btn btn-sm"
+                onClick={() => {
+                  setThirdRegulationModal(!thirdRegulationModal);
+                  setUpdateRulesData(rules);
+                  setChangeModeRule3(false);
+                }}
               >
                 Close
               </button>

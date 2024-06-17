@@ -49,37 +49,54 @@ const InformationCard: React.FC<{ passengerId: string }> = ({
               onClick={(e) => e.stopPropagation()}
               className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm"
             >
-              <div className="flex  items-center mb-4">
-                <img
-                  className="w-16 h-16 rounded-full mr-4 border-2 border-blue-500"
-                  src={customer?.profilePicture || customer?.cccdPicture}
-                  alt="Avatar"
-                />
+              <div>
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-800">
-                    {customer?.fullname}
-                  </h2>
-                  <p className="text-gray-500">{customer?.email}</p>
+                  <div className="w-28 h-28 mx-auto  rounded-full overflow-hidden border-4 border-white relative">
+                    <img
+                      className="object-cover w-full h-full"
+                      src={
+                        customer?.cccdPicture ||
+                        "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
+                      }
+                      alt="Profile Picture"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col justify-start">
-                <p>
-                  <span className="font-semibold text-gray-700">CCCD:</span>
-                  {customer?.cccd}
+                <h2 className="text-3xl mb-5 font-bold text-gray-800 text-center">
+                  {customer?.fullname}
+                </h2>
+                <div className="bg-gray-200 p-2 rounded-lg my-3">
+                  <p className="text-base font-medium">Basic Details</p>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="text-sm font-semibold">Date of Birth</span>{" "}
+                  <br />
+                  <span className="text-sm">{customer?.birthday}</span>
                 </p>
-                <p>
-                  <span className="font-semibold text-gray-700">Phone:</span>
-                  {customer?.phoneNumber}
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="text-sm font-semibold">Address</span> <br />
+                  <span className="text-sm">
+                    {customer?.address}, {customer?.nationality}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="text-sm font-semibold">Identification</span>{" "}
+                  <br />
+                  <span className="text-sm">{customer?.cccd}</span>
                 </p>
 
-                <p>
-                  <span className="font-semibold text-gray-700">Birthday:</span>
-                  {customer?.birthday}
+                <div className="bg-gray-200 p-2 rounded-lg my-3">
+                  <p className="text-base font-medium">Contact Information</p>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="text-sm font-semibold">Email</span> <br />
+                  <span className="text-sm">{customer?.email}</span>
                 </p>
-                <p>
-                  <span className="font-semibold text-gray-700">Address:</span>
-                  {customer?.address}, {customer?.nationality}
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="text-sm font-semibold">Phone</span> <br />
+                  <span className="text-sm">{customer?.phoneNumber}</span>
                 </p>
               </div>
 

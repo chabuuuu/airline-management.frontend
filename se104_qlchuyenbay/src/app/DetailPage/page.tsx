@@ -213,13 +213,25 @@ const DetailPage = () => {
         <div
           className={`${baseClassName} ${seatBgColor} ${textColor}`}
           onClick={() => {
-            if (!seatWithTypedColor.selected) {
+            if (
+              !chooseSeats.find(
+                (findSeat) => findSeat.seat === seatWithTypedColor.seatId
+              ) &&
+              seatWithTypedColor.selected !== true
+            ) {
               handleSeatSelection(
                 seatWithTypedColor.seatId,
                 seatWithTypedColor.color,
                 seatWithTypedColor.class,
                 seatWithTypedColor.priceBonusInterest
               );
+            } else {
+              let cancelChooseSeats = chooseSeats;
+              cancelChooseSeats = cancelChooseSeats.filter(
+                (selectedSeat) =>
+                  selectedSeat.seat !== seatWithTypedColor.seatId
+              );
+              setChooseSeats(cancelChooseSeats);
             }
           }}
         >

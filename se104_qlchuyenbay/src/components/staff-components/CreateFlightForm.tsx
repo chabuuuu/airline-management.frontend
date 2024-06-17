@@ -5,12 +5,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { PlanesData } from "@/planes";
-
-type IntermediateAirport = {
-  airport: string;
-  time: string;
-  note: string;
-};
+import { IntermediateAirport } from "@/type";
 
 type FormFields = {
   flightId: string;
@@ -35,7 +30,7 @@ const CreateFlightForm: React.FC = () => {
     departureTime: "",
   });
 
-  const [planes, setPlanes] = useState<string | null>(null);
+  const [airlines, setAirlines] = useState<string | null>(null);
 
   const [departure, setDeparture] = useState<string | null>(null);
   const [destination, setDestination] = useState<string | null>(null);
@@ -136,7 +131,7 @@ const CreateFlightForm: React.FC = () => {
     if (intermediateAirports.length < 2) {
       setIntermediateAirports([
         ...intermediateAirports,
-        { airport: "", time: "", note: "" },
+        { flightId: formData.flightId, airportId: "", duration: "", notes: "" },
       ]);
     }
   };
@@ -148,6 +143,7 @@ const CreateFlightForm: React.FC = () => {
   ) => {
     const updatedIntermediateAirports = [...intermediateAirports];
     updatedIntermediateAirports[index][field] = value;
+
     setIntermediateAirports(updatedIntermediateAirports);
   };
 
@@ -216,10 +212,17 @@ const CreateFlightForm: React.FC = () => {
                   /> */}
                   <Autocomplete
                     onChange={(_, value) => {
-                      setPlanes(value);
+                      if (value) {
+                        setAirlines(value);
+
+                        setFormData({
+                          ...formData,
+                          airlines: value,
+                        });
+                      }
                     }}
                     options={PlanesData.map((op) => op.brand)}
-                    value={planes}
+                    value={airlines}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -373,6 +376,7 @@ const CreateFlightForm: React.FC = () => {
                 </div>
               </div>
             </div>
+
             <div className="mb-3">
               {intermediateAirports.map((inter, index) => (
                 <div className="flex mb-3" key={index}>
@@ -380,24 +384,41 @@ const CreateFlightForm: React.FC = () => {
                     <span>{index + 1}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-5 w-full">
-                    <input
-                      onChange={(e) =>
-                        handleIntermediateAirportChange(
-                          index,
-                          "airport",
-                          e.target.value
-                        )
+                    <Autocomplete
+                      onChange={(_, value) => {
+                        const id = airportOptions.find(
+                          (op) => op.airportName === value
+                        )?.airportId;
+                        if (id)
+                          handleIntermediateAirportChange(
+                            index,
+                            "airportId",
+                            id
+                          );
+                      }}
+                      options={airportOptions.map((op) => op.airportName)}
+                      value={
+                        airportOptions.find(
+                          (op) =>
+                            op.airportId ===
+                            intermediateAirports[index]["airportId"]
+                        )?.airportName
                       }
-                      id={`airport-${index}`}
-                      className="border rounded w-full py-2 px-3 text-gray-700 focus:shadow-outline"
-                      type="text"
-                      placeholder="Sân bay trung gian"
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          id="departure"
+                          name="departure"
+                          size="small"
+                          placeholder="Tân Sơn Nhất"
+                        />
+                      )}
                     />
                     <input
                       onChange={(e) =>
                         handleIntermediateAirportChange(
                           index,
-                          "time",
+                          "duration",
                           e.target.value
                         )
                       }
@@ -410,7 +431,7 @@ const CreateFlightForm: React.FC = () => {
                       onChange={(e) =>
                         handleIntermediateAirportChange(
                           index,
-                          "note",
+                          "notes",
                           e.target.value
                         )
                       }

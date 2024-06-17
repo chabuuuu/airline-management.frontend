@@ -68,6 +68,13 @@ export type FlightType = {
   updateAt?: string;
 };
 
+export type IntermediateAirport = {
+  flightId: string;
+  airportId: string;
+  duration: string;
+  notes: string;
+};
+
 export type AirplaneType = {
   airplaneModel: string;
   airlinePicture: string;
@@ -97,4 +104,14 @@ export type chart = {
   unit: string;
   datas: number[];
   labels: string[];
+};
+
+export type Rules = {
+  minFlightDuration: number;
+  maxIntermediateAirport: number;
+  minIntermediateAirportStopDelay: number;
+  maxIntermediateAirportStopDelay: number;
+
+  minBookingTime: number;
+  minCancelBookingTime: number;
 };
