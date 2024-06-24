@@ -390,7 +390,7 @@ const DetailPage = () => {
               Tiếp tục thanh toán
             </Link>
           )} */}
-          {!(chooseSeats[0].seat === "") && (
+          {!(chooseSeats[0]?.seat === "") && (
             <button className="btn bg-orange-500 text-white w-full rounded-full">
               {!session ? (
                 <a href="/SignIn">Đăng nhập để tiếp tục</a>
