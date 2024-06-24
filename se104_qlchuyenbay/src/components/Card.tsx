@@ -20,7 +20,7 @@ const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
   return (
     <div
       key={flight.flightId}
-      className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white drop-shadow-md p-5"
+      className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white hover:drop-shadow-lg p-5"
     >
       <div className="flex items-center">
         <img

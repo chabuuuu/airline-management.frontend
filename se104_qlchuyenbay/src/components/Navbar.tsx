@@ -154,7 +154,11 @@ const Navbar = () => {
     <div className="navbar bg-neutral-100">
       <div className="container justify-between flex items-center">
         <Link href="/" className="text-2xl font-bold">
-          CSE
+          <img
+            className="w-8 h-8 object-contain"
+            src="https://i.postimg.cc/MpSjPbsB/cse-01.png"
+            alt="Logo"
+          />
         </Link>
         <div className="flex justify-center items-center">
           <Link className="btn btn-ghost mr-1 ml-1" href="/About">

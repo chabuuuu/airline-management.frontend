@@ -1,54 +1,65 @@
 "use client";
-import { AutocompleteInput } from "@/components/AutocompleteInput";
 import Link from "next/link";
 import React from "react";
 
 const About: React.FC = () => {
   return (
-    <div className=" bg-white rounded-2xl p-6 h-screen min-h-screen">
-      <p className="ml-4 text-3xl font-semibold">ABOUT US</p>
-
-      <div className="">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <img
-            src="https://daisyui.com/images/stock/photo-1635805737707-575885ab0820.jpg"
-            className="max-w-sm rounded-lg shadow-2xl"
-          />
+    <div className=" bg-white rounded-2xl p-10 m-10 flex flex-col justify-between">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-10">
+        <img
+          className="w-40 h-40 object-contain"
+          src="https://i.postimg.cc/MpSjPbsB/cse-01.png"
+          alt="Logo"
+        />
+        <div className="hero-content flex-col lg:flex-row-reverse ">
           <div>
-            <h1 className="text-5xl font-bold">Box Office News!</h1>
-            <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
-            </p>
+            <div className="mb-10 ">
+              <h1 className="text-4xl  font-semibold ">We are CSAir!</h1>
+              <p className="py-6 text-sm font-light ">
+                Our team consists of five members, all college students from the
+                University of Information Technology (UIT). We currently
+                learning Introduction Software Technology, class SE104.O25 . And
+                thís website is our final course project. The topic of our
+                project is Airlines Management. We have developed this website
+                to help users like you to have best experience using the flight
+                booking feature as a customer or become a manager with
+                efficiently manage various aspects of airline travel.
+              </p>
+            </div>
+
+            <div className="mb-10">
+              <h1 className="text-4xl font-semibold mb-5">Our Member</h1>
+              <p className="py-1 text-sm font-light">Nguyen Viet Duc</p>
+              <p className="py-1 text-sm font-light">Ha Phu Thinh </p>
+              <p className="py-1 text-sm font-light">Doan Van Hoang</p>
+              <p className="py-1 text-sm font-light">Nguyen Vu Khai Tam</p>
+              <p className="py-1 text-sm font-light">Huynh Nhat Minh</p>
+            </div>
+
+            <div className="mb-10">
+              <h1 className="text-4xl font-semibold mb-5">Front-End</h1>
+              <p className="py-1 text-sm font-light">Type Script</p>
+              <p className="py-1 text-sm font-light">Nextjs</p>
+              <p className="py-1 text-sm font-light">Tailwind css</p>
+              <p className="py-1 text-sm font-light">Next-auth</p>
+              <p className="py-1 text-sm font-light">Daisy-ui</p>
+              <p className="py-1 text-sm font-light">Nodejs</p>
+            </div>
+            <div className="mb-10">
+              <h1 className="text-4xl font-semibold mb-5">Back-End</h1>
+              <p className="py-1 text-sm font-light">TypeScrip</p>
+              <p className="py-1 text-sm font-light">MySQL</p>
+              <p className="py-1 text-sm font-light">Nodemon</p>
+              <p className="py-1 text-sm font-light">Express</p>
+            </div>
           </div>
         </div>
       </div>
-      <div className=" ">
-        <div className="hero-content flex-col lg:flex-row">
-          <img
-            src="https://daisyui.com/images/stock/photo-1635805737707-575885ab0820.jpg"
-            className="max-w-sm rounded-lg shadow-2xl"
-          />
-          <div>
-            <h1 className="text-5xl font-bold">Box Office News!</h1>
-            <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
-            </p>
-            <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <Link href={"/"} className="btn mb-5 btn-primary  ">
-            Get Started
-          </Link>
-        </div>
+
+      <div className="flex justify-end">
+        <Link href={"/"} className="btn mb-5 btn-primary  ">
+          Get Started
+        </Link>
       </div>
       <footer className="footer rounded-2xl items-center p-4 bg-slate-100 text-neutral-content">
         <aside className="items-center grid-flow-col">

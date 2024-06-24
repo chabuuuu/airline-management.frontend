@@ -343,7 +343,7 @@ const FlightManage = () => {
                   </div>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content z-[1] menu drop-shadow-lg bg-base-100 rounded-box w-40 mt-5"
+                    className="dropdown-content z-[50] menu drop-shadow-lg bg-base-100 rounded-box w-40 mt-5"
                   >
                     <li>
                       <a id="Đã hoàn thành" onClick={handleFilter}>

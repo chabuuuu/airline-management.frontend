@@ -40,7 +40,7 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                   key={index}
                   className={cardData.status === "sold" ? "bg-red-50" : ""}
                 >
-                  <div className="grid grid-cols-8 bg-white rounded-lg p-5 m-2 items-center">
+                  <div className="grid grid-cols-8 hover:drop-shadow-lg bg-white rounded-lg  p-5 m-2 items-center">
                     <div className="col-span-1">
                       <div className="flex items-center gap-3">
                         <div className="">

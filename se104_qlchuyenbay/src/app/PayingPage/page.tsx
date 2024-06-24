@@ -127,7 +127,7 @@ const PayingPage = () => {
       <form onSubmit={handleSubmit}>
         {filteredParams.chooseSeat.map((param, index) => (
           <div key={index} className="flex justify-center items-center mb-6">
-            <div className="bg-white rounded-3xl shadow-md ">
+            <div className="bg-white rounded-3xl drop-shadow-lg ">
               <div className="flex rounded-t-3xl p-2 bg-teal-600 justify-between items-center border-b ">
                 <div className="flex items-center">
                   <img
