@@ -177,14 +177,14 @@ const FlightManage = () => {
   }, [allFlightInfo]);
 
   const pieData: chart = {
-    tittle: "Top 5 country have been created the most",
+    tittle: "Top 5 most created cities",
     unit: "Count",
     datas: topDestination.map((d) => d.count),
     labels: topDestination.map((d) => d.country),
   };
 
   const brandChartData: chart = {
-    tittle: "Brand Average",
+    tittle: "Flights of each brand",
     unit: "Count",
     indicate: "Count",
     datas: brandData.map((d) => d.count),
@@ -192,7 +192,7 @@ const FlightManage = () => {
   };
 
   const barData: chart = {
-    tittle: "Number flight had been created during the year",
+    tittle: "Number of flights created monthly",
     indicate: "Monthly Average",
     unit: "Flight",
     datas: flightInMonth,

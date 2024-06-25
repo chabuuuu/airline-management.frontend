@@ -8,6 +8,8 @@ import FormData from "form-data";
 import { toast } from "react-toastify";
 import { GoogleSignUpButton } from "./GoogleSignUpButton";
 
+import { useRouter } from "next/navigation";
+
 const schema = z.object({
   email: z.string().email(),
   password: z
@@ -44,6 +46,8 @@ const schema = z.object({
 type FormFields = z.infer<typeof schema>;
 
 const SignUpForm = () => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -51,12 +55,6 @@ const SignUpForm = () => {
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
   });
-
-  const [showModal, setShowModal] = useState(false);
-  const [cccdPicture, setCccdPicture] = useState<string>("");
-
-  const [verifiedEmail, setVerifiedEmail] = useState<string>("");
-  const [createSuccess, setCreateSuccess] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<FormFields> = async (data, event) => {
     try {
@@ -73,7 +71,25 @@ const SignUpForm = () => {
       const mss = await response.json();
       console.log(mss);
 
-      if (!(mss.statusCode === 200)) {
+      if (mss.message.statusCode === 200) {
+        verifiedEmailHandle(data.email);
+        toast.success(
+          "Register succesful! Please verified your email to login.",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+        setInterval(() => {
+          router.push("/SignIn", { scroll: false });
+        }, 3000);
+      } else {
         toast.error(mss.message.message, {
           position: "top-right",
           autoClose: 5000,
@@ -84,25 +100,9 @@ const SignUpForm = () => {
           progress: undefined,
           theme: "light",
         });
-      } else {
-        setVerifiedEmail(data.email);
-        setCreateSuccess(true);
-        toast.success(
-          "Register succesful! Please verified your email to login.",
-          {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
       }
     } catch (e: any) {
-      const messages = e.response.data.message;
+      const messages = e.response?.data.message;
       console.log(e.response.data.message);
       messages.map((m: any) => {
         toast.error(m || "An error occurred", {
@@ -120,28 +120,23 @@ const SignUpForm = () => {
     }
   };
 
-  useEffect(() => {
-    const verifiedEmailHandle = async () => {
-      console.log(JSON.stringify({ email: verifiedEmail }));
-      let config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/customer/send-verify-email`,
-        headers: {},
-        data: JSON.stringify({ email: verifiedEmail }),
-      };
-      try {
-        const response = await axios.request(config);
-        console.log(response);
-        setCreateSuccess(false);
-        setVerifiedEmail("");
-      } catch (e: any) {
-        console.log(e);
-      }
-    };
+  const verifiedEmailHandle = async (verifiedEmail: string) => {
+    console.log(JSON.stringify({ email: verifiedEmail }));
 
-    if (createSuccess) verifiedEmailHandle();
-  }, [verifiedEmail, createSuccess]);
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/send-verify-email`,
+      headers: {},
+      data: JSON.stringify({ email: verifiedEmail }),
+    };
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+    } catch (e: any) {
+      console.log(e);
+    }
+  };
 
   return (
     <div>
@@ -263,6 +258,7 @@ const SignUpForm = () => {
             {...register("password")}
             type="password"
             id="password"
+            autoComplete="on"
             placeholder="Enter your password"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />

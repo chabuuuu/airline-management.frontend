@@ -78,9 +78,7 @@ const AirportManage = () => {
         <div className="collapse-title text-2xl font-semibold">
           Airport DashBoard
         </div>
-        <div className="collapse-content">
-          <p>hello</p>
-        </div>
+        <div className="collapse-content"></div>
       </div>
 
       <div className="collapse collapse-arrow bg-base-200 my-3">

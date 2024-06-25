@@ -99,7 +99,7 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
         </table>
       </div>
       <div className="flex justify-between p-3">
-        <p className="font-medium">Total flight: {allBooking.length} </p>
+        <p className="font-medium">Total: {allBooking.length} </p>
         <div className="join">
           <button
             className="join-item btn btn-xs btn-ghost"
