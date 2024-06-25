@@ -13,7 +13,7 @@ const About: React.FC = () => {
         />
         <div className="hero-content flex-col lg:flex-row-reverse ">
           <div>
-            <div className="mb-10 ">
+            <div className="">
               <h1 className="text-4xl  font-semibold ">We are CSAir!</h1>
               <p className="py-6 text-sm font-light ">
                 Our team consists of five members, all college students from the
@@ -24,6 +24,17 @@ const About: React.FC = () => {
                 to help users like you to have best experience using the flight
                 booking feature as a customer or become a manager with
                 efficiently manage various aspects of airline travel.
+              </p>
+            </div>
+            <div className="mb-10 ">
+              <h1 className="text-2xl  font-semibold "> What is CSAir?</h1>
+              <p className="py-4 text-sm font-light ">
+                We are students from the Department of Computer Science (CS) and
+                the Department of Software Engineering (SE), so CSE is a
+                combination of both acronyms. The word "Air" is a homonym with
+                the letter "E" and also represents the theme of our website,
+                which is an airline ticket management site. That is how our
+                project name was conceived.
               </p>
             </div>
 

@@ -164,7 +164,7 @@ const CreateAirportForm = () => {
         <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className=" min-w-[700px]  p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"
+            className=" min-w-[600px]  p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-5xl"
           >
             <h1 className="text-2xl font-bold ">Tạo mới sân bay</h1>
             <div className="divider h-1"></div>
@@ -194,6 +194,7 @@ const CreateAirportForm = () => {
                         renderInput={(params) => (
                           <TextField
                             {...params}
+                            size="small"
                             {...register("country")}
                             placeholder="Departure"
                           />
@@ -224,6 +225,7 @@ const CreateAirportForm = () => {
                         renderInput={(params) => (
                           <TextField
                             {...params}
+                            size="small"
                             {...register("city")}
                             placeholder="City"
                           />
@@ -289,7 +291,7 @@ const CreateAirportForm = () => {
                 <input
                   {...register("description")}
                   id="descriptions"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
+                  className="shadow  appearance-none border rounded w-full py-6 px-3 text-gray-700 leading-tight place-content-start "
                   type="text"
                   placeholder="Miêu tả"
                 />
@@ -304,7 +306,7 @@ const CreateAirportForm = () => {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="btn btn-ghost rounded-2xl mr-5"
+                className="btn btn-ghost border-neutral-400 rounded-2xl mr-5"
               >
                 Hủy
               </button>

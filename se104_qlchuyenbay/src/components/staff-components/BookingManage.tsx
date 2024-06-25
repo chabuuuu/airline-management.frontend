@@ -105,7 +105,7 @@ const BookingManage = () => {
   };
 
   const lineData = {
-    tittle: "Register customer account.",
+    tittle: "Number of customer bookings each month",
     unit: "Count",
     datas: customerInMonth,
     labels: [

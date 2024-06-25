@@ -43,21 +43,6 @@ export default function StaffHome() {
         <div role="tablist" className="tabs tabs-lifted">
           <input
             type="radio"
-            name="my_tabs_0"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Profile "
-            checked={activeTab === 0}
-            onChange={() => handleTabChange(0)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 0 ? "" : "hidden"
-            }`}
-          ></div>
-          <input
-            type="radio"
             name="my_tabs_1"
             role="tab"
             className="tab font-semibold text-lg h-12"

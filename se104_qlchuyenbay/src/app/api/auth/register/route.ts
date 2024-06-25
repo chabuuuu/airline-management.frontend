@@ -17,11 +17,12 @@ export async function POST(request: Request) {
     };
 
     const response = await axios.request(config);
-    console.log("Here", response.data);
 
-    return NextResponse.json({ message: "success", data: response.data });
+    return NextResponse.json(
+      { message: { message: "success", statusCode: 200 }, data: response.data },
+      { status: 200 }
+    );
   } catch (e: any) {
-    console.log("error------------------------------", e);
     return NextResponse.json(
       { message: e.response?.data || "An error occurred" },
       { status: 500 }
