@@ -1,3 +1,5 @@
+"use client";
+
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -330,11 +332,13 @@ const CustomerAccountTable: React.FC<{ customers: Customer[] }> = ({
                         <div className="flex items-center gap-3">
                           <div className="avatar">
                             <div className="mask mask-squircle w-12 h-12">
-                              <img
-                                src={customer?.cccdPicture}
-                                crossOrigin="anonymous"
-                                alt="Avatar Tailwind CSS Component"
-                              />
+                              <picture>
+                                <img
+                                  src={customer?.cccdPicture}
+                                  crossOrigin="anonymous"
+                                  alt="Avatar Tailwind CSS Component"
+                                />
+                              </picture>
                             </div>
                           </div>
                           <div>
@@ -565,20 +569,25 @@ const CustomerAccountTable: React.FC<{ customers: Customer[] }> = ({
             <div className="flex flex-col justify-between"></div>
             <div className="modal-action">
               <button
-                className="btn"
-                onClick={() => setCustomerChangeRoleModal(false)}
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setCheckChangeRole(false);
+                  setCustomerChangeRoleModal(false);
+                }}
               >
                 Close
               </button>
-              <button
-                type="button"
-                className="btn btn-warning"
-                onClick={() => {
-                  changeCustomerRole();
-                }}
-              >
-                Save
-              </button>
+              {checkChangeRole && (
+                <button
+                  type="button"
+                  className="btn btn-sm bg-green-500 text-white"
+                  onClick={() => {
+                    changeCustomerRole();
+                  }}
+                >
+                  Save
+                </button>
+              )}
             </div>
           </div>
         </div>

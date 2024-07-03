@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
@@ -65,15 +65,15 @@ const CreateClassForm = () => {
   };
 
   return (
-    <div className="collapse bg-slate-200">
+    <div className="collapse bg-slate-100">
       <input type="checkbox" />
       <div className="collapse-title text-xl font-semibold">
         Create new ticket class
       </div>
       <div className="collapse-content ">
         <form onSubmit={handleSubmit} className="space-y-4 p-5">
-          <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <div className="flex ">
+            <div className="w-full ">
               <label
                 htmlFor="className"
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -83,13 +83,13 @@ const CreateClassForm = () => {
               <input
                 id="className"
                 type="text"
-                placeholder="Enter class name"
+                placeholder="LV1"
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
-                className="input"
+                className=" px-2 rounded-lg max-w-[150px] py-1"
               />
             </div>
-            <div className="w-full md:w-1/2 px-3">
+            <div className="w-full px-3">
               <label
                 htmlFor="color"
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -99,15 +99,15 @@ const CreateClassForm = () => {
               <input
                 id="color"
                 type="text"
-                placeholder="Enter color"
+                placeholder="red"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="input"
+                className=" px-2 rounded-lg max-w-[150px] py-1"
               />
             </div>
           </div>
-          <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full md:w-1/2 px-3">
+          <div className="flex ">
+            <div className="w-full ">
               <label
                 htmlFor="priceBonusInterest"
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -117,15 +117,19 @@ const CreateClassForm = () => {
               <input
                 id="priceBonusInterest"
                 type="number"
-                placeholder="Enter price bonus interest"
+                placeholder="0.3"
                 value={priceBonusInterest}
                 onChange={(e) => setPriceBonusInterest(e.target.value)}
-                className="input"
+                className=" px-2 rounded-lg max-w-[150px] py-1"
               />
             </div>
-            <div className="w-full md:w-1/2 items-end flex justify-end  px-3">
-              <button type="submit" className="btn" disabled={loading}>
-                {loading ? "Creating..." : "Create Class"}
+            <div className="w-full items-end flex justify-end  px-3">
+              <button
+                type="submit"
+                className="btn btn-sm bg-green-500 text-white"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Create"}
               </button>
             </div>
           </div>

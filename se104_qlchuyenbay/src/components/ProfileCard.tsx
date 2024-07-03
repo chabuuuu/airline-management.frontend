@@ -1,3 +1,5 @@
+"use client";
+
 import { Customer } from "@/type";
 import axios from "axios";
 import React, { useState, useEffect, ChangeEvent } from "react";
@@ -163,14 +165,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
       <div>
         <div>
           <div className="w-28 h-28 mx-auto  rounded-full overflow-hidden border-4 border-white relative">
-            <img
-              className="object-cover w-full h-full"
-              src={
-                profile.cccdPicture ||
-                "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
-              }
-              alt="Profile Picture"
-            />
+            <picture>
+              <img
+                className="object-cover w-full h-full"
+                src={
+                  profile.cccdPicture ||
+                  "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
+                }
+                alt="Profile Picture"
+              />{" "}
+            </picture>
           </div>
         </div>
 
@@ -235,11 +239,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
 
             <div className="flex">
               <div className="flex flex-col justify-between items-center mr-5">
-                <img
-                  src={profile.cccdPicture}
-                  alt="Logo"
-                  className="w-24 h-24 rounded-full object-cover border border-gray-300"
-                />
+                <picture>
+                  <img
+                    src={profile.cccdPicture}
+                    alt="Logo"
+                    className="w-24 h-24 rounded-full object-cover border border-gray-300"
+                  />
+                </picture>
+
                 {editMode && (
                   <div className="relative">
                     <button className="relative text-sm px-1 bg-blue-200 text-white rounded-full hover:bg-blue-400">

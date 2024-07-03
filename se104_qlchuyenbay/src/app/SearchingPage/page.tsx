@@ -114,7 +114,7 @@ export default function SearchingPage() {
     let filteredFlights = [...allFlightInfo]; // Create a copy of allFlightInfo
 
     if (availableFlight) {
-      filteredFlights = filteredFlights.filter((f) => f.seatsAvailable === 46);
+      filteredFlights = filteredFlights.filter((f) => f.seatsAvailable !== 0);
     }
 
     if (filters) {

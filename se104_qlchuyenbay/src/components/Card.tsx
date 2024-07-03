@@ -1,8 +1,6 @@
 import React from "react";
-import Button from "./Button";
 import Link from "next/link";
 import { FlightType } from "@/type";
-import { duration } from "@mui/material";
 
 const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
   const statusColor = (status: any) => {
@@ -23,11 +21,14 @@ const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
       className="rounded-3xl flex flex-col  justify-around min-h-[250px] bg-white hover:drop-shadow-lg p-5"
     >
       <div className="flex items-center">
-        <img
-          src={flight.logo}
-          alt={flight.brand}
-          className=" h-8 object-cover mr-4"
-        />
+        <picture>
+          <img
+            src={flight.logo}
+            alt={flight.brand}
+            className=" h-8 object-cover mr-4"
+          />
+        </picture>
+
         <div className="flex  w-full  justify-between">
           <h2 className="text-xl  font-medium">{flight?.brand}</h2>
           <h2 className="text-2xl  font-semibold">{flight.flightId}</h2>

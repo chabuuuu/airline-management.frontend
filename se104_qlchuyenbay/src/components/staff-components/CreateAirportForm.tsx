@@ -164,9 +164,9 @@ const CreateAirportForm = () => {
         <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className=" min-w-[600px]  p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-5xl"
+            className="min-w-[500px]  p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-5xl"
           >
-            <h1 className="text-2xl font-bold ">Tạo mới sân bay</h1>
+            <h1 className="text-2xl font-bold ">Create new airport</h1>
             <div className="divider h-1"></div>
 
             <div className="mb-3">
@@ -179,7 +179,7 @@ const CreateAirportForm = () => {
                     <p className=" mb-2 ">Country</p>
                     <div>
                       <Autocomplete
-                        className="w-full"
+                        className="w-full max-w-[200px]"
                         onChange={(_, value) => {
                           setCountry(value);
                           const selectedCountryCode = countryOptions.find(
@@ -217,7 +217,7 @@ const CreateAirportForm = () => {
                     <p className=" mb-2 ">City</p>
                     <div>
                       <Autocomplete
-                        className="w-full"
+                        className="w-full max-w-[200px]"
                         onChange={(_, value) => setCity(value)}
                         disabled={isSubmitting || !countryCode} // Disable city if country code is not selected
                         options={cityOptions}
@@ -243,20 +243,20 @@ const CreateAirportForm = () => {
             </div>
 
             <div className="mb-3">
-              <div className="grid grid-cols-1 gap-5">
+              <div className="">
                 <div>
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="airport"
                   >
-                    Tên sân bay
+                    Aiport name
                   </label>
                   <input
                     {...register("airportName")}
                     id="airportName"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
+                    className=" border rounded w-full py-2 px-3 text-gray-700 leading-tight"
                     type="text"
-                    placeholder="Sân bay"
+                    placeholder="Aiport name"
                   />
                   {errors.airportName && (
                     <div className="text-red-500">
@@ -264,36 +264,22 @@ const CreateAirportForm = () => {
                     </div>
                   )}
                 </div>
-                {/* <div>
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="status"
-                  >
-                    Status
-                  </label>
-                  <select className="select select-bordered select-sm w-full shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight ">
-                    <option>Success</option>
-                    <option>In Progress</option>
-                    <option>Cancel</option>
-                    <option>Not Started</option>
-                  </select>
-                </div> */}
               </div>
             </div>
-            <div className="mb-3">
+            <div className="mb-6">
               <div>
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="descriptions"
                 >
-                  Miêu tả
+                  Description
                 </label>
                 <input
                   {...register("description")}
                   id="descriptions"
-                  className="shadow  appearance-none border rounded w-full py-6 px-3 text-gray-700 leading-tight place-content-start "
+                  className=" border rounded w-full py-6 px-3 text-gray-700 leading-tight place-content-start "
                   type="text"
-                  placeholder="Miêu tả"
+                  placeholder="description"
                 />
                 {errors.description && (
                   <div className="text-red-500">
@@ -303,19 +289,19 @@ const CreateAirportForm = () => {
               </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2 ">
               <button
                 onClick={() => setShowModal(false)}
-                className="btn btn-ghost border-neutral-400 rounded-2xl mr-5"
+                className="btn btn-sm btn-ghost"
               >
-                Hủy
+                Cancel
               </button>
               <button
                 disabled={isSubmitting}
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4  rounded-2xl "
+                className="bg-green-500 btn-sm btn text-white  "
               >
-                {isSubmitting ? "Loading... " : " Tạo sân bay"}
+                {isSubmitting ? "Loading... " : " Create"}
               </button>
             </div>
           </form>

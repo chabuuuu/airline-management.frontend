@@ -66,6 +66,8 @@ export type FlightType = {
   seatsAvailable: number;
   createAt?: string;
   updateAt?: string;
+  description?: string;
+  intermediate?: IntermediateAirport[];
 };
 
 export type IntermediateAirport = {

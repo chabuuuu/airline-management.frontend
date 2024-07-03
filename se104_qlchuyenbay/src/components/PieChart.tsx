@@ -31,7 +31,7 @@ const PieChart: React.FC<{ props: chart }> = ({ props }) => {
       <h2 className="text-xl text-gray-800 font-bold leading-tight">
         {props?.tittle}
       </h2>
-      <div className="h-64 w-full flex flex-col justify-center items-center">
+      <div className="h-full min-h-56 max-h-64 w-full flex flex-col justify-center items-center">
         <Pie data={data} />
       </div>
     </div>

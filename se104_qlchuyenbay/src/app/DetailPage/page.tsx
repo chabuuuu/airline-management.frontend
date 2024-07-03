@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { SeatColor } from "@/type";
+import SignInForm from "@/components/SignInForm";
 
 const DetailPage = () => {
   const router = useRouter();
@@ -226,12 +227,14 @@ const DetailPage = () => {
                 seatWithTypedColor.priceBonusInterest
               );
             } else {
-              let cancelChooseSeats = chooseSeats;
-              cancelChooseSeats = cancelChooseSeats.filter(
-                (selectedSeat) =>
-                  selectedSeat.seat !== seatWithTypedColor.seatId
-              );
-              setChooseSeats(cancelChooseSeats);
+              if (chooseSeats.length > 1) {
+                let cancelChooseSeats = chooseSeats;
+                cancelChooseSeats = cancelChooseSeats.filter(
+                  (selectedSeat) =>
+                    selectedSeat.seat !== seatWithTypedColor.seatId
+                );
+                setChooseSeats(cancelChooseSeats);
+              }
             }
           }}
         >
@@ -267,6 +270,8 @@ const DetailPage = () => {
     ));
   };
 
+  const [signInModal, setSignInModal] = useState<boolean>(false);
+
   return (
     <div className="flex justify-center h-screen">
       <div className="flex flex-row justify-between w-full">
@@ -274,11 +279,14 @@ const DetailPage = () => {
           <div className="card bg-white h-80 w-full mb-5 p-5">
             <div className="flex items-center">
               <div className="flex items-center mb-4">
-                <img
-                  src={logo}
-                  alt={brand}
-                  className="w-12 object-cover mr-4"
-                />
+                <picture>
+                  <img
+                    src={logo}
+                    alt={brand}
+                    className="w-12 object-cover mr-4"
+                  />
+                </picture>
+
                 <h2 className="text-2xl font-semibold">{brand}</h2>
               </div>
             </div>
@@ -390,14 +398,40 @@ const DetailPage = () => {
               Tiếp tục thanh toán
             </Link>
           )} */}
-          {!(chooseSeats[0]?.seat === "") && (
+          {!(chooseSeats[0]?.seat === "") && !session?.user.role && (
             <button className="btn bg-orange-500 text-white w-full rounded-full">
               {!session ? (
-                <a href="/SignIn">Đăng nhập để tiếp tục</a>
+                <p onClick={() => setSignInModal(!signInModal)}>
+                  Đăng nhập để tiếp tục
+                </p>
               ) : (
                 <a onClick={() => handlePaymentClick()}>Tiếp tục thanh toán</a>
               )}
             </button>
+          )}
+          {signInModal && !session && (
+            <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-full shadow-lg transform transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-semibold">Sign In</h2>
+                  <p
+                    onClick={() => {
+                      setSignInModal(!signInModal);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 384 512"
+                      className="w-5 h-5 hover:opacity-75 cursor-pointer"
+                    >
+                      <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                    </svg>
+                  </p>
+                </div>
+
+                <SignInForm isModal={true} />
+              </div>
+            </div>
           )}
         </div>
       </div>

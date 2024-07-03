@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import CreateClassForm from "@/components/staff-components/CreateClassForm";
 import axios from "axios";
@@ -260,60 +262,85 @@ const RegulationsManage = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Thời gian bay tối thiểu:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="minFlightDuration"
-                      value={updateRulesData?.minFlightDuration}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
-                    <span className="ml-3">giờ</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Số sân bay trung gian tối đa:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="maxIntermediateAirport"
-                      value={updateRulesData?.maxIntermediateAirport}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
-                    <span className="ml-3">sân bay</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Thời gian dừng tối thiểu:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="minIntermediateAirportStopDelay"
-                      value={updateRulesData?.minIntermediateAirportStopDelay}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
-                    <span className="ml-3">giờ</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Thời gian dừng tối đa:</td>
-                  <td>
-                    <input
-                      type="text"
-                      name="maxIntermediateAirportStopDelay"
-                      value={updateRulesData?.maxIntermediateAirportStopDelay}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
-                    <span className="ml-3">giờ</span>
-                  </td>
-                </tr>
-              </tbody>
+              {!changeMode ? (
+                <tbody>
+                  <tr>
+                    <td>Thời gian bay tối thiểu:</td>
+                    <td>{updateRulesData?.minFlightDuration} giờ</td>
+                  </tr>
+                  <tr>
+                    <td>Số sân bay trung gian tối đa:</td>
+                    <td>{updateRulesData?.maxIntermediateAirport} sân bay</td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian dừng tối thiểu:</td>
+                    <td>
+                      {updateRulesData?.minIntermediateAirportStopDelay} giờ
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian dừng tối đa:</td>
+                    <td>
+                      {updateRulesData?.maxIntermediateAirportStopDelay} giờ
+                    </td>
+                  </tr>
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td>Thời gian bay tối thiểu:</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="minFlightDuration"
+                        value={updateRulesData?.minFlightDuration}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
+                      <span className="ml-3">giờ</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Số sân bay trung gian tối đa:</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="maxIntermediateAirport"
+                        value={updateRulesData?.maxIntermediateAirport}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
+                      <span className="ml-3">sân bay</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian dừng tối thiểu:</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="minIntermediateAirportStopDelay"
+                        value={updateRulesData?.minIntermediateAirportStopDelay}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
+                      <span className="ml-3">giờ</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian dừng tối đa:</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="maxIntermediateAirportStopDelay"
+                        value={updateRulesData?.maxIntermediateAirportStopDelay}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
+                      <span className="ml-3">giờ</span>
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </table>
 
             <div className="modal-action">
@@ -326,7 +353,7 @@ const RegulationsManage = () => {
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm"
+                  className="btn btn-sm bg-green-500 text-white"
                   onClick={() => handleChangeRules()}
                 >
                   Save
@@ -354,30 +381,11 @@ const RegulationsManage = () => {
             <h3 className="font-bold text-2xl mb-10">Update Booking Rules</h3>
 
             <CreateClassForm />
-            <div className="flex">
-              <p className="mt-6 w-[300px]">
-                Chỉ bán vé khi còn chỗ. Có {secondRegulation.length} hạng vé (
-                {secondRegulation
-                  .map((regulation) => regulation.ticketClass)
-                  .join(", ")}
-                ) . Vé{" "}
-                {secondRegulation.map((regulation, index) => (
-                  <span key={index}>
-                    <span className="font-bold">{regulation.ticketClass}</span>{" "}
-                    bằng{" "}
-                    <span className="font-bold">
-                      {regulation.ticketPriceInterest}
-                    </span>{" "}
-                    giá vé gốc
-                    {index !== secondRegulation.length - 1 && ", "}
-                  </span>
-                ))}{" "}
-                . Mỗi chuyến bay có một giá vé riêng.
-              </p>
-              <div className="mt-5 w-[300px] collapse bg-base-200">
+            <div className="flex justify-between">
+              <div className="mt-5 w-[300px] collapse bg-slate-100">
                 <input type="checkbox" />
                 <div className="collapse-title text-xl font-semibold">
-                  Change ticket class
+                  Update price interest
                 </div>
                 <div className="collapse-content ">
                   <div className="overflow-x-auto">
@@ -417,17 +425,7 @@ const RegulationsManage = () => {
                   </div>
                   <div className="flex justify-end gap-3">
                     <button
-                      className="btn btn-ghost "
-                      onClick={() => {
-                        handleCancel;
-                        setSecondRegulationModal(false);
-                      }}
-                    >
-                      Cancel
-                    </button>
-
-                    <button
-                      className="btn btn-ghost"
+                      className="btn btn-sm bg-green-500 text-white"
                       onClick={() => setSecondRegulationModal(false)}
                     >
                       Save
@@ -435,15 +433,14 @@ const RegulationsManage = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="modal-action">
-              <button
-                className="btn"
-                onClick={() => setSecondRegulationModal(false)}
-              >
-                Close
-              </button>
+              <div className="modal-action flex justify-end flex-col">
+                <button
+                  className="btn btn-sm"
+                  onClick={() => setSecondRegulationModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -461,35 +458,48 @@ const RegulationsManage = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Thời gian đặt vé chậm nhất trước khi cất cánh: </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="minBookingTime"
-                      value={updateRulesData?.minBookingTime}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
-                    <span className="ml-3">ngày</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Thời gian hủy vé chậm nhất trước khi cất cánh: </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="minCancelBookingTime"
-                      value={updateRulesData?.minCancelBookingTime}
-                      className="input input-bordered input-sm w-[100px] max-w-xs"
-                      onChange={handleChangeInputRules}
-                    />
+              {!changeModeRule3 ? (
+                <tbody>
+                  <tr>
+                    <td>Thời gian đặt vé chậm nhất trước khi cất cánh: </td>
+                    <td>{updateRulesData?.minBookingTime} ngày</td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian hủy vé chậm nhất trước khi cất cánh: </td>
+                    <td>{updateRulesData?.minCancelBookingTime} ngày</td>
+                  </tr>
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td>Thời gian đặt vé chậm nhất trước khi cất cánh: </td>
+                    <td>
+                      <input
+                        type="text"
+                        name="minBookingTime"
+                        value={updateRulesData?.minBookingTime}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
+                      <span className="ml-3">ngày</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Thời gian hủy vé chậm nhất trước khi cất cánh: </td>
+                    <td>
+                      <input
+                        type="text"
+                        name="minCancelBookingTime"
+                        value={updateRulesData?.minCancelBookingTime}
+                        className="input input-bordered input-sm w-[50px] max-w-xs"
+                        onChange={handleChangeInputRules}
+                      />
 
-                    <span className="ml-3">ngày</span>
-                  </td>
-                </tr>
-              </tbody>
+                      <span className="ml-3">ngày</span>
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </table>
 
             <div className="modal-action">
@@ -502,7 +512,7 @@ const RegulationsManage = () => {
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm"
+                  className="btn btn-sm text-white bg-green-500"
                   onClick={() => handleChangeRules()}
                 >
                   Save

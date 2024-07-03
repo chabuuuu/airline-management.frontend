@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { toast } from "react-toastify";
 
 interface Seat {
@@ -130,11 +129,14 @@ const PayingPage = () => {
             <div className="bg-white rounded-3xl drop-shadow-lg ">
               <div className="flex rounded-t-3xl p-2 bg-teal-600 justify-between items-center border-b ">
                 <div className="flex items-center">
-                  <img
-                    src={filteredParams.logo}
-                    alt={filteredParams.brand}
-                    className="w-12 object-cover mx-4"
-                  />
+                  <picture>
+                    <img
+                      src={filteredParams.logo}
+                      alt={filteredParams.brand}
+                      className="w-12 object-cover mx-4"
+                    />
+                  </picture>
+
                   <h2 className="text-2xl font-semibold text-white">
                     {filteredParams.brand}
                   </h2>

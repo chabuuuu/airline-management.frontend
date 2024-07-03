@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import FlightTable from "./FlightTable";
 import CreateFlightForm from "./CreateFlightForm";
@@ -6,11 +8,16 @@ import { PlanesData } from "@/planes";
 import { FlightType, chart } from "@/type";
 import BarChart from "../BarChart";
 import PieChart from "../PieChart";
+import { useRouter } from "next/navigation";
+import LineChart from "../LineChart";
 
 const FlightManage = () => {
+  const router = useRouter();
+
   const [allFlightInfo, setAllFlightInfo] = useState<FlightType[]>([]);
   const [filteredFlights, setFilteredFlights] = useState<FlightType[]>([]);
   const [loading, seatLoading] = useState<boolean>(true);
+
   useEffect(() => {
     const searchForFlight = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
@@ -18,6 +25,7 @@ const FlightManage = () => {
       try {
         const response = await axios.get(url);
         const responseData = response.data;
+        console.log(responseData);
         const updatedFlightInfo = responseData.data.map((dt: any) => {
           const planeData = PlanesData.find(
             (plane) => plane.brand === dt.airlines
@@ -40,6 +48,8 @@ const FlightManage = () => {
             seatsAvailable: dt.seatsAvailable,
             updateAt: dt.updateAt,
             createAt: dt.createAt,
+            description: dt.description,
+            intermediate: dt.intermediateAirports,
           };
         });
 
@@ -51,7 +61,10 @@ const FlightManage = () => {
 
     searchForFlight();
   }, []);
-
+  const [totalFlight, setTotalFlight] = useState<number>(0);
+  useEffect(() => {
+    setTotalFlight(allFlightInfo.length);
+  }, [allFlightInfo]);
   const [searchQuery, setSearchQuery] = useState<{
     id: string;
     departure: string;
@@ -177,13 +190,6 @@ const FlightManage = () => {
   }, [allFlightInfo]);
 
   const pieData: chart = {
-    tittle: "Top 5 most created cities",
-    unit: "Count",
-    datas: topDestination.map((d) => d.count),
-    labels: topDestination.map((d) => d.country),
-  };
-
-  const brandChartData: chart = {
     tittle: "Flights of each brand",
     unit: "Count",
     indicate: "Count",
@@ -191,9 +197,16 @@ const FlightManage = () => {
     labels: brandData.map((d) => d.brand),
   };
 
+  const brandChartData: chart = {
+    tittle: "Top 5 most created cities",
+    unit: "Count",
+    indicate: "Count",
+    datas: topDestination.map((d) => d.count),
+    labels: topDestination.map((d) => d.country),
+  };
+
   const barData: chart = {
     tittle: "Number of flights created monthly",
-    indicate: "Monthly Average",
     unit: "Flight",
     datas: flightInMonth,
     labels: [
@@ -225,7 +238,7 @@ const FlightManage = () => {
             <div className="flex gap-5 h-full">
               <BarChart data={brandChartData} orientation={"horizontal"} />
               <PieChart props={pieData} />
-              <BarChart data={barData} orientation={"vertical"} />
+              <LineChart props={barData} />
             </div>
           )}
         </div>
@@ -241,7 +254,7 @@ const FlightManage = () => {
         <div className="flex flex-col collapse-content">
           <div className="flex justify-between h-full items-center mt-5">
             <div>
-              <CreateFlightForm />
+              <CreateFlightForm numberFlight={totalFlight} />
             </div>
 
             <div className="flex justify-between">
