@@ -84,10 +84,12 @@ const AirplaneTable = () => {
                   <div className="flex items-center gap-3">
                     <div className="avatar">
                       <div className="mask mask-squircle w-12 h-12">
-                        <img
-                          src={cardData.airlinePicture}
-                          alt="Avatar Tailwind CSS Component"
-                        />
+                        <picture>
+                          <img
+                            src={cardData.airlinePicture}
+                            alt="Avatar Tailwind CSS Component"
+                          />
+                        </picture>
                       </div>
                     </div>
                     <div>

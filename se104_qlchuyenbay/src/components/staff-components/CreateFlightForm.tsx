@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -6,6 +7,8 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { PlanesData } from "@/planes";
 import { IntermediateAirport } from "@/type";
+import { useRouter } from "next/navigation";
+import { duration } from "@mui/material";
 
 type FormFields = {
   flightId: string;
@@ -17,8 +20,13 @@ type FormFields = {
   departureTime: string;
 };
 
-const CreateFlightForm: React.FC = () => {
+const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
+  numberFlight,
+}) => {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const currentNumberFlight = numberFlight;
 
   const [formData, setFormData] = useState<FormFields>({
     flightId: "",
@@ -29,7 +37,11 @@ const CreateFlightForm: React.FC = () => {
     arrivalAirportId: "",
     departureTime: "",
   });
-
+  const [flightId, setFlightId] = useState<string>("");
+  useEffect(() => {
+    setFlightId(formData.flightId);
+  }, [formData]);
+  console.log(flightId);
   const [airlines, setAirlines] = useState<string | null>(null);
 
   const [departure, setDeparture] = useState<string | null>(null);
@@ -65,10 +77,36 @@ const CreateFlightForm: React.FC = () => {
     getAllAirports();
   }, []);
 
+  const addIntermediateAirport = async () => {
+    if (intermediateAirports[0]?.flightId) {
+      const data = {
+        flightId: intermediateAirports[0].flightId,
+        airportId: intermediateAirports[0].airportId,
+        duration: Number(intermediateAirports[0].duration),
+        notes: intermediateAirports[0].notes,
+      };
+      const config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/flight/add-intermediate-airport`,
+        headers: {
+          Authorization: session?.user.token,
+        },
+        data: JSON.stringify(data),
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+      } catch (e: any) {
+        console.log(e);
+      }
+    }
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data = { ...formData, intermediateAirports };
+    const data = { ...formData };
 
     try {
       const response = await fetch(`/api/auth/CreateFlight`, {
@@ -92,6 +130,8 @@ const CreateFlightForm: React.FC = () => {
           theme: "light",
         });
       } else {
+        addIntermediateAirport();
+
         toast.success("Create new Flight succesful", {
           position: "top-right",
           autoClose: 3000,
@@ -102,9 +142,10 @@ const CreateFlightForm: React.FC = () => {
           progress: undefined,
           theme: "light",
         });
-        setInterval(() => {
-          window.location.reload();
-        }, 3000);
+        router.refresh();
+        // setInterval(() => {
+        //   window.location.reload();
+        // }, 3000);
       }
     } catch (e: any) {
       toast.error("Wrong api's client method", {
@@ -128,10 +169,15 @@ const CreateFlightForm: React.FC = () => {
   };
 
   const handleAddIntermediateAirport = () => {
-    if (intermediateAirports.length < 2) {
+    if (intermediateAirports.length < 2 && flightId) {
       setIntermediateAirports([
         ...intermediateAirports,
-        { flightId: formData.flightId, airportId: "", duration: "", notes: "" },
+        {
+          flightId: flightId,
+          airportId: "",
+          duration: "",
+          notes: "",
+        },
       ]);
     }
   };
@@ -162,8 +208,8 @@ const CreateFlightForm: React.FC = () => {
           <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
         </svg>
       </button>
-      {showModal && (
-        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+      {showModal && currentNumberFlight === numberFlight && (
+        <div className="fixed bg-black bg-opacity-15 inset-0 flex items-center justify-center z-50">
           <form
             onSubmit={onSubmit}
             className="min-w-[900px] p-8 px-8 mx-auto bg-white shadow-md rounded-2xl max-w-4xl"
@@ -201,15 +247,6 @@ const CreateFlightForm: React.FC = () => {
                   >
                     Hãng máy bay
                   </label>
-                  {/* <input
-                    id="airlines"
-                    name="airlines"
-                    className="border rounded w-full py-2 px-3 text-gray-700"
-                    type="text"
-                    placeholder="VietNam Airlines"
-                    value={formData.airlines}
-                    onChange={handleInputChange}
-                  /> */}
                   <Autocomplete
                     onChange={(_, value) => {
                       if (value) {
@@ -453,19 +490,19 @@ const CreateFlightForm: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="flex justify-end">
+            <div className="flex  gap-3 justify-end">
               <button
                 onClick={() => {
                   setIntermediateAirports([]);
                   setShowModal(false);
                 }}
-                className="btn btn-ghost rounded-2xl mr-5"
+                className="btn btn-ghost btn-sm rounded-2xl "
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+                className="btn btn-sm bg-green-500 text-white rounded-2xl"
               >
                 Submit
               </button>

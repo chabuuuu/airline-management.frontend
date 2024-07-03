@@ -50,11 +50,14 @@ const Ticket: React.FC<{ params: Params }> = ({ params }) => {
           <div className="bg-white rounded-3xl drop-shadow-lg">
             <div className="flex rounded-t-3xl p-2 bg-teal-600 justify-between items-center border-b ">
               <div className="flex items-center">
-                <img
-                  src={params.logo}
-                  alt={params.brand}
-                  className="w-12 object-cover mx-4"
-                />
+                <picture>
+                  <img
+                    src={params.logo}
+                    alt={params.brand}
+                    className="w-12 object-cover mx-4"
+                  />
+                </picture>
+
                 <h2 className="text-2xl font-semibold text-white">
                   {params.brand}
                 </h2>

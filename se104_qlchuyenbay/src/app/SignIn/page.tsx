@@ -38,11 +38,13 @@ const SignIn = async () => {
             </p>
           </div>
           <div className=" w-96 hidden lg:block ">
-            <img
-              src="https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png"
-              alt="Illustration"
-              className="w-full h-full object-cover rounded-e-2xl justify-center "
-            />
+            <picture>
+              <img
+                src="https://i.postimg.cc/9f1FPGGC/image-2024-03-26-170516871.png"
+                alt="Illustration"
+                className="w-full h-full object-cover rounded-e-2xl justify-center "
+              />
+            </picture>
           </div>
         </div>
       </div>

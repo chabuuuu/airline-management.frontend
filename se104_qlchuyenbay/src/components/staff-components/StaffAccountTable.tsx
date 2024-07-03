@@ -1,4 +1,5 @@
-import axios from "axios";
+"use client";
+
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -115,10 +116,12 @@ const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
                     <div className="flex items-center gap-3">
                       <div className="avatar">
                         <div className="mask mask-squircle w-12 h-12">
-                          <img
-                            src="https://th.bing.com/th/id/OIP.2hAVCZRMcBjsE8AGQfWCVQHaHa?rs=1&pid=ImgDetMain"
-                            alt="Avatar Tailwind CSS Component"
-                          />
+                          <picture>
+                            <img
+                              src="https://th.bing.com/th/id/OIP.2hAVCZRMcBjsE8AGQfWCVQHaHa?rs=1&pid=ImgDetMain"
+                              alt="Avatar Tailwind CSS Component"
+                            />
+                          </picture>
                         </div>
                       </div>
                       <div>

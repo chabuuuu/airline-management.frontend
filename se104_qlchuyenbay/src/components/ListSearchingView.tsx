@@ -45,11 +45,13 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                       <div className="flex items-center gap-3">
                         <div className="">
                           <div className="w-8">
-                            <img
-                              className="w-full"
-                              src={cardData.logo}
-                              alt="Logo"
-                            />
+                            <picture>
+                              <img
+                                className="w-full"
+                                src={cardData.logo}
+                                alt="Logo"
+                              />
+                            </picture>
                           </div>
                         </div>
                         <div>

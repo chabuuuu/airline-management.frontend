@@ -1,5 +1,8 @@
+"use client";
+
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState, useTransition } from "react";
 import { toast } from "react-toastify";
 
 type Props = {
@@ -7,6 +10,9 @@ type Props = {
 };
 
 const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     const getSeatOfAirplane = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/seat-flight/seat-list?flightId=${flightId}`;
@@ -40,7 +46,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
       }
     };
     getSeatOfAirplane();
-  }, []);
+  }, [flightId]);
 
   const [alreadySelectedSeats, setAlreadySelectedSeats] = useState<
     {
@@ -264,9 +270,16 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
           progress: undefined,
           theme: "light",
         });
-        setInterval(() => {
-          window.location.reload();
-        }, 3000);
+        startTransition(() => {
+          setChooseSeats([]);
+          // Refresh the current route and fetch new data from the server without
+          // losing client-side browser or React state.
+          router.refresh();
+        });
+
+        // setInterval(() => {
+        //   window.location.reload();
+        // }, 3000);
       }
     } catch (e: any) {
       toast.error("An error occurred", {
@@ -312,7 +325,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
         <div>{renderSeatGrid()}</div>
 
         <div className="mt-5">
-          <div className="collapse bg-slate-200">
+          <div className="collapse bg-slate-100">
             <input
               type="checkbox"
               onClick={() => {
@@ -324,7 +337,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
               Change seat class
             </div>
             <div className="collapse-content ">
-              <div className="bg-slate-200 rounded-2xl p-4 flex flex-col">
+              <div className=" rounded-2xl p-4 flex flex-col">
                 <div className="flex items-center gap-5">
                   <div className="font-semibold">
                     <p className="w-[90px]">Seat select </p>
@@ -351,7 +364,7 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
                     onClick={() => {
                       changeSeatClass();
                     }}
-                    className="btn"
+                    className="btn btn-ghost"
                   >
                     Change
                   </button>

@@ -56,7 +56,7 @@ function ProfilePage() {
       }
     };
     getBookingTicket();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     const total = bookings.reduce((acc, book) => acc + Number(book.price), 0);

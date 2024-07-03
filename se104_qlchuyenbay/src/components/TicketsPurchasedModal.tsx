@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TicketCard from "./TIcketCard";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import { BookingType } from "@/type";
 
@@ -51,15 +50,17 @@ const TicketsPurchasedModal: React.FC<{ allBookings: BookingType[] }> = ({
                 </button>
               </div>
               <div className="p-5 max-h-[600px] overflow-y-auto bg-base-200 rounded-lg">
-                {allBookings.map((book) => (
-                  <TicketCard
-                    flightId={book.flightId}
-                    bookedAt={book.bookedAt}
-                    paymentStatus={book.paymentStatus}
-                    seatId={book.seatId}
-                    seatClass={book.class}
-                    price={book.price}
-                  />
+                {allBookings.map((book, index) => (
+                  <div key={index}>
+                    <TicketCard
+                      flightId={book.flightId}
+                      bookedAt={book.bookedAt}
+                      paymentStatus={book.paymentStatus}
+                      seatId={book.seatId}
+                      seatClass={book.class}
+                      price={book.price}
+                    />
+                  </div>
                 ))}
               </div>
             </div>

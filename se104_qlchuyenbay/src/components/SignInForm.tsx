@@ -17,7 +17,10 @@ const schema = z.object({
 
 type FormFields = z.infer<typeof schema>;
 
-function SignInForm() {
+interface prop {
+  isModal?: boolean;
+}
+const SignInForm: React.FC<prop> = ({ isModal = false }) => {
   const router = useRouter();
   const {
     register,
@@ -51,8 +54,10 @@ function SignInForm() {
         theme: "light",
       });
 
-      router.push("/");
-      router.refresh();
+      if (!isModal) router.push("/");
+      else {
+        router.refresh();
+      }
     } else {
       console.log(res);
       toast.error(res.error, {
@@ -81,6 +86,7 @@ function SignInForm() {
           {...register("email")}
           type="text"
           id="email"
+          autoComplete="on"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="name@flowbite.com"
         />
@@ -99,6 +105,7 @@ function SignInForm() {
           {...register("password")}
           type="password"
           id="password"
+          autoComplete="on"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
         {errors.password && (
@@ -139,6 +146,6 @@ function SignInForm() {
       <GoogleSignInButton />
     </form>
   );
-}
+};
 
 export default SignInForm;

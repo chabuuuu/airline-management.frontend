@@ -21,7 +21,7 @@ const LineChart: React.FC<{ props: chart }> = ({ props }) => {
         data: props?.datas,
         fill: false,
         backgroundColor: "rgb(100, 200, 100)",
-        tension: 0.1,
+        tension: 0.2,
       },
     ],
   };
@@ -31,7 +31,7 @@ const LineChart: React.FC<{ props: chart }> = ({ props }) => {
       <h2 className="text-xl text-gray-800 font-bold leading-tight">
         {props?.tittle}
       </h2>
-      <div className="h-64 w-full flex flex-col justify-center items-center">
+      <div className="h-full w-full flex flex-col justify-center items-center">
         <Line data={data} />
       </div>
     </div>

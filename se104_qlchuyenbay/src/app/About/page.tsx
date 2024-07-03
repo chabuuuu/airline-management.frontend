@@ -6,11 +6,13 @@ const About: React.FC = () => {
   return (
     <div className=" bg-white rounded-2xl p-10 m-10 flex flex-col justify-between">
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-10">
-        <img
-          className="w-40 h-40 object-contain"
-          src="https://i.postimg.cc/MpSjPbsB/cse-01.png"
-          alt="Logo"
-        />
+        <picture>
+          <img
+            className="w-40 h-40 object-contain"
+            src="https://i.postimg.cc/MpSjPbsB/cse-01.png"
+            alt="Logo"
+          />
+        </picture>
         <div className="hero-content flex-col lg:flex-row-reverse ">
           <div>
             <div className="">
@@ -58,7 +60,7 @@ const About: React.FC = () => {
             </div>
             <div className="mb-10">
               <h1 className="text-4xl font-semibold mb-5">Back-End</h1>
-              <p className="py-1 text-sm font-light">TypeScrip</p>
+              <p className="py-1 text-sm font-light">TypeScript</p>
               <p className="py-1 text-sm font-light">MySQL</p>
               <p className="py-1 text-sm font-light">Nodemon</p>
               <p className="py-1 text-sm font-light">Express</p>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import HandleSeatModal from "./HandleSeatModal";
 import { FlightType } from "@/type";
 import { useSession } from "next-auth/react";
@@ -129,6 +129,61 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
     }
   };
 
+  const [updateFlightModal, setUpdateFlightModal] = useState<boolean>(false);
+  const [flightIdModal, setFlightIdModal] = useState<string>("");
+  const [descriptionChange, setDescriptionChange] = useState<string>("");
+
+  const updateFlight = async () => {
+    // const data = {
+    //   description: descriptionChange,
+    // };
+    let data = '{\n    "description": "Chuyến bay giá rẻ của VietJet"\n}';
+
+    const config = {
+      method: "put",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/flight/${flightIdModal}`,
+      headers: {
+        Authorization: session?.user.token,
+      },
+      data: JSON.stringify(data),
+    };
+    console.log(config);
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+      toast.success("Update successful", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      router.refresh();
+    } catch (e: any) {
+      console.log(e);
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+
+  const [intermediateModal, setIntermediateModal] = useState<boolean>(false);
+  const flightIntermediate = allFlight.find(
+    (flight) => flight.flightId === selectedFlightId
+  );
+
   return (
     <div>
       <div className="overflow-x-auto ">
@@ -138,6 +193,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
               <th></th>
               <th>Flight</th>
               <th>Departure</th>
+              <th></th>
               <th>Destination</th>
               <th>Date</th>
               <th>Seat</th>
@@ -166,7 +222,9 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
                       <div className="flex items-center gap-3">
                         <div className="">
                           <div className="w-8 object-cover">
-                            <img src={cardData.logo} alt="Avatar" />
+                            <picture>
+                              <img src={cardData.logo} alt="Avatar" />
+                            </picture>
                           </div>
                         </div>
                         <div>
@@ -183,6 +241,17 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
                       </span>
                       <br />
                       <span className="text-sm">{cardData.airportStart}</span>
+                    </td>
+                    <td>
+                      <span
+                        className="btn btn-xs btn-ghost"
+                        onClick={() => {
+                          setIntermediateModal(!intermediateModal);
+                          setSelectedFlightId(cardData.flightId);
+                        }}
+                      >
+                        -
+                      </span>
                     </td>
                     <td>
                       <span className="font-semibold">{cardData.arrival}</span>
@@ -264,9 +333,12 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
                               key={`update-${cardData.flightId}`}
                               className="btn btn-sm btn-ghost "
                               value={cardData.flightId}
-                              // onClick={() =>
-                              //   deleteFlightById(cardData.flightId)
-                              // }
+                              onClick={() => {
+                                setFlightIdModal(cardData.flightId);
+                                setUpdateFlightModal(!updateFlightModal);
+                                if (cardData?.description)
+                                  setDescriptionChange(cardData?.description);
+                              }}
                             >
                               <div className="flex justify-between">
                                 <p>Update Flight</p>
@@ -350,6 +422,123 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
           </button>
         </div>
       </div>
+      {intermediateModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white shadow-black p-10 rounded-2xl">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-2xl font-semibold">Intermediate flight</h2>
+                <p
+                  onClick={() => {
+                    setIntermediateModal(!intermediateModal);
+                  }}
+                >
+                  {" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 384 512"
+                    className="w-5 h-5 hover:opacity-75 cursor-pointer"
+                  >
+                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                  </svg>
+                </p>
+              </div>
+              <div className="">
+                <table className="table flex justify-center ">
+                  {/* head */}
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Airport</th>
+                      <th>Duration</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {flightIntermediate?.intermediate &&
+                      flightIntermediate?.intermediate.map((it, index) => (
+                        <tr key={index}>
+                          <td>{index}</td>
+                          <td>
+                            <div>{it.airportId}</div>
+                          </td>
+                          <td>
+                            <div> {it.duration}</div>
+                          </td>
+                          <td>
+                            <div> {it.notes}</div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {updateFlightModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white shadow-black p-10 rounded-2xl">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-semibold">
+                Change flight description
+              </h2>
+              <p
+                onClick={() => {
+                  setUpdateFlightModal(!updateFlightModal);
+                }}
+              >
+                {" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 384 512"
+                  className="w-5 h-5 hover:opacity-75 cursor-pointer"
+                >
+                  <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                </svg>
+              </p>
+            </div>
+            <table className="table flex justify-center ">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="description">Description</label>
+                      <textarea
+                        name="description"
+                        value={descriptionChange}
+                        className="textarea textarea-bordered textarea-sm"
+                        onChange={(e) => setDescriptionChange(e.target.value)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => setUpdateFlightModal(!updateFlightModal)}
+              >
+                Close
+              </button>
+              <button
+                onClick={updateFlight}
+                className="btn bg-green-500 btn-sm text-white"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showStatusModal && (
         <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <div className="bg-white shadow-black p-10 rounded-2xl">
@@ -371,13 +560,13 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
             </div>
             <div className="modal-action">
               <button
-                className="btn btn-sm"
+                className="btn btn-sm btn-ghost"
                 onClick={() => setShowStatusModal(false)}
               >
                 Close
               </button>
               <button
-                className="btn btn-warning btn-sm text-white"
+                className="btn bg-green-500 btn-sm text-white"
                 onClick={() => changStatus()}
               >
                 Save
@@ -396,11 +585,14 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
               <HandleSeatModal flightId={selectedFlightId} />
             </div>
             <div className="modal-action">
-              <button className="btn" onClick={() => setShowSeatModal(false)}>
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => setShowSeatModal(false)}
+              >
                 Close
               </button>
               <button
-                className="btn btn-warning"
+                className="btn bg-green-500 btn-sm text-white"
                 onClick={() => setShowSeatModal(false)}
               >
                 Save

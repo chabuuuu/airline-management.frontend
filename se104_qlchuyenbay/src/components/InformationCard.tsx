@@ -1,3 +1,5 @@
+"use client";
+
 import { Customer } from "@/type";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -52,14 +54,16 @@ const InformationCard: React.FC<{ passengerId: string }> = ({
               <div>
                 <div>
                   <div className="w-28 h-28 mx-auto  rounded-full overflow-hidden border-4 border-white relative">
-                    <img
-                      className="object-cover w-full h-full"
-                      src={
-                        customer?.cccdPicture ||
-                        "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
-                      }
-                      alt="Profile Picture"
-                    />
+                    <picture>
+                      <img
+                        className="object-cover w-full h-full"
+                        src={
+                          customer?.cccdPicture ||
+                          "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
+                        }
+                        alt="Profile Picture"
+                      />
+                    </picture>
                   </div>
                 </div>
 

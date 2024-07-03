@@ -1,3 +1,5 @@
+"use client";
+
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -32,7 +34,7 @@ const BookingManage = () => {
     };
 
     getAllBookingListOfStaff();
-  }, []);
+  }, [session?.user.token]);
 
   const [customerBookingCount, setCustomerBookingCount] = useState<
     {
@@ -54,8 +56,10 @@ const BookingManage = () => {
   useEffect(() => {
     const customerCount: { [key: string]: number } = {};
     const monthCounts = Array(12).fill(0);
+    const proceedPerMonth = Array(12).fill(0);
     let paidCount = 0;
     let unpaidCount = 0;
+    let proceeds = 0;
     bookings.forEach((book) => {
       if (customerCount[book.passengerId]) {
         customerCount[book.passengerId]++;
@@ -75,6 +79,7 @@ const BookingManage = () => {
         paidCount++;
       } else {
         unpaidCount++;
+        proceedPerMonth[Number(createMonth) - 1] += Number(book.price);
       }
     });
 
