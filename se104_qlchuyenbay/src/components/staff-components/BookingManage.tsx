@@ -27,7 +27,21 @@ const BookingManage = () => {
       };
       try {
         const response = await axios.request(config);
-        setBookings(response.data);
+        const responseData = response.data;
+        responseData.sort((a: any, b: any) => {
+          const dateA = new Date(
+            a.bookedAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              a.bookedAt.split(" ")[1]
+          ).getTime();
+          const dateB = new Date(
+            b.bookedAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              b.bookedAt.split(" ")[1]
+          ).getTime();
+          return dateB - dateA;
+        });
+        setBookings(responseData);
       } catch (e) {
         console.log(e);
       }
@@ -224,6 +238,7 @@ const BookingManage = () => {
                 />
               </svg>
             </label>
+
             <div className="flex rounded-md p-1 items-center justify-around h-12 bg-base-300">
               <div
                 className={`${

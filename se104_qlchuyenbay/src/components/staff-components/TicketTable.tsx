@@ -84,12 +84,13 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
           <thead>
             <tr>
               <th></th>
+              <th>TicketId</th>
               <th>BookingId</th>
               <th>Passenger</th>
               <th>FlightId</th>
               <th>Seat</th>
-              <th>Date</th>
               <th>Price</th>
+              <th>Date</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -101,7 +102,7 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                 index < MAX_LENGTH_COL * page
               ) {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <th key={index}>
                       <label>
                         <span>{index}</span>
@@ -110,14 +111,21 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                     <td>
                       <div className="tooltip" data-tip={ticket.ticketId}>
                         <span className="font-semibold">
-                          {ticket.ticketId.slice(0, 8).concat("...")}
+                          {ticket.ticketId?.slice(0, 8).concat("...")}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="tooltip" data-tip={ticket.bookingId}>
+                        <span className="font-semibold">
+                          {ticket.bookingId?.slice(0, 8).concat("...")}
                         </span>
                       </div>
                     </td>
                     <td>
                       <div
                         className="tooltip"
-                        data-tip={ticket.passenger.passengerId}
+                        data-tip={`${ticket.passenger.fullName} - ${ticket.passenger.phoneNumber} ${ticket.passenger.email} `}
                       >
                         <span
                           className="font-semibold"
@@ -128,7 +136,7 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                             );
                           }}
                         >
-                          {ticket.passenger.passengerId
+                          {ticket.passenger?.passengerId
                             .slice(0, 8)
                             .concat("...")}{" "}
                         </span>
@@ -148,11 +156,15 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                       </div>
                     </td>
                     <td>
-                      <div className="tooltip" data-tip="Detail seats ">
-                        <button className="btn btn-ghost text-green-400 btn-xs font-medium">
+                      <div className="tooltip" data-tip={ticket.seat.class}>
+                        <span className="font-semibold text-base">
                           {ticket.seat.seatId}
-                        </button>
+                        </span>
                       </div>
+                    </td>
+
+                    <td>
+                      <div className="tooltip">{ticket.price}</div>
                     </td>
                     <td>
                       SellAt:{" "}
@@ -160,9 +172,6 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                       <br />
                       UpdateAt:{" "}
                       <span className="text-sm">{ticket.updateAt}</span>
-                    </td>
-                    <td>
-                      <div className="tooltip">{ticket.price}</div>
                     </td>
                     <td>
                       <button className="btn btn-ghost text-green-400 btn-xs font-medium">
@@ -189,6 +198,7 @@ const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
                           </Button>
                         </DropdownTrigger>
                         <DropdownMenu
+                          key={ticket.ticketId}
                           aria-label="Static Actions"
                           className="bg-white rounded-xl drop-shadow-lg p-3"
                         >

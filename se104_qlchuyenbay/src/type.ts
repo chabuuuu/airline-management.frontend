@@ -49,6 +49,7 @@ export type BookingType = {
 export type TicketType = {
   ticketId: string;
   flightId: string;
+  bookingId: string;
   passenger: {
     passengerId: string;
     fullName: string;
@@ -127,7 +128,7 @@ export type chart = {
 };
 
 export type Rules = {
-  minFlightDuration: number;
+  minFlightDuration: GLfloat;
   maxIntermediateAirport: number;
   minIntermediateAirportStopDelay: number;
   maxIntermediateAirportStopDelay: number;

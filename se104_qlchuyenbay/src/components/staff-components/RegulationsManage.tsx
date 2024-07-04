@@ -7,10 +7,12 @@ import { useEffect, useState } from "react";
 import { Rules } from "@/type";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const RegulationsManage = () => {
   const { data: session } = useSession();
 
+  const router = useRouter();
   const [rules, setRules] = useState<Rules>();
 
   useEffect(() => {
@@ -119,10 +121,10 @@ const RegulationsManage = () => {
       url: `${process.env.NEXT_PUBLIC_SERVER}/rules/modify`,
       headers: {
         Authorization: session?.user.token,
+        "Content-Type": "application/json",
       },
       data: JSON.stringify(updateRulesData),
     };
-    console.log(config);
     try {
       const response = await axios.request(config);
       console.log(response);
@@ -137,7 +139,9 @@ const RegulationsManage = () => {
         theme: "light",
       });
       setChangeMode(!changeMode);
+      router.refresh();
     } catch (e: any) {
+      console.log(e);
       const messages = e.response.data.message;
       toast.error(messages || "An error occurred", {
         position: "top-right",
@@ -354,7 +358,7 @@ const RegulationsManage = () => {
               ) : (
                 <button
                   className="btn btn-sm bg-green-500 text-white"
-                  onClick={() => handleChangeRules()}
+                  onClick={handleChangeRules}
                 >
                   Save
                 </button>

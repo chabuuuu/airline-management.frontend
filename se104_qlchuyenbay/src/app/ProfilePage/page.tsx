@@ -16,9 +16,13 @@ function ProfilePage() {
 
   const router = useRouter();
   useEffect(() => {
-    if (!session) {
-      router.push("/");
-    }
+    const interval = setInterval(() => {
+      if (!session) {
+        router.push("/");
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
   }, [session, router]);
 
   const [bookings, setBookings] = useState<BookingType[]>([]);
@@ -49,6 +53,20 @@ function ProfilePage() {
           flightId: dt.seatFlight.flightId,
           class: dt.seatFlight.class,
         }));
+        mappedData.sort((a: any, b: any) => {
+          const dateA = new Date(
+            a.bookedAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              a.bookedAt.split(" ")[1]
+          ).getTime();
+          const dateB = new Date(
+            b.bookedAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              b.bookedAt.split(" ")[1]
+          ).getTime();
+          return dateB - dateA;
+        });
+
         setBookings(mappedData);
       } catch (e) {
         console.log(e);
@@ -85,6 +103,15 @@ function ProfilePage() {
   const [flightInMonth, setFlightInMonth] = useState<number[]>(
     Array(12).fill(0)
   );
+
+  const brandChartData: chart = {
+    tittle: "Top 5 most created cities",
+    unit: "Count",
+    indicate: "Count",
+    datas: topDestination.map((d) => d.count),
+    labels: topDestination.map((d) => d.country),
+  };
+
   const barData: chart = {
     tittle: "Number booking during the year",
     indicate: "Monthly Average",
@@ -159,6 +186,7 @@ function ProfilePage() {
                 <p className="text-lg font-semibold">Lastest Ticket</p>
                 {bookings[0] && (
                   <TicketCard
+                    bookingId={bookings[0]?.bookingId}
                     flightId={bookings[0]?.flightId}
                     bookedAt={bookings[0]?.bookedAt}
                     seatId={bookings[0]?.seatId}
