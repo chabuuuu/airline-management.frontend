@@ -25,7 +25,7 @@ const FlightManage = () => {
       try {
         const response = await axios.get(url);
         const responseData = response.data;
-        console.log(responseData);
+
         const updatedFlightInfo = responseData.data.map((dt: any) => {
           const planeData = PlanesData.find(
             (plane) => plane.brand === dt.airlines

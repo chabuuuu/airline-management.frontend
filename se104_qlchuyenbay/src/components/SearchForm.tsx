@@ -60,7 +60,6 @@ const SearchForm = () => {
           code: country.code,
         }));
         setCountryOptions(options);
-        console.log(options);
       } catch (e) {
         console.log(e);
       }
@@ -103,7 +102,7 @@ const SearchForm = () => {
       try {
         const response = await axios.request(config);
         const responseData = response.data;
-        console.log(responseData);
+
         setCityArrivalOptions(responseData);
       } catch (e) {
         console.log(e);
@@ -113,7 +112,6 @@ const SearchForm = () => {
   }, [countryArrivalCode]);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    console.log("Form data:", data);
     const queryParams = `?departure=${encodeURIComponent(
       data.departure
     )}&destination=${encodeURIComponent(

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       url: `${process.env.NEXT_PUBLIC_SERVER}/booking/create`,
       headers: {
         Authorization: session?.user.token,
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
       data: qs.stringify(body),
     };

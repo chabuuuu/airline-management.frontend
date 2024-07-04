@@ -49,7 +49,6 @@ function ProfilePage() {
           flightId: dt.seatFlight.flightId,
           class: dt.seatFlight.class,
         }));
-        console.log("mappedData", mappedData);
         setBookings(mappedData);
       } catch (e) {
         console.log(e);
@@ -127,7 +126,7 @@ function ProfilePage() {
   return (
     <div className="container ">
       <div className="flex flex-row justify-between ">
-        <ProfileCard CUSTOMER_TOKEN={session?.user.token} />
+        <ProfileCard />
         <div className="flex flex-col justify-between w-full ml-5">
           <div className="  mb-5 flex justify-between h-full  items-center gap-5">
             {/* <PieChart /> */}
@@ -158,14 +157,16 @@ function ProfilePage() {
               </div>
               <div>
                 <p className="text-lg font-semibold">Lastest Ticket</p>
-                <TicketCard
-                  flightId={bookings[0]?.flightId}
-                  bookedAt={bookings[0]?.bookedAt}
-                  seatId={bookings[0]?.seatId}
-                  paymentStatus={bookings[0]?.paymentStatus}
-                  seatClass={bookings[0]?.class}
-                  price={bookings[0]?.price}
-                />
+                {bookings[0] && (
+                  <TicketCard
+                    flightId={bookings[0]?.flightId}
+                    bookedAt={bookings[0]?.bookedAt}
+                    seatId={bookings[0]?.seatId}
+                    paymentStatus={bookings[0]?.paymentStatus}
+                    seatClass={bookings[0]?.class}
+                    price={bookings[0]?.price}
+                  />
+                )}
               </div>
             </div>
             <TicketsPurchasedModal allBookings={bookings} />

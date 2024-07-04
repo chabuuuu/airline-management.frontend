@@ -37,6 +37,7 @@ const schema = z.object({
           `${process.env.NEXT_PUBLIC_SERVER}/customer/upload-profile-picture`,
           formData
         );
+
         return response.data.picture_url;
       }
     })
@@ -90,7 +91,20 @@ const SignUpForm = () => {
           router.push("/SignIn", { scroll: false });
         }, 3000);
       } else {
-        toast.error(mss.message.message, {
+        const messages = mss.message?.message;
+        messages.map((m: any) => {
+          toast.error(m || "An error occurred", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        });
+        toast.error("Error", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -101,20 +115,16 @@ const SignUpForm = () => {
           theme: "light",
         });
       }
-    } catch (e: any) {
-      const messages = e.response?.data.message;
-      console.log(e.response.data.message);
-      messages.map((m: any) => {
-        toast.error(m || "An error occurred", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+    } catch (e) {
+      toast.error("An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
       });
       console.log(e);
     }
@@ -127,9 +137,12 @@ const SignUpForm = () => {
       method: "post",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/customer/send-verify-email`,
-      headers: {},
+      headers: {
+        "Content-Type": "application/json",
+      },
       data: JSON.stringify({ email: verifiedEmail }),
     };
+
     try {
       const response = await axios.request(config);
       console.log(response);

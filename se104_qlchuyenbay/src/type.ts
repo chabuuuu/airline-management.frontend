@@ -46,7 +46,25 @@ export type BookingType = {
   flightId: string;
   class: string;
 };
-
+export type TicketType = {
+  ticketId: string;
+  flightId: string;
+  passenger: {
+    passengerId: string;
+    fullName: string;
+    cccd: string;
+    email: string;
+    phoneNumber: string;
+  };
+  price: string;
+  seat: {
+    seatId: string;
+    class: string;
+  };
+  status: string;
+  sellAt: string;
+  updateAt: string;
+};
 export type FlightType = {
   flightId: string;
   logo: string;

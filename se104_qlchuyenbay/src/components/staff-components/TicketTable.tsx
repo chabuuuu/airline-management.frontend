@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import InformationCard from "../InformationCard";
-import { BookingType } from "@/type";
+import { BookingType, TicketType } from "@/type";
 import {
   Dropdown,
   DropdownTrigger,
@@ -11,16 +11,12 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
 
 const MAX_LENGTH_COL = 9;
 const MAX_PAGE_BUTTONS = 5;
 
-const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
-  allBooking,
-}) => {
+const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
   const [page, setPage] = useState<number>(1);
-  const { data: session } = useSession();
 
   const statusColor = (status: any) => {
     switch (status) {
@@ -35,36 +31,27 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
     }
   };
 
-  const totalPages = Math.ceil(allBooking.length / MAX_LENGTH_COL);
+  const totalPages = Math.ceil(tickets.length / MAX_LENGTH_COL);
   const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
   const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
-  const [isLoadingId, setIsLoadingId] = useState<string | null>(null);
-
-  const handleCreateAndPrintTicket = async (bookingId: string) => {
-    let config = {
+  const printTicket = async (ticketId: string) => {
+    console.log(ticketId);
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/ticket/print?ticketId=${ticketId}`;
+    const config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/ticket/create-and-print/by-booking-id/${bookingId}`,
+      url: url,
       headers: {
-        Authorization: session?.user.token,
+        "Content-Type": "application/json",
       },
     };
+    console.log(url);
     try {
       const response = await axios.request(config);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `ticket_${bookingId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      setIsLoadingId(null);
-      toast.success("Create ticket succesful", {
+      console.log(response);
+      toast.success("Print succesful", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -75,10 +62,10 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
         theme: "light",
       });
     } catch (e: any) {
-      console.log(e);
-      toast.error(e.response.data.message || "Create ticket succesful", {
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -88,6 +75,7 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
       });
     }
   };
+  const [printModal, setPrintModal] = useState<boolean>(false);
 
   return (
     <div>
@@ -98,99 +86,106 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
               <th></th>
               <th>BookingId</th>
               <th>Passenger</th>
-              <th>Price</th>
+              <th>FlightId</th>
+              <th>Seat</th>
               <th>Date</th>
-              <th>Payment</th>
+              <th>Price</th>
               <th>Status</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {allBooking.map((cardData, index) => {
+            {tickets.map((ticket, index) => {
               if (
                 index >= MAX_LENGTH_COL * (page - 1) &&
                 index < MAX_LENGTH_COL * page
               ) {
                 return (
-                  <tr key={index}>
-                    <th>
+                  <tr>
+                    <th key={index}>
                       <label>
                         <span>{index}</span>
                       </label>
                     </th>
                     <td>
-                      <span className="font-semibold">
-                        {cardData.bookingId}
-                      </span>
+                      <div className="tooltip" data-tip={ticket.ticketId}>
+                        <span className="font-semibold">
+                          {ticket.ticketId.slice(0, 8).concat("...")}
+                        </span>
+                      </div>
                     </td>
                     <td>
-                      <InformationCard passengerId={cardData.passengerId} />
+                      <div
+                        className="tooltip"
+                        data-tip={ticket.passenger.passengerId}
+                      >
+                        <span
+                          className="font-semibold"
+                          onClick={(e: any) => {
+                            console.log(e);
+                            navigator.clipboard.writeText(
+                              ticket.passenger.passengerId
+                            );
+                          }}
+                        >
+                          {ticket.passenger.passengerId
+                            .slice(0, 8)
+                            .concat("...")}{" "}
+                        </span>
+                      </div>
                     </td>
                     <td>
-                      <span className="font-semibold">{cardData.price}</span>
-                    </td>
-                    <td>
-                      BookedAt:{" "}
-                      <span className="font-semibold">{cardData.bookedAt}</span>
-                      <br />
-                      UpdateAt:{" "}
-                      <span className="text-sm">{cardData.updateAt}</span>
+                      <div className="tooltip" data-tip={ticket.flightId}>
+                        <span
+                          className="font-semibold"
+                          onClick={(e: any) => {
+                            console.log(e);
+                            navigator.clipboard.writeText(ticket.flightId);
+                          }}
+                        >
+                          {ticket.flightId}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       <div className="tooltip" data-tip="Detail seats ">
-                        {cardData.paymentStatus ? (
-                          <button className="btn btn-ghost text-green-400 btn-xs font-medium">
-                            {cardData.paymentStatus.toString()}
-                          </button>
-                        ) : (
-                          <button className="btn btn-ghost text-rose-400 btn-xs font-medium">
-                            {cardData.paymentStatus.toString()}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="tooltip">
-                        <button className={statusColor(cardData.bookingStatus)}>
-                          {cardData.bookingStatus}
+                        <button className="btn btn-ghost text-green-400 btn-xs font-medium">
+                          {ticket.seat.seatId}
                         </button>
                       </div>
                     </td>
+                    <td>
+                      SellAt:{" "}
+                      <span className="font-semibold">{ticket.sellAt}</span>
+                      <br />
+                      UpdateAt:{" "}
+                      <span className="text-sm">{ticket.updateAt}</span>
+                    </td>
+                    <td>
+                      <div className="tooltip">{ticket.price}</div>
+                    </td>
+                    <td>
+                      <button className="btn btn-ghost text-green-400 btn-xs font-medium">
+                        {ticket.status}
+                      </button>
+                    </td>
                     <td className="flex flex-col mt-3 justify-center">
                       <Dropdown
-                        key={cardData.bookingId}
+                        key={ticket.ticketId}
                         className="flex justify-center"
                       >
                         <DropdownTrigger>
                           <Button variant="bordered">
-                            {isLoadingId === cardData.bookingId ? (
-                              <span
-                                key={index}
-                                className="loading loading-dots loading-xs"
-                              ></span>
-                            ) : (
-                              <svg
-                                key={index}
-                                className="w-4 h-4 hover:opacity-50 cursor-pointer"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 200 50"
-                                fill="none"
-                              >
-                                <circle cx="25" cy="25" r="25" fill="#2F2F2F" />
-                                <circle
-                                  cx="100"
-                                  cy="25"
-                                  r="25"
-                                  fill="#2F2F2F"
-                                />
-                                <circle
-                                  cx="175"
-                                  cy="25"
-                                  r="25"
-                                  fill="#2F2F2F"
-                                />
-                              </svg>
-                            )}
+                            <svg
+                              className="w-4 h-4 hover:opacity-50 cursor-pointer"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 200 50"
+                              fill="none"
+                            >
+                              <circle cx="25" cy="25" r="25" fill="#2F2F2F" />
+                              <circle cx="100" cy="25" r="25" fill="#2F2F2F" />
+                              <circle cx="175" cy="25" r="25" fill="#2F2F2F" />
+                            </svg>
                           </Button>
                         </DropdownTrigger>
                         <DropdownMenu
@@ -199,14 +194,14 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                         >
                           <DropdownItem
                             textValue="dropdown"
-                            key={`upload-${cardData.bookingId}`}
+                            key={`upload-${ticket.ticketId}`}
                             className="btn btn-sm btn-ghost"
                           >
                             <div
                               className="flex justify-between"
                               onClick={() => {
-                                setIsLoadingId(cardData.bookingId);
-                                handleCreateAndPrintTicket(cardData.bookingId);
+                                const url = `${process.env.NEXT_PUBLIC_SERVER}/ticket/print?ticketId=${ticket.ticketId}`;
+                                window.open(url);
                               }}
                             >
                               <p>Print ticket</p>
@@ -226,11 +221,11 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
 
                           <DropdownItem
                             textValue="dropdown"
-                            key={`delete-${cardData.bookingId}`}
+                            key={`delete-${ticket.ticketId}`}
                             className="btn btn-sm btn-ghost text-red-600"
                           >
                             <div className="flex justify-between">
-                              <p> Delete airport</p>
+                              <p> Delete ticket</p>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-4 h-4"
@@ -255,9 +250,38 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
           </tbody>
         </table>
       </div>
-
+      {printModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="flex flex-col p-10 w-[300px] rounded-2xl bg-white items-center justify-between gap-4">
+            <div className="flex w-full justify-between">
+              <h2 className="text-2xl font-semibold">Ticket</h2>
+              <p
+                onClick={() => {
+                  setPrintModal(!printModal);
+                }}
+              >
+                {" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 384 512"
+                  className="w-5 h-5 hover:opacity-75 cursor-pointer"
+                >
+                  <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                </svg>
+              </p>
+            </div>
+            <div className="bg-white shadow-black p-10 rounded-2xl">
+              <div className="flex flex-col gap-3">
+                <div className="btn btn-sm ">DUC - A1</div>
+                <div className="btn btn-sm ">THINH - A2</div>
+                <div className="btn btn-sm ">TAM - A3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex justify-between p-3">
-        <p className="font-medium">Total: {allBooking.length} </p>
+        <p className="font-medium">Total: {tickets.length} </p>
         <div className="join">
           <button
             className="join-item btn btn-xs btn-ghost"
@@ -291,4 +315,4 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
   );
 };
 
-export default BookingTable;
+export default TicketTable;

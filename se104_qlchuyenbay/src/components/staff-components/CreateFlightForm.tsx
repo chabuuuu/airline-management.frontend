@@ -38,10 +38,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
     departureTime: "",
   });
   const [flightId, setFlightId] = useState<string>("");
-  useEffect(() => {
-    setFlightId(formData.flightId);
-  }, [formData]);
-  console.log(flightId);
+
   const [airlines, setAirlines] = useState<string | null>(null);
 
   const [departure, setDeparture] = useState<string | null>(null);
@@ -53,7 +50,6 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
   const [airportOptions, setAirportOptions] = useState<
     { airportId: string; airportName: string }[]
   >([]);
-
   useEffect(() => {
     const getAllAirports = async () => {
       const config = {
@@ -77,29 +73,31 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
     getAllAirports();
   }, []);
 
-  const addIntermediateAirport = async () => {
-    if (intermediateAirports[0]?.flightId) {
-      const data = {
-        flightId: intermediateAirports[0].flightId,
-        airportId: intermediateAirports[0].airportId,
-        duration: Number(intermediateAirports[0].duration),
-        notes: intermediateAirports[0].notes,
-      };
-      const config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/flight/add-intermediate-airport`,
-        headers: {
-          Authorization: session?.user.token,
-        },
-        data: JSON.stringify(data),
-      };
-      try {
-        const response = await axios.request(config);
-        console.log(response);
-      } catch (e: any) {
-        console.log(e);
-      }
+  const addIntermediateAirport = async (
+    intermediateAirport: IntermediateAirport
+  ) => {
+    const apiData = {
+      flightId: intermediateAirport.flightId,
+      airportId: Number(intermediateAirport.airportId),
+      duration: Number(intermediateAirport.duration),
+      notes: intermediateAirport.notes,
+    };
+    console.log(apiData);
+    const config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/flight/add-intermediate-airport`,
+      headers: {
+        Authorization: session?.user.token,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify(apiData),
+    };
+    try {
+      const response = await axios.request(config);
+      console.log(response);
+    } catch (e: any) {
+      console.log(e);
     }
   };
 
@@ -130,7 +128,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
           theme: "light",
         });
       } else {
-        addIntermediateAirport();
+        intermediateAirports.forEach((inter) => addIntermediateAirport(inter));
 
         toast.success("Create new Flight succesful", {
           position: "top-right",
@@ -235,7 +233,10 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                     type="text"
                     placeholder="BBA00"
                     value={formData.flightId}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      setFlightId(e.target.value);
+                    }}
                   />
                 </div>
               </div>

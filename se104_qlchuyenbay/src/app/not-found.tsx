@@ -5,12 +5,12 @@ const NotFound = () => {
   return (
     <div className="flex w-full justify-center">
       <div className="w-full max-w-[1000px] items-center p-10 rounded-2xl bg-white h-screen">
-        <div className="flex mt-10 justify-between items-center w-full">
-          <picture>
+        <div className="flex flex-col lg:flex-row  mt-10 justify-between items-center w-full">
+          <picture className="flex justify-center">
             <img
               src="https://i.postimg.cc/3JNzpRR6/realistic-cube-box-mockup.png"
               alt="Illustration"
-              className=" h-1/2 w-1/2 bg-cover justify-center rounded-e-2xl"
+              className="max-w-96 bg-cover justify-center rounded-e-2xl"
             />
           </picture>
 

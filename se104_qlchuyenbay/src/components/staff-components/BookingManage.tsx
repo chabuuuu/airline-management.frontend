@@ -46,16 +46,18 @@ const BookingManage = () => {
   const [customerInMonth, setCustomerInMonth] = useState<number[]>(
     Array(12).fill(0)
   );
-  const [pieData, setPieData] = useState<chart>({
-    tittle: "Payment rate",
-    unit: "Percent",
-    datas: [],
-    labels: ["Paid", "Unpaid"],
-  });
+  const [revenueInMonth, setRevenueInMonth] = useState<number[]>(
+    Array(12).fill(0)
+  );
+  const [availableFlight, setAvailableFlight] = useState<boolean>(false);
 
+  const handleFilterAvailableFlight = () => {
+    setAvailableFlight((prev) => !prev);
+  };
   useEffect(() => {
     const customerCount: { [key: string]: number } = {};
     const monthCounts = Array(12).fill(0);
+    const revenueMonth = Array(12).fill(0);
     const proceedPerMonth = Array(12).fill(0);
     let paidCount = 0;
     let unpaidCount = 0;
@@ -73,6 +75,7 @@ const BookingManage = () => {
         const monthIndex = Number(createMonth) - 1;
         if (monthIndex >= 0 && monthIndex < 12) {
           monthCounts[monthIndex]++;
+          revenueMonth[monthIndex] += Number(book.price);
         }
       }
       if (book.paymentStatus) {
@@ -91,6 +94,7 @@ const BookingManage = () => {
     const top5Destinations = top5Count.slice(0, 5);
     setCustomerBookingCount(top5Destinations);
     setCustomerInMonth(monthCounts);
+    setRevenueInMonth(revenueMonth);
 
     const total = paidCount + unpaidCount;
     const paidPercentage = total > 0 ? (paidCount / total) * 100 : 0;
@@ -100,6 +104,26 @@ const BookingManage = () => {
       datas: [paidPercentage, unpaidPercentage],
     }));
   }, [bookings]);
+
+  const [pieData, setPieData] = useState<chart>({
+    tittle: "Payment rate",
+    unit: "Percent",
+    datas: [],
+    labels: ["Paid", "Unpaid"],
+  });
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterBookings, setFilterBookings] = useState<BookingType[]>([]);
+
+  useEffect(() => {
+    let filter = bookings.filter((book) =>
+      book.bookingId.includes(searchQuery)
+    );
+    if (availableFlight) {
+      filter = filter.filter((book) => book.paymentStatus);
+    }
+
+    setFilterBookings(filter);
+  }, [searchQuery, bookings, availableFlight]);
 
   const brandChartData = {
     tittle: "Top 5 the most customer booking",
@@ -129,18 +153,40 @@ const BookingManage = () => {
     ],
   };
 
+  const MonthlyRevenuelineData = {
+    tittle: "Monthly revenue in current year",
+    unit: "VND",
+    datas: revenueInMonth,
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+  };
+
   return (
     <div>
       <div className="collapse collapse-arrow bg-base-200 my-3">
+        <div></div>
         <input type="checkbox" defaultChecked />
         <div className="collapse-title text-2xl font-semibold">
-          Ticket Booked DashBoard
+          Booked DashBoard
         </div>
         <div className="collapse-content">
           <div className="flex gap-5 h-full">
-            <BarChart data={brandChartData} orientation={"horizontal"} />
-            <PieChart props={pieData} />
+            <LineChart props={MonthlyRevenuelineData} />
+            {/* <BarChart data={brandChartData} orientation={"horizontal"} /> */}
 
+            <PieChart props={pieData} />
             <LineChart props={lineData} />
           </div>
         </div>
@@ -149,13 +195,62 @@ const BookingManage = () => {
         <input type="checkbox" />
         <div className="collapse-title ">
           <div className="text-2xl font-semibold inline-flex items-center">
-            Airplane Table Management
+            Booked Table Management
           </div>
         </div>
         <div className="flex flex-col collapse-content">
+          <div className="flex justify-between">
+            <label className="input input-bordered flex items-center gap-2 mx-3">
+              <p className=" ">Booking Id</p>
+              <input
+                type="text"
+                id="bookingId"
+                className="grow font-medium"
+                placeholder=""
+                onChange={(e: any) => {
+                  setSearchQuery(e?.target.value);
+                }}
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="w-4 h-4 opacity-70"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </label>
+            <div className="flex rounded-md p-1 items-center justify-around h-12 bg-base-300">
+              <div
+                className={`${
+                  availableFlight
+                    ? "flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                    : "bg-white flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                }`}
+                onClick={() => setAvailableFlight(!availableFlight)}
+              >
+                All
+              </div>
+
+              <div
+                className={`${
+                  availableFlight
+                    ? "bg-white flex justify-center rounded-md px-5 py-2  text-sm font-medium"
+                    : "flex justify-center rounded-md px-5 py-1  text-sm font-medium"
+                }`}
+                onClick={() => setAvailableFlight(!availableFlight)}
+              >
+                Pays
+              </div>
+            </div>
+          </div>
           <div className=" bg-white rounded-2xl p-5 my-3">
             <div className="overflow-x-auto">
-              <BookingTable allBooking={bookings} />
+              <BookingTable allBooking={filterBookings} />
             </div>
           </div>
         </div>

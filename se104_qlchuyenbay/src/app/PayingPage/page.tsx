@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 
 interface Seat {
   seat: string;
@@ -22,14 +24,15 @@ interface Params {
 }
 
 interface FillForm {
-  fullname: string;
-  phonenumber: string;
+  fullName: string;
+  phoneNumber: string;
   email: string;
-  luggage: string;
+  cccd: string;
   money: string;
 }
 
 const PayingPage = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = Object.fromEntries(searchParams.entries());
@@ -58,60 +61,40 @@ const PayingPage = () => {
     const newFormData = [...formData];
     newFormData[index] = { ...newFormData[index], [name]: value };
     setFormData(newFormData);
-    console.log(formData);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const apiForm = {
+      seatIdList: filteredParams.chooseSeat.map((Seat) => Seat.seat),
+      fullNameList: formData.map((form) => form.fullName),
+      phoneNumberList: formData.map((form) => form.phoneNumber),
+      emailList: formData.map((form) => form.email),
+      cccdList: formData.map((form) => form.cccd),
+      flightId: filteredParams.flightId,
+    };
+    console.log(apiForm);
+    handleBooking(apiForm);
     router.push(`/iPayPage?total=${totalMoney.toString()}`);
   };
 
-  const handleBooking = async () => {
-    const data = {
-      flightId: filteredParams.flightId,
-      seatIdList: filteredParams.chooseSeat.map((s) => s.seat),
+  const handleBooking = async (data: any) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/booking/create`,
+      headers: {
+        Authorization: session?.user.token,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify(data),
     };
-
     try {
-      const response = await fetch(`/api/auth/Booking/Create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const mss = await response.json();
-      console.log(mss);
-      if (!(mss.message === "success")) {
-        toast.error(mss.message.message[0], {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      } else {
-        toast.success("Booking succesful", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        setInterval(() => {
-          window.location.reload();
-        }, 3000);
-      }
-    } catch (e: any) {
-      toast.error("An error occurred", {
+      const response = await axios.request(config);
+      console.log(response);
+      toast.success("Booking succesful", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -119,6 +102,8 @@ const PayingPage = () => {
         progress: undefined,
         theme: "light",
       });
+    } catch (e: any) {
+      console.log(e);
     }
   };
   return (
@@ -179,19 +164,32 @@ const PayingPage = () => {
                   </div>
                 </div>
 
-                <div className="my-4">
-                  <h3 className="font-bold text-gray-600">FULL NAME</h3>
-                  <input
-                    type="text"
-                    name="fullName"
-                    required
-                    placeholder="NGUYEN VAN A"
-                    onChange={(e) => handleChange(e, index)}
-                    className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
-                  />
+                <div className="grid grid-cols-2 gap-4 mb-5 ">
+                  <div>
+                    <h3 className="font-bold text-gray-600">FULL NAME</h3>
+                    <input
+                      type="text"
+                      name="fullName"
+                      required
+                      placeholder="NGUYEN VAN A"
+                      onChange={(e) => handleChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-600">CCCD</h3>
+                    <input
+                      type="text"
+                      name="cccd"
+                      placeholder="0123456789"
+                      value={formData[index]?.cccd || ""}
+                      onChange={(e) => handleChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
                 </div>
 
-                <div className=" grid grid-cols-2 gap-4">
+                <div className=" grid grid-cols-2 gap-4 mb-5">
                   <div>
                     <h3 className="font-bold text-gray-600">PHONE NUMBER</h3>
                     <input
@@ -216,32 +214,14 @@ const PayingPage = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <div className="my-4">
-                    <h3 className="font-bold text-gray-600">HÀNH LÝ KÍ GỬI</h3>
-                    <select
-                      name="luggage"
-                      value={formData[index]?.luggage || ""}
-                      onChange={(e) => handleChange(e, index)}
-                      className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
-                    >
-                      <option>0 kg</option>
-                      <option>20 kg</option>
-                      <option>15 kg</option>
-                      <option>10 kg</option>
-                      <option>7 kg</option>
-                    </select>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <div className="text-right">
-                      <h3 className="text-xl font-bold text-orange-500">
-                        TỔNG THANH TOÁN
-                      </h3>
-                      <p className="text-3xl font-bold text-orange-500">
-                        {param.price} VND
-                      </p>
-                    </div>
+                <div className="flex justify-end items-center">
+                  <div className="text-right">
+                    <h3 className="text-xl font-bold text-orange-500">
+                      TỔNG THANH TOÁN
+                    </h3>
+                    <p className="text-3xl font-bold text-orange-500">
+                      {param.price} VND
+                    </p>
                   </div>
                 </div>
               </div>
@@ -255,8 +235,9 @@ const PayingPage = () => {
             </button>
 
             <button
-              onClick={handleBooking}
+              // onClick={handleBooking}
               //type="submit"
+
               className="btn btn-active bg-orange-400 text-white min-w-[200px] hover:text-black "
             >
               Pay
