@@ -52,6 +52,19 @@ const FlightManage = () => {
             intermediate: dt.intermediateAirports,
           };
         });
+        updatedFlightInfo.sort((a: any, b: any) => {
+          const dateA = new Date(
+            a.createAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              a.createAt.split(" ")[1]
+          ).getTime();
+          const dateB = new Date(
+            b.createAt.split(" ")[0].split("-").reverse().join("-") +
+              "T" +
+              b.createAt.split(" ")[1]
+          ).getTime();
+          return dateB - dateA;
+        });
 
         setAllFlightInfo(updatedFlightInfo);
       } catch (error) {
@@ -72,6 +85,7 @@ const FlightManage = () => {
     date: string;
     status: string;
   }>({ id: "", departure: "", destination: "", date: "", status: "" });
+
   const [filters, setFilters] = useState<string | null>(null);
 
   useEffect(() => {

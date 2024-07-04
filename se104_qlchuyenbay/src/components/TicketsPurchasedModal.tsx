@@ -53,6 +53,7 @@ const TicketsPurchasedModal: React.FC<{ allBookings: BookingType[] }> = ({
                 {allBookings.map((book, index) => (
                   <div key={index}>
                     <TicketCard
+                      bookingId={book.bookingId}
                       flightId={book.flightId}
                       bookedAt={book.bookedAt}
                       paymentStatus={book.paymentStatus}

@@ -53,6 +53,19 @@ const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
           >
             <line y1="4" x2="90" y2="4" stroke="black" />
             <circle cx="5" cy="4" r="4" fill="#D9D9D9" stroke="black" />
+            {!flight.intermediate ? (
+              <></>
+            ) : flight.intermediate.length === 0 ? (
+              <></>
+            ) : flight.intermediate.length > 1 ? (
+              <>
+                <circle cx="30" cy="4" r="4" fill="#D9D9D9" stroke="black" />
+                <circle cx="60" cy="4" r="4" fill="#D9D9D9" stroke="black" />
+              </>
+            ) : (
+              <circle cx="45" cy="4" r="4" fill="#D9D9D9" stroke="black" />
+            )}
+
             <circle cx="90" cy="4" r="4" fill="#D9D9D9" stroke="black" />
           </svg>
         </div>
@@ -71,9 +84,7 @@ const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
 
       <div className="flex justify-between items-center ">
         <div className="text-2xl  font-semibold">
-          {typeof flight.price === "number"
-            ? `${flight.price} VND/NG`
-            : flight.price}
+          {flight.price} <span className="text-base"> VND</span>
         </div>
         <Link
           href={{

@@ -56,9 +56,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
         progress: undefined,
         theme: "light",
       });
-      setInterval(() => {
-        window.location.reload();
-      }, 3000);
+      router.refresh();
     } catch (e: any) {
       console.log(e);
       const messages = e.response.data.message;
@@ -567,7 +565,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
               </button>
               <button
                 className="btn bg-green-500 btn-sm text-white"
-                onClick={() => changStatus()}
+                onClick={changStatus}
               >
                 Save
               </button>

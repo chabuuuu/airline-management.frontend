@@ -526,31 +526,7 @@ const CustomerAccountTable: React.FC<{ customers: Customer[] }> = ({
           </div>
         </div>
       </div>
-      {customerActivityModal && (
-        <div className="fixed bg-black backdrop-blur-sm bg-opacity-15 inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-10 rounded-2xl">
-            <h3 className="font-bold text-2xl">Update Seat Flight </h3>
 
-            <div className="flex flex-col justify-between">
-              {/* <HandleSeatModal flightId={selectedFlightId} /> */}
-            </div>
-            <div className="modal-action">
-              <button
-                className="btn"
-                onClick={() => setCustomerActivityModal(false)}
-              >
-                Close
-              </button>
-              <button
-                className="btn btn-warning"
-                onClick={() => setCustomerActivityModal(false)}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {customerChangeRoleModal && (
         <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-10 rounded-2xl">

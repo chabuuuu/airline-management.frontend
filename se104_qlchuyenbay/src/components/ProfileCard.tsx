@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const ProfileCard = () => {
   const { data: session } = useSession();
-  const [profile, setProfile] = useState<Customer>({
+  const typeProfile = {
     customerId: "",
     email: "",
     phoneNumber: "",
@@ -22,10 +22,12 @@ const ProfileCard = () => {
     profilePicture: "",
     createAt: "",
     updateAt: "",
-  });
+  };
+  const [profile, setProfile] = useState<Customer>(typeProfile);
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [updateData, setUpdateData] = useState<Customer>(profile);
+  const [updateData, setUpdateData] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     const fetchProfile = async () => {
       let config = {
@@ -39,14 +41,13 @@ const ProfileCard = () => {
       try {
         const response = await axios.request(config);
         setProfile(response.data);
-        setUpdateData(response.data);
       } catch (error) {
         console.error(error);
       }
     };
     fetchProfile();
   }, [session]);
-
+  const [imageChange, setImageChange] = useState<boolean>(false);
   const handleChangeProfilePicture = async (
     e: ChangeEvent<HTMLInputElement>,
     files: any
@@ -60,11 +61,12 @@ const ProfileCard = () => {
           `${process.env.NEXT_PUBLIC_SERVER}/customer/upload-profile-picture`,
           formData
         );
-        console.log(response.data);
+
         setUpdateData((prevData) => ({
           ...prevData,
           [e.target.id]: response.data.picture_url,
         }));
+        setImageChange(!imageChange);
       }
     } catch (e: any) {
       console.log(e);
@@ -80,12 +82,14 @@ const ProfileCard = () => {
   };
 
   const handleOnsubmit = async () => {
+    console.log(updateData);
     let config = {
       method: "put",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${profile.customerId}`,
       headers: {
         Authorization: session?.user.token,
+        "Content-Type": "application/json",
       },
       data: JSON.stringify(updateData),
     };
@@ -168,10 +172,7 @@ const ProfileCard = () => {
               <img
                 crossOrigin="anonymous"
                 className="object-cover w-full h-full"
-                src={
-                  profile.cccdPicture ||
-                  "https://i.postimg.cc/fW7tk0PW/plane-01-7-1.png"
-                }
+                src={profile.cccdPicture}
                 alt="Profile Picture"
               />{" "}
             </picture>
@@ -241,6 +242,7 @@ const ProfileCard = () => {
               <div className="flex flex-col justify-between items-center mr-5">
                 <picture>
                   <img
+                    crossOrigin="anonymous"
                     src={profile.cccdPicture}
                     alt="Logo"
                     className="w-24 h-24 rounded-full object-cover border border-gray-300"
@@ -249,9 +251,16 @@ const ProfileCard = () => {
 
                 {editMode && (
                   <div className="relative">
-                    <button className="relative text-sm px-1 bg-blue-200 text-white rounded-full hover:bg-blue-400">
-                      Change Avatar
-                    </button>
+                    {!imageChange ? (
+                      <button className="relative text-sm px-1 bg-slate-400 text-white rounded-full ">
+                        Change Avatar
+                      </button>
+                    ) : (
+                      <button className="relative text-sm px-1 bg-blue-400 text-white rounded-full ">
+                        Change Avatar
+                      </button>
+                    )}
+
                     <input
                       type="file"
                       id="cccdPicture"
@@ -275,6 +284,19 @@ const ProfileCard = () => {
                 </div>
                 {editMode ? (
                   <div className="space-y-2">
+                    <p>
+                      <span className="font-semibold text-gray-700">Email</span>{" "}
+                      <input
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          handleInput(e)
+                        }
+                        className="input input-sm w-full input-bordered"
+                        type="text"
+                        id="email"
+                        value={updateData.email}
+                        placeholder="email"
+                      />
+                    </p>
                     <p>
                       <span className="font-semibold text-gray-700">Name</span>{" "}
                       <input
@@ -342,9 +364,7 @@ const ProfileCard = () => {
                         type="text"
                         id="address"
                         placeholder="address"
-                        value={
-                          updateData.address + "," + updateData.nationality
-                        }
+                        value={updateData.address}
                       />
                     </p>
                   </div>
@@ -381,7 +401,8 @@ const ProfileCard = () => {
                 <button
                   onClick={() => {
                     setEditMode(!editMode);
-                    setUpdateData(profile);
+                    setImageChange(!imageChange);
+                    setUpdateData({});
                   }}
                   className="btn btn-sm btn-ghost text-yellow-600"
                 >

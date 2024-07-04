@@ -119,9 +119,11 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                       </label>
                     </th>
                     <td>
-                      <span className="font-semibold">
-                        {cardData.bookingId}
-                      </span>
+                      <div className="tooltip" data-tip={cardData.bookingId}>
+                        <span className="font-semibold">
+                          {cardData.bookingId.slice(0, 8).concat("...")}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       <InformationCard passengerId={cardData.passengerId} />

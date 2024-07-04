@@ -64,6 +64,8 @@ export default function SearchingPage() {
             seatsAvailable: dt.seatsAvailable,
             updateAt: dt.updateAt,
             createAt: dt.createAt,
+            description: dt.description,
+            intermediate: dt.intermediateAirports,
           };
         });
 

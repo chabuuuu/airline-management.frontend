@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import AirplaneTable from "@/components/staff-components/AirplaneTable";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AirportManage from "@/components/staff-components/AirportManage";
@@ -8,29 +7,22 @@ import FlightManage from "@/components/staff-components/FlightManage";
 import RegulationsManage from "@/components/staff-components/RegulationsManage";
 import BookingManage from "@/components/staff-components/BookingManage";
 import AccountManage from "@/components/staff-components/AccountManage";
-import { toast } from "react-toastify";
 import TicketManage from "@/components/staff-components/TicketManage";
 
 export default function StaffHome() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  // if (!session || session.user.role === undefined) {
-  //   console.log("hi");
-  //   toast.success("You must to login!", {
-  //     position: "top-right",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //     theme: "light",
-  //   });
-  //   router.push("/");
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!session || session.user.role === undefined) {
+        router.push("/");
+      }
+    }, 500);
 
-  //   return null;
-  // }
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  }, [session, router]);
+
   const [activeTab, setActiveTab] = useState(1);
 
   const handleTabChange = (tabIndex: any) => {
