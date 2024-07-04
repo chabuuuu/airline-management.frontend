@@ -149,7 +149,6 @@ const DetailPage = () => {
       try {
         const response = await axios.request(config);
         const seatData = response.data.data;
-        console.log(seatData);
 
         setAlreadySelectedSeats((prevSeats) => {
           const newSeats = seatData.map((seat: any) => ({

@@ -9,6 +9,7 @@ import RegulationsManage from "@/components/staff-components/RegulationsManage";
 import BookingManage from "@/components/staff-components/BookingManage";
 import AccountManage from "@/components/staff-components/AccountManage";
 import { toast } from "react-toastify";
+import TicketManage from "@/components/staff-components/TicketManage";
 
 export default function StaffHome() {
   const router = useRouter();
@@ -64,17 +65,35 @@ export default function StaffHome() {
             name="my_tabs_2"
             role="tab"
             className="tab font-semibold text-lg h-12"
-            aria-label="Ticket "
+            aria-label="Booked "
             checked={activeTab === 2}
             onChange={() => handleTabChange(2)}
           />
           <div
             role="tabpanel"
             className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 1 ? "" : "hidden"
+              activeTab === 2 ? "" : "hidden"
             }`}
           >
             <BookingManage />{" "}
+          </div>
+
+          <input
+            type="radio"
+            name="my_tabs_3"
+            role="tab"
+            className="tab font-semibold text-lg h-12"
+            aria-label="Ticket "
+            checked={activeTab === 3}
+            onChange={() => handleTabChange(3)}
+          />
+          <div
+            role="tabpanel"
+            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+              activeTab === 3 ? "" : "hidden"
+            }`}
+          >
+            <TicketManage />{" "}
           </div>
         </div>
       );

@@ -2,14 +2,12 @@
 
 import { Customer } from "@/type";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 
-interface ProfileCardProps {
-  CUSTOMER_TOKEN: string | undefined;
-}
-
-const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
+const ProfileCard = () => {
+  const { data: session } = useSession();
   const [profile, setProfile] = useState<Customer>({
     customerId: "",
     email: "",
@@ -30,15 +28,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
   const [updateData, setUpdateData] = useState<Customer>(profile);
   useEffect(() => {
     const fetchProfile = async () => {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/customer/me`,
+        headers: {
+          Authorization: session?.user.token,
+        },
+      };
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER}/customer/me`,
-          {
-            headers: {
-              Authorization: `${CUSTOMER_TOKEN}`,
-            },
-          }
-        );
+        const response = await axios.request(config);
         setProfile(response.data);
         setUpdateData(response.data);
       } catch (error) {
@@ -46,7 +45,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
       }
     };
     fetchProfile();
-  }, [CUSTOMER_TOKEN]);
+  }, [session]);
 
   const handleChangeProfilePicture = async (
     e: ChangeEvent<HTMLInputElement>,
@@ -86,7 +85,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${profile.customerId}`,
       headers: {
-        Authorization: `${CUSTOMER_TOKEN}`,
+        Authorization: session?.user.token,
       },
       data: JSON.stringify(updateData),
     };
@@ -128,7 +127,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${profile.customerId}`,
       headers: {
-        Authorization: `${CUSTOMER_TOKEN}`,
+        Authorization: session?.user.token,
       },
     };
     try {
@@ -167,6 +166,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ CUSTOMER_TOKEN }) => {
           <div className="w-28 h-28 mx-auto  rounded-full overflow-hidden border-4 border-white relative">
             <picture>
               <img
+                crossOrigin="anonymous"
                 className="object-cover w-full h-full"
                 src={
                   profile.cccdPicture ||
