@@ -152,9 +152,6 @@ const SearchForm = () => {
               />
             )}
           />
-          {errors.country && (
-            <div className="text-red-500">{errors.country.message}</div>
-          )}
         </div>
         <div className="flex-1 min-w-[200px]">
           <label
@@ -185,9 +182,6 @@ const SearchForm = () => {
               />
             )}
           />
-          {errors.country && (
-            <div className="text-red-500">{errors.country.message}</div>
-          )}
         </div>
       </div>
       <div className="flex justify-between items-center mb-10 gap-5">

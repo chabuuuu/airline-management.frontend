@@ -41,6 +41,7 @@ function ProfilePage() {
       try {
         const response = await axios.request(config);
         const responseData = response.data;
+        console.log(responseData);
         const mappedData = responseData.map((dt: any) => ({
           bookingId: dt.bookingId,
           paymentStatus: dt.paymentStatus,
@@ -52,6 +53,7 @@ function ProfilePage() {
           seatId: dt.seatFlight.seatId,
           flightId: dt.seatFlight.flightId,
           class: dt.seatFlight.class,
+          brand: dt.seatFlight.flight.airlines,
         }));
         mappedData.sort((a: any, b: any) => {
           const dateA = new Date(
@@ -86,13 +88,6 @@ function ProfilePage() {
       count: number;
     }[]
   >([]);
-  const pieData: chart = {
-    tittle: "Top 5 country have been created the most",
-    unit: "Count",
-    datas: topDestination.map((d) => d.count),
-    labels: topDestination.map((d) => d.country),
-  };
-
   // const brandChartData: chart = {
   //   tittle: "Brand Average",
   //   unit: "Count",
@@ -103,14 +98,6 @@ function ProfilePage() {
   const [flightInMonth, setFlightInMonth] = useState<number[]>(
     Array(12).fill(0)
   );
-
-  const brandChartData: chart = {
-    tittle: "Top 5 most created cities",
-    unit: "Count",
-    indicate: "Count",
-    datas: topDestination.map((d) => d.count),
-    labels: topDestination.map((d) => d.country),
-  };
 
   const barData: chart = {
     tittle: "Number booking during the year",
@@ -132,6 +119,21 @@ function ProfilePage() {
       "Dec",
     ],
   };
+  const [brandData, setBrandData] = useState<
+    {
+      brand: string;
+      count: number;
+    }[]
+  >([]);
+
+  const pieData: chart = {
+    tittle: "Flights of each brand",
+    unit: "Count",
+    indicate: "Count",
+    datas: brandData.map((d) => d.count),
+    labels: brandData.map((d) => d.brand),
+  };
+
   useEffect(() => {
     const monthCounts = Array(12).fill(0);
     const countryCounts: { [key: string]: number } = {};
@@ -145,7 +147,19 @@ function ProfilePage() {
           monthCounts[monthIndex]++;
         }
       }
+      ////
+      if (brandCounts[book.brand]) {
+        brandCounts[book.brand]++; // Fixing this line
+      } else {
+        brandCounts[book.brand] = 1; // Fixing this line
+      }
+      const brandDatas = Object.keys(brandCounts).map((brand) => ({
+        brand,
+        count: brandCounts[brand],
+      }));
+      console.log(brandDatas);
 
+      setBrandData(brandDatas);
       setFlightInMonth(monthCounts);
     });
   }, [bookings]);
@@ -158,8 +172,8 @@ function ProfilePage() {
           <div className="  mb-5 flex justify-between h-full  items-center gap-5">
             {/* <PieChart /> */}
             <LineChart props={barData} />
-            <BarChart data={barData} orientation={"vertical"} />
-
+            {/* <BarChart data={barData} orientation={"vertical"} /> */}
+            <BarChart data={pieData} orientation={"horizontal"} />
             {/* <BarChart /> */}
           </div>
 

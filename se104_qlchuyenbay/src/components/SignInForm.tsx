@@ -74,8 +74,11 @@ const SignInForm: React.FC<prop> = ({ isModal = false }) => {
   };
 
   return (
-    <form className="space-y-4 z-50 w-full " onSubmit={handleSubmit(onSubmit)}>
-      <div className="mt-5 mb-5">
+    <form
+      className="flex gap-5 flex-col z-50 w-[330px]"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="mt-5">
         <label
           htmlFor="email"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -113,25 +116,6 @@ const SignInForm: React.FC<prop> = ({ isModal = false }) => {
         )}
       </div>
 
-      <div className="flex items-start mb-5">
-        <div className="flex items-center h-5">
-          <input
-            id="remember"
-            type="checkbox"
-            value=""
-            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-          />
-        </div>
-        <label
-          htmlFor="remember"
-          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-        >
-          Remember me
-        </label>
-      </div>
-      <Link href="/" className="text-sm text-blue-600 hover:underline">
-        Forgot Password?
-      </Link>
       <button
         disabled={isSubmitting}
         type="submit"

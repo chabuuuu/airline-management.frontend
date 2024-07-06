@@ -10,9 +10,11 @@ import BarChart from "../BarChart";
 import PieChart from "../PieChart";
 import { useRouter } from "next/navigation";
 import LineChart from "../LineChart";
+import { useSession } from "next-auth/react";
 
 const FlightManage = () => {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [allFlightInfo, setAllFlightInfo] = useState<FlightType[]>([]);
   const [filteredFlights, setFilteredFlights] = useState<FlightType[]>([]);
@@ -21,9 +23,16 @@ const FlightManage = () => {
   useEffect(() => {
     const searchForFlight = async () => {
       const url = `${process.env.NEXT_PUBLIC_SERVER}/flight`;
-
+      const config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: url,
+        headers: {
+          Authorization: session?.user.token,
+        },
+      };
       try {
-        const response = await axios.get(url);
+        const response = await axios.request(config);
         const responseData = response.data;
 
         const updatedFlightInfo = responseData.data.map((dt: any) => {
@@ -52,6 +61,7 @@ const FlightManage = () => {
             intermediate: dt.intermediateAirports,
           };
         });
+
         updatedFlightInfo.sort((a: any, b: any) => {
           const dateA = new Date(
             a.createAt.split(" ")[0].split("-").reverse().join("-") +
@@ -73,7 +83,8 @@ const FlightManage = () => {
     };
 
     searchForFlight();
-  }, []);
+  }, [session?.user.token]);
+
   const [totalFlight, setTotalFlight] = useState<number>(0);
   useEffect(() => {
     setTotalFlight(allFlightInfo.length);

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InformationCard from "../InformationCard";
 import { BookingType } from "@/type";
 import {
@@ -41,30 +41,27 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   const [isLoadingId, setIsLoadingId] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
+  const [selectedBookId, setSelectedBookId] = useState<string>("");
+  const [checkCancel, setCheckCancel] = useState<boolean>(false);
+  const [detailModal, setDetailModal] = useState<boolean>(false);
 
-  const handleCreateAndPrintTicket = async (bookingId: string) => {
+  const handleCancelBooking = async () => {
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/booking/cancel-booking/${selectedBookId}`;
     let config = {
-      method: "get",
+      method: "put",
       maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/ticket/create-and-print/by-booking-id/${bookingId}`,
+      url: url,
       headers: {
         Authorization: session?.user.token,
+        "Content-Type": "application/json",
       },
     };
     try {
       const response = await axios.request(config);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `ticket_${bookingId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      setIsLoadingId(null);
-      toast.success("Create ticket succesful", {
+      console.log(response);
+      toast.success("Delete successful", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -76,9 +73,10 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
       });
     } catch (e: any) {
       console.log(e);
-      toast.error(e.response.data.message || "Create ticket succesful", {
+      const messages = e.response.data.message;
+      toast.error(messages || "An error occurred", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -89,6 +87,30 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
     }
   };
 
+  const [bookingDetail, setBookingDetail] = useState<any>({});
+  useEffect(() => {
+    if (detailModal) {
+      const getDetailBookingByID = async () => {
+        const url = `${process.env.NEXT_PUBLIC_SERVER}/booking/detail/${selectedBookId}`;
+        let config = {
+          method: "get",
+          maxBodyLength: Infinity,
+          url: url,
+          headers: {
+            Authorization: session?.user.token,
+            "Content-Type": "application/json",
+          },
+        };
+        try {
+          const response = await axios.request(config);
+          setBookingDetail(response.data);
+        } catch (e: any) {
+          console.log(e);
+        }
+      };
+      getDetailBookingByID();
+    }
+  }, [detailModal, selectedBookId, session?.user.token]);
   return (
     <div>
       <div className="overflow-x-auto">
@@ -164,7 +186,12 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                         className="flex justify-center"
                       >
                         <DropdownTrigger>
-                          <Button variant="bordered">
+                          <Button
+                            onClick={() => {
+                              setSelectedBookId(cardData?.bookingId || ""); // Check for undefined
+                            }}
+                            variant="bordered"
+                          >
                             {isLoadingId === cardData.bookingId ? (
                               <span
                                 key={index}
@@ -205,13 +232,34 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                             className="btn btn-sm btn-ghost"
                           >
                             <div
-                              className="flex justify-between"
+                              className="flex justify-between gap-3"
                               onClick={() => {
-                                setIsLoadingId(cardData.bookingId);
-                                handleCreateAndPrintTicket(cardData.bookingId);
+                                setDetailModal(!detailModal);
                               }}
                             >
-                              <p>Print ticket</p>
+                              <p>Detail Booking</p>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                className="w-4 h-4"
+                              >
+                                <path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z" />
+                              </svg>
+                            </div>
+                          </DropdownItem>
+                          <DropdownItem
+                            textValue="dropdown"
+                            key={`upload-${cardData.bookingId}`}
+                            className="btn btn-sm btn-ghost"
+                          >
+                            <div
+                              className="flex justify-between gap-3"
+                              onClick={() => {
+                                const url = `${process.env.NEXT_PUBLIC_SERVER}/ticket/create-and-print/by-booking-id?bookingId=${cardData.bookingId}&staffId=${session?.user.id}`;
+                                window.open(url);
+                              }}
+                            >
+                              <p>Create & print ticket</p>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -230,9 +278,12 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
                             textValue="dropdown"
                             key={`delete-${cardData.bookingId}`}
                             className="btn btn-sm btn-ghost text-red-600"
+                            onClick={() => {
+                              setShowStatusModal(true);
+                            }}
                           >
                             <div className="flex justify-between">
-                              <p> Delete airport</p>
+                              <p> Canel booking</p>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-4 h-4"
@@ -257,6 +308,139 @@ const BookingTable: React.FC<{ allBooking: BookingType[] }> = ({
           </tbody>
         </table>
       </div>
+      {detailModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Detail Booking</h3>
+
+            <table className="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Full Name:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.fullName}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">CCCD:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.cccd}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Email:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.email}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Phone Number:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.phoneNumber}</span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Flight ID:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.seatFlight?.flightId}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Seat:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.seatFlight?.seatId}</span>,
+                    <span>{bookingDetail?.seatFlight?.class}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="font-medium text-sm">Booked At:</span>
+                  </td>
+                  <td>
+                    {" "}
+                    <span>{bookingDetail?.bookedAt}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setDetailModal(!detailModal);
+                  setSelectedBookId("");
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showStatusModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Cancel Booking</h3>
+            <label className="inline-flex items-center  mt-5">
+              <input
+                type="checkbox"
+                className="form-checkbox"
+                checked={checkCancel}
+                onChange={(e) => setCheckCancel(e.target.checked)}
+              />
+              <span className="ml-2 text-black">Confirm to cancel booking</span>
+            </label>
+            <div className="flex flex-col justify-between"></div>
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setCheckCancel(false);
+                  setShowStatusModal(false);
+                  setSelectedBookId("");
+                }}
+              >
+                Close
+              </button>
+              {checkCancel && (
+                <button
+                  type="button"
+                  className="btn btn-sm bg-green-500 text-white"
+                  onClick={handleCancelBooking}
+                >
+                  Save
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex justify-between p-3">
         <p className="font-medium">Total: {allBooking.length} </p>

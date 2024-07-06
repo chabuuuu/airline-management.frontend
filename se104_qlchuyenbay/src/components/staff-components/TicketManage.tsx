@@ -10,6 +10,7 @@ import LineChart from "../LineChart";
 import PieChart from "../PieChart";
 import TicketTable from "./TicketTable";
 import { string } from "zod";
+import CreateTicketForm from "./CreateTicketForm";
 
 const TicketManage = () => {
   const { data: session } = useSession();
@@ -31,12 +32,11 @@ const TicketManage = () => {
       };
       try {
         const response = await axios.request(config);
-
         const responseData = response.data.data.map((ticket: any) => {
           return {
             ticketId: ticket.ticketId,
             flightId: ticket.flightId,
-            bookingId: ticket.seatFlight.bookingId,
+            bookingId: ticket.seatFlight?.bookingId,
             passenger: {
               passengerId: ticket.passengerId,
               fullName: ticket.fullName,
@@ -46,8 +46,8 @@ const TicketManage = () => {
             },
             price: ticket.price,
             seat: {
-              seatId: ticket.seatFlight.seatId,
-              class: ticket.seatFlight.class,
+              seatId: ticket.seatFlight?.seatId,
+              class: ticket.seatFlight?.class,
             },
             status: ticket.status,
             sellAt: ticket.sellAt,
@@ -103,6 +103,7 @@ const TicketManage = () => {
     const filterValue = event.currentTarget;
     setTargetFilter(filterValue.id);
   };
+  const [createTicketModal, setCreateTicketModal] = useState<boolean>(false);
   return (
     <div>
       <div className="collapse collapse-arrow bg-base-200 my-3">
@@ -124,18 +125,7 @@ const TicketManage = () => {
         </div>
         <div className="flex flex-col collapse-content">
           <div className="flex justify-between">
-            <div>
-              <button className="btn btn-ghost transition duration-300">
-                Create Ticket
-                <svg
-                  className="w-4 h-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-                </svg>
-              </button>
-            </div>
+            <CreateTicketForm />
 
             <div className="flex gap-4">
               <label className="input input-bordered flex items-center gap-2 mx-3">

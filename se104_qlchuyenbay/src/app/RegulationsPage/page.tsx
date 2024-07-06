@@ -146,8 +146,8 @@ const RegulationsPage = () => {
                   ) . Vé{" "}
                   {secondRegulation.map((regulation, index) => (
                     <span key={index}>
-                      <span>{regulation.ticketClass}</span> bằng{" "}
-                      <span>{regulation.ticketPriceInterest}</span> giá vé gốc
+                      <span>{regulation.ticketClass}</span> bằng giá vé gốc cộng
+                      thêm <span>{regulation.ticketPriceInterest}</span>%
                       {index !== secondRegulation.length - 1 && ", "}
                     </span>
                   ))}{" "}
