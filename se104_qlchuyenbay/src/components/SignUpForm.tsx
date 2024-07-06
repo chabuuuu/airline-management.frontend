@@ -20,11 +20,11 @@ const schema = z.object({
       "Password must contain uppercase letter, number, and special character"
     ),
   fullname: z.string().nonempty("Name is required"),
-  address: z.string(),
+  address: z.string().nonempty("Address Required"),
   nationality: z.string().default("VN"),
-  phoneNumber: z.string(),
-  birthday: z.string(),
-  cccd: z.string(),
+  phoneNumber: z.string().nonempty("PhoneNumber Required"),
+  birthday: z.string().nonempty("Birthday Required"),
+  cccd: z.string().nonempty("CCCD is Required"),
   cccdPicture: z
     .any()
     .refine((files) => files?.length == 1, "Image is required.")
@@ -200,6 +200,9 @@ const SignUpForm = () => {
             placeholder="John"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
+          {errors.cccd && (
+            <div className="text-red-500">{errors.cccd.message}</div>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -226,6 +229,9 @@ const SignUpForm = () => {
             placeholder="123 Street, City"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
+          {errors.address && (
+            <div className="text-red-500">{errors.address.message}</div>
+          )}
         </div>
         <div>
           <label
@@ -237,10 +243,13 @@ const SignUpForm = () => {
           <input
             {...register("phoneNumber")}
             type="tel"
-            id="phone"
+            id="phoneNumber"
             placeholder="123-456-7890"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
+          {errors.phoneNumber && (
+            <div className="text-red-500">{errors.phoneNumber.message}</div>
+          )}
         </div>
         <div className="col-span-2">
           <label

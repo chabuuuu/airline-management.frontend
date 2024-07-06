@@ -115,9 +115,8 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
         body: JSON.stringify(data),
       });
       const mss = await response.json();
-      console.log(mss);
       if (!(mss.message === "success")) {
-        toast.error(mss.message.message[0], {
+        toast.error(mss.message.message.join("\n."), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -227,6 +226,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                     Mã máy bay
                   </label>
                   <input
+                    required
                     id="flightId"
                     name="flightId"
                     className="border rounded w-full py-2 px-3 text-gray-700"
@@ -280,6 +280,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                     Thời gian bay
                   </label>
                   <input
+                    required
                     id="flightDuration"
                     name="flightDuration"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
@@ -301,6 +302,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                     Giá vé
                   </label>
                   <input
+                    required
                     id="price"
                     name="price"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
@@ -318,6 +320,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                     Ngày giờ
                   </label>
                   <input
+                    required
                     id="departureTime"
                     name="departureTime"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
@@ -453,6 +456,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                       )}
                     />
                     <input
+                      required
                       onChange={(e) =>
                         handleIntermediateAirportChange(
                           index,
@@ -466,6 +470,7 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
                       placeholder="Thời gian"
                     />
                     <input
+                      required
                       onChange={(e) =>
                         handleIntermediateAirportChange(
                           index,

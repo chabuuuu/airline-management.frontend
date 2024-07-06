@@ -11,9 +11,9 @@ import { ToastContainer, toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 
 const schema = z.object({
-  airportName: z.string(),
-  city: z.string(),
-  country: z.string(),
+  airportName: z.string().nonempty("Airport name required"),
+  city: z.string().nonempty("City name required"),
+  country: z.string().nonempty("Country name required"),
   description: z.string(),
 });
 
