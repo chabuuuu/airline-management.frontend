@@ -10,11 +10,11 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 
 const schema = z.object({
-  username: z.string(),
-  email: z.string(),
-  phoneNumber: z.string(),
-  password: z.string(),
-  birthday: z.string(),
+  username: z.string().nonempty("User name required"),
+  email: z.string().nonempty("Email required"),
+  phoneNumber: z.string().nonempty("Phone Number required"),
+  password: z.string().nonempty("Password required"),
+  birthday: z.string().nonempty("Birthday required"),
   role: z.string().default("Staff_LV2"),
 });
 
@@ -127,7 +127,7 @@ function CreateStaffForm() {
                     type="text"
                     id="username"
                     placeholder="John"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                   {errors.username && (
                     <div className="text-red-500">
@@ -143,7 +143,7 @@ function CreateStaffForm() {
                     {...register("birthday")}
                     type="date"
                     id="birthday"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                   {errors.birthday && (
                     <div className="text-red-500">
@@ -164,8 +164,13 @@ function CreateStaffForm() {
                   type="tel"
                   id="phoneNumber"
                   placeholder="123-456-7890"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
+                {errors.phoneNumber && (
+                  <div className="text-red-500">
+                    {errors.phoneNumber.message}
+                  </div>
+                )}
               </div>
               <div className="mt-10 mb-5">
                 <label
@@ -178,7 +183,7 @@ function CreateStaffForm() {
                   {...register("email")}
                   type="text"
                   id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@flowbite.com"
                 />
                 {errors.username && (
@@ -198,7 +203,7 @@ function CreateStaffForm() {
                   id="password"
                   autoComplete="on"
                   placeholder="******"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
                 {errors.password && (
                   <div className="text-red-500">{errors.password.message}</div>

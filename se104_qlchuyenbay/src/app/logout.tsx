@@ -1,13 +1,17 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Logout() {
+  const router = useRouter();
   return (
     <button
       className="btn btn-ghost mr-1 ml-1"
       onClick={() => {
-        signOut();
+        signOut({ redirect: false }).then(() => {
+          router.push("/");
+        });
       }}
     >
       <div className="flex w-full justify-between items-center ">
