@@ -18,63 +18,11 @@ const MAX_PAGE_BUTTONS = 5;
 const TicketTable: React.FC<{ tickets: TicketType[] }> = ({ tickets }) => {
   const [page, setPage] = useState<number>(1);
 
-  const statusColor = (status: any) => {
-    switch (status) {
-      case "BOOKED":
-        return `btn btn-ghost text-green-400 btn-xs`;
-      case "NotBooked":
-        return `btn btn-ghost text-yellow-400 btn-xs`;
-      case "Cancelled":
-        return `btn btn-ghost text-red-400 btn-xs`;
-      default:
-        return `btn btn-ghost text-blue-400 btn-xs`;
-    }
-  };
-
   const totalPages = Math.ceil(tickets.length / MAX_LENGTH_COL);
   const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
   const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
-  const printTicket = async (ticketId: string) => {
-    console.log(ticketId);
-    const url = `${process.env.NEXT_PUBLIC_SERVER}/ticket/print?ticketId=${ticketId}`;
-    const config = {
-      method: "get",
-      maxBodyLength: Infinity,
-      url: url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    console.log(url);
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-      toast.success("Print succesful", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } catch (e: any) {
-      const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
   const [printModal, setPrintModal] = useState<boolean>(false);
 
   return (

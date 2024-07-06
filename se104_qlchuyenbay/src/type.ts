@@ -45,6 +45,7 @@ export type BookingType = {
   seatId: string;
   flightId: string;
   class: string;
+  brand: string;
 };
 export type TicketType = {
   ticketId: string;

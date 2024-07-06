@@ -193,7 +193,7 @@ const BookingManage = () => {
         <div></div>
         <input type="checkbox" defaultChecked />
         <div className="collapse-title text-2xl font-semibold">
-          Booked DashBoard
+          Booking DashBoard
         </div>
         <div className="collapse-content">
           <div className="flex gap-5 h-full">
@@ -209,7 +209,7 @@ const BookingManage = () => {
         <input type="checkbox" />
         <div className="collapse-title ">
           <div className="text-2xl font-semibold inline-flex items-center">
-            Booked Table Management
+            Booking Table Management
           </div>
         </div>
         <div className="flex flex-col collapse-content">

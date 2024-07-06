@@ -132,24 +132,21 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
   const [descriptionChange, setDescriptionChange] = useState<string>("");
 
   const updateFlight = async () => {
-    // const data = {
-    //   description: descriptionChange,
-    // };
-    let data = '{\n    "description": "Chuyến bay giá rẻ của VietJet"\n}';
-
-    const config = {
+    let config = {
       method: "put",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_SERVER}/flight/${flightIdModal}`,
       headers: {
         Authorization: session?.user.token,
+        "Content-Type": "application/json",
       },
-      data: JSON.stringify(data),
+      data: JSON.stringify({
+        description: descriptionChange,
+      }),
     };
-    console.log(config);
     try {
       const response = await axios.request(config);
-      console.log(response);
+
       toast.success("Update successful", {
         position: "top-right",
         autoClose: 3000,
@@ -160,6 +157,7 @@ const FlightTable: React.FC<{ allFlight: FlightType[] }> = ({ allFlight }) => {
         progress: undefined,
         theme: "light",
       });
+      setDescriptionChange("");
       router.refresh();
     } catch (e: any) {
       console.log(e);

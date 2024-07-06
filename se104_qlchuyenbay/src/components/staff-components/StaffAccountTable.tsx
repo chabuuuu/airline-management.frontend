@@ -10,12 +10,18 @@ import {
   Button,
 } from "@nextui-org/react";
 import { Staff } from "@/type";
+import axios from "axios";
+import { toast } from "react-toastify";
+import CreateStaffForm from "./CreateStaffForm";
 
 const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
   const { data: session } = useSession();
 
   const [filtersStaffs, setFiltersStaffs] = useState<Staff[]>([]);
   const [filterRole, setFilterRole] = useState<string>("");
+  const [selectedStaffId, setSelectedStaffId] = useState<string>("");
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [changeRoleModal, setChangeRoleModal] = useState<boolean>(false);
 
   useEffect(() => {
     setFiltersStaffs(staffs);
@@ -36,12 +42,52 @@ const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
   const handleFilterStaffRole = (role: string) => {
     setFilterRole(role);
   };
+  const [checkDelete, setCheckDelete] = useState<boolean>(false);
 
+  const handleDeleteStaff = async () => {
+    if (checkDelete) {
+      let config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `${process.env.NEXT_PUBLIC_SERVER}/staff/${selectedStaffId}`,
+        headers: {
+          Authorization: session?.user.token,
+        },
+      };
+      try {
+        const response = await axios.request(config);
+        console.log(response);
+        toast.success("Delete staff succesful", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } catch (e: any) {
+        console.log(e);
+        const messages = e.response.data.message;
+        toast.error(messages || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    }
+  };
+  const [createStaffModal, setCreateStaffModal] = useState<boolean>(false);
   return (
     <div className="flex flex-col collapse-content">
       <div className="flex justify-between h-full items-center mt-5">
-        <div></div>
-
+        <CreateStaffForm />
         <div className="flex justify-between">
           <label className="input input-bordered flex items-center gap-2">
             <p className=" ">Username</p>
@@ -195,8 +241,12 @@ const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
 
                         <DropdownItem
                           textValue="dropdown"
-                          key={`changerole-${customer.staffId}`}
+                          key={`Delete-${customer.staffId}`}
                           className="btn btn-sm btn-ghost"
+                          onClick={() => {
+                            setChangeRoleModal(!changeRoleModal);
+                            setSelectedStaffId(customer.staffId);
+                          }}
                         >
                           <div className="flex justify-between">
                             <p>Change role</p>
@@ -215,6 +265,12 @@ const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
 
                         <DropdownItem
                           textValue="dropdown"
+                          onClick={() => {
+                            if (customer.role !== "Staff_LV1") {
+                              setSelectedStaffId(customer.staffId);
+                              setDeleteModal(!deleteModal);
+                            }
+                          }}
                           key={`delete-${customer.staffId}`}
                           className="btn btn-sm btn-ghost text-red-600"
                           value={customer.staffId}
@@ -242,6 +298,92 @@ const StaffAccountTable: React.FC<{ staffs: Staff[] }> = ({ staffs }) => {
           </table>
         </div>
       </div>
+      {createStaffModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl ">
+            <CreateStaffForm />
+          </div>
+        </div>
+      )}
+      {deleteModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Delete Staff</h3>
+            <label className="inline-flex items-center  mt-5">
+              <input
+                type="checkbox"
+                className="form-checkbox"
+                checked={checkDelete}
+                onChange={(e) => setCheckDelete(e.target.checked)}
+              />
+              <span className="ml-2 text-black">Confirm to delete staff</span>
+            </label>
+            <div className="flex flex-col justify-between"></div>
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setCheckDelete(false);
+                  setDeleteModal(false);
+                  setSelectedStaffId("");
+                }}
+              >
+                Close
+              </button>
+              {checkDelete && (
+                <button
+                  type="button"
+                  className="btn btn-sm bg-green-500 text-white"
+                  onClick={handleDeleteStaff}
+                >
+                  Save
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* {changeRoleModal && (
+        <div className="fixed bg-black bg-opacity-15 backdrop-blur-sm inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-10 rounded-2xl">
+            <h3 className="font-bold text-2xl">Change Staff Role</h3>
+            <label className="inline-flex items-center  mt-5">
+              <input
+                type="checkbox"
+                className="form-checkbox"
+                checked={checkDelete}
+                onChange={(e) => setCheckDelete(e.target.checked)}
+              />
+              <span className="ml-2 text-black">
+                Confirm to change customer to staff
+              </span>
+            </label>
+            <div className="flex flex-col justify-between"></div>
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => {
+                  setCheckDelete(false);
+                  setDeleteModal(false);
+                  setSelectedStaffId("");
+                }}
+              >
+                Close
+              </button>
+              {checkDelete && (
+                <button
+                  type="button"
+                  className="btn btn-sm bg-green-500 text-white"
+                  onClick={handleDeleteStaff}
+                >
+                  Save
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };

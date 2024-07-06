@@ -272,8 +272,8 @@ const PayForm = () => {
           <button
             onClick={() => {
               toast.success("Purchase Succesful. Redirect to Profile", {
-                position: "top-center",
-                autoClose: 5000,
+                position: "top-right",
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,

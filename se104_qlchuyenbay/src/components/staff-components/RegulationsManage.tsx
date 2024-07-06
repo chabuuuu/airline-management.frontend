@@ -155,6 +155,28 @@ const RegulationsManage = () => {
       });
     }
   };
+  const handleUpdateInterest = async (TC: any) => {
+    let config = {
+      method: "put",
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/update/${TC.ticketClass}`,
+      headers: {
+        Authorization: session?.user.token,
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        priceBonusInterest: parseFloat(TC.ticketPriceInterest),
+      }),
+    };
+    try {
+      const response = await axios.request(config);
+    } catch (e: any) {
+      console.log(e);
+    }
+  };
+  const handlSaveChange = () => {
+    tmpSecondR.map((tmp) => handleUpdateInterest(tmp));
+  };
 
   return (
     <div className="overflow-x-auto mt-10 p-10">
@@ -203,8 +225,8 @@ const RegulationsManage = () => {
               ) . Vé{" "}
               {secondRegulation.map((regulation, index) => (
                 <span key={index}>
-                  <span>{regulation.ticketClass}</span> bằng{" "}
-                  <span>{regulation.ticketPriceInterest}</span> giá vé gốc
+                  <span>{regulation.ticketClass}</span> bằng giá vé gốc thêm{" "}
+                  <span>{regulation.ticketPriceInterest}</span>%
                   {index !== secondRegulation.length - 1 && ", "}
                 </span>
               ))}{" "}
@@ -279,13 +301,13 @@ const RegulationsManage = () => {
                   <tr>
                     <td>Thời gian dừng tối thiểu:</td>
                     <td>
-                      {updateRulesData?.minIntermediateAirportStopDelay} giờ
+                      {updateRulesData?.minIntermediateAirportStopDelay} phút
                     </td>
                   </tr>
                   <tr>
                     <td>Thời gian dừng tối đa:</td>
                     <td>
-                      {updateRulesData?.maxIntermediateAirportStopDelay} giờ
+                      {updateRulesData?.maxIntermediateAirportStopDelay} phút
                     </td>
                   </tr>
                 </tbody>
@@ -327,7 +349,7 @@ const RegulationsManage = () => {
                         className="input input-bordered input-sm w-[50px] max-w-xs"
                         onChange={handleChangeInputRules}
                       />
-                      <span className="ml-3">giờ</span>
+                      <span className="ml-3">phút</span>
                     </td>
                   </tr>
                   <tr>
@@ -340,7 +362,7 @@ const RegulationsManage = () => {
                         className="input input-bordered input-sm w-[50px] max-w-xs"
                         onChange={handleChangeInputRules}
                       />
-                      <span className="ml-3">giờ</span>
+                      <span className="ml-3">phút</span>
                     </td>
                   </tr>
                 </tbody>
@@ -430,7 +452,7 @@ const RegulationsManage = () => {
                   <div className="flex justify-end gap-3">
                     <button
                       className="btn btn-sm bg-green-500 text-white"
-                      onClick={() => setSecondRegulationModal(false)}
+                      onClick={() => handlSaveChange()}
                     >
                       Save
                     </button>
