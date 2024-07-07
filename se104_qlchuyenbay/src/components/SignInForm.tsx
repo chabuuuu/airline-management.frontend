@@ -119,6 +119,8 @@ const SignInForm: React.FC<prop> = ({ isModal = false }) => {
       <button
         disabled={isSubmitting}
         type="submit"
+        id="signin"
+        data-testid="signin-button"
         className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-900"
       >
         {isSubmitting ? (
