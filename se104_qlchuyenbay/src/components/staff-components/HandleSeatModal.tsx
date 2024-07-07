@@ -249,15 +249,17 @@ const HandleSeatModal: React.FC<Props> = ({ flightId }) => {
       console.log(mss);
 
       if (response.status !== 200) {
-        toast.error(mss.message.message[0], {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        mss.message.message.map((m: any) => {
+          toast.error(m || "An error occurred", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         });
       } else {
         toast.success("Changed successful", {

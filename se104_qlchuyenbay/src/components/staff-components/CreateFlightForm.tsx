@@ -116,15 +116,17 @@ const CreateFlightForm: React.FC<{ numberFlight: number }> = ({
       });
       const mss = await response.json();
       if (!(mss.message === "success")) {
-        toast.error(mss.message.message.join("\n."), {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+        mss.message.message.map((m: any) => {
+          toast.error(m || "An error occurred", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
         });
       } else {
         intermediateAirports.forEach((inter) => addIntermediateAirport(inter));

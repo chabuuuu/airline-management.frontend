@@ -47,7 +47,7 @@ function CreateStaffForm() {
     try {
       const response = await axios.request(config);
       console.log(response);
-      toast.success("Login Successful", {
+      toast.success("Create Staff Successful", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -59,15 +59,18 @@ function CreateStaffForm() {
       });
     } catch (e: any) {
       const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      console.log(e);
+      messages.map((m: any) => {
+        toast.error(m || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       });
     }
   };
@@ -80,7 +83,7 @@ function CreateStaffForm() {
           onClick={() => setCreateStaffModal(!createStaffModal)}
           className="btn btn-ghost transition duration-300"
         >
-          Create Ticket
+          Create Staff
           <svg
             className="w-4 h-4"
             xmlns="http://www.w3.org/2000/svg"

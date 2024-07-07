@@ -12,12 +12,12 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
 const schema = z.object({
-  flightId: z.string(),
-  seatId: z.string(),
-  fullName: z.string(),
-  email: z.string(),
-  phoneNumber: z.string(),
-  cccd: z.string(),
+  flightId: z.string().nonempty("FlightId required"),
+  seatId: z.string().nonempty("SeatId required"),
+  fullName: z.string().nonempty("Full Name required"),
+  email: z.string().nonempty("Email required"),
+  phoneNumber: z.string().nonempty("Phone Number required"),
+  cccd: z.string().nonempty("Cccd required"),
 });
 
 type FormFields = z.infer<typeof schema>;
@@ -88,15 +88,18 @@ function CreateTicketForm() {
       });
     } catch (e: any) {
       const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      console.log(e);
+      messages.map((m: any) => {
+        toast.error(m || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       });
     }
   };
