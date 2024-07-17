@@ -16,7 +16,7 @@ const GridSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   return (
-    <div>
+    <div data-testid="grid">
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
         {allFlight?.map((flight, index) => {
           if (

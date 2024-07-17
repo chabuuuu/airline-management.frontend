@@ -74,6 +74,7 @@ function StaffLoginForm() {
           {...register("username")}
           type="text"
           id="username"
+          data-testid="username"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="name@flowbite.com"
         />
@@ -93,6 +94,7 @@ function StaffLoginForm() {
           type="password"
           id="password"
           placeholder="******"
+          data-testid="password"
           autoComplete="on"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
@@ -120,6 +122,7 @@ function StaffLoginForm() {
       <button
         disabled={isSubmitting}
         type="submit"
+        data-testid="login"
         className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-900"
       >
         {isSubmitting ? (

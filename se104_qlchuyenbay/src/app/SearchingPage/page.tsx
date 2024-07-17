@@ -70,7 +70,7 @@ export default function SearchingPage() {
         });
 
         setAllFlightInfo(updatedFlightInfo);
-        setFilterFlight(updatedFlightInfo); // Set initial filtered flights
+        setFilterFlight(updatedFlightInfo);
         setIsFetching(false);
       } catch (error) {
         console.error("Error fetching flight data:", error);
@@ -142,7 +142,7 @@ export default function SearchingPage() {
   }
 
   return (
-    <main className="main  rounded-2xl p-5">
+    <main data-testid className="main  rounded-2xl p-5">
       <div className="flex justify-center items-center mb-10  p-5 ">
         <>
           <p className="text-4xl font-bold  text-slate-800">{departure}</p>

@@ -168,6 +168,7 @@ const SignUpForm = () => {
             {...register("fullname")}
             type="text"
             id="name"
+            data-testid="name"
             placeholder="John"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -182,6 +183,7 @@ const SignUpForm = () => {
           <input
             {...register("birthday")}
             type="date"
+            data-testid="birthday"
             id="birthday"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -197,6 +199,7 @@ const SignUpForm = () => {
             {...register("cccd")}
             type="text"
             id="cccd"
+            data-testid="cccd"
             placeholder="John"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -226,6 +229,7 @@ const SignUpForm = () => {
             {...register("address")}
             type="text"
             id="address"
+            data-testid="address"
             placeholder="123 Street, City"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -244,6 +248,7 @@ const SignUpForm = () => {
             {...register("phoneNumber")}
             type="tel"
             id="phoneNumber"
+            data-testid="phoneNumber"
             placeholder="123-456-7890"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -262,6 +267,7 @@ const SignUpForm = () => {
             {...register("email")}
             type="email"
             id="email"
+            data-testid="email"
             placeholder="you@example.com"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
           />
@@ -280,6 +286,7 @@ const SignUpForm = () => {
             {...register("password")}
             type="password"
             id="password"
+            data-testid="password"
             autoComplete="on"
             placeholder="Enter your password"
             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500"
@@ -291,6 +298,7 @@ const SignUpForm = () => {
         <button
           disabled={isSubmitting}
           type="submit"
+          data-testid="signup-button"
           className="col-span-2 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none"
         >
           {isSubmitting ? "Loading... " : " Create account"}
