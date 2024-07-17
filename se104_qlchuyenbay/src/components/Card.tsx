@@ -1,18 +1,32 @@
 import React from "react";
-import Link from "next/link";
 import { FlightType } from "@/type";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
-  const statusColor = (status: any) => {
-    switch (status) {
-      case "Đã hủy chuyến":
-        return ` font-medium text-red-400 `;
-      case "Đang bay":
-        return ` font-medium text-green-400`;
-      case "Chưa khởi hành":
-        return ` font-medium text-yellow-400`;
-      default:
-        return ` font-medium text-blue-400`;
+  const handleChooseFlight = async () => {
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/booking/check-booking?flightId=${flight.flightId}`;
+    const config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {},
+    };
+    try {
+      const response = await axios.request(config);
+      window.location.href = `/DetailPage?flightId=${flight.flightId}&logo=${flight.logo}&brand=${flight.brand}&date=${flight.date}&time=${flight.time}&departure=${flight.departure}&destination=${flight.arrival}&airportStart=${flight.airportStart}&airportEnd=${flight.airportEnd}&price=${flight.price}&duration=${flight.duration}`;
+    } catch (e: any) {
+      const messages = e.response?.data.message;
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
   return (
@@ -86,27 +100,12 @@ const Card: React.FC<{ flight: FlightType }> = ({ flight }) => {
         <div className="text-2xl  font-semibold">
           {flight.price} <span className="text-base"> VND</span>
         </div>
-        <Link
-          href={{
-            pathname: "/DetailPage",
-            query: {
-              flightId: flight.flightId,
-              logo: flight.logo,
-              brand: flight.brand,
-              date: flight.date,
-              time: flight.time,
-              departure: flight.departure,
-              destination: flight.arrival,
-              airportStart: flight.airportStart,
-              airportEnd: flight.airportEnd,
-              price: flight.price,
-              duration: flight.duration,
-            },
-          }}
+        <button
+          onClick={handleChooseFlight}
           className="w-20 h-8 p-3 font-semibold bg-opacity-80 hover:bg-opacity-100 active:btn-active flex items-center justify-center bg-primary rounded-xl text-white"
         >
           Chọn
-        </Link>
+        </button>
       </div>
     </div>
   );

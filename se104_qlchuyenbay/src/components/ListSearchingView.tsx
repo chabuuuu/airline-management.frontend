@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { FlightType, IntermediateAirport } from "@/type";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const MAX_LENGTH_COL = 9;
 const MAX_PAGE_BUTTONS = 3;
@@ -79,9 +80,38 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
     handle();
   }, [intermediateModalId, handleViewIntermediate]);
 
+  const handleChooseFlight = async (flight: any) => {
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/booking/check-booking?flightId=${flight.flightId}`;
+    const config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {},
+    };
+    try {
+      const response = await axios.request(config);
+      window.location.href = `/DetailPage?flightId=${flight.flightId}&logo=${flight.logo}&brand=${flight.brand}&date=${flight.date}&time=${flight.time}&departure=${flight.departure}&destination=${flight.arrival}&airportStart=${flight.airportStart}&airportEnd=${flight.airportEnd}&price=${flight.price}&duration=${flight.duration}`;
+    } catch (e: any) {
+      console.log(e);
+      const messages = e.response?.data.message;
+      console.log(messages);
+
+      toast.error(messages || "An error occurred", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+
   return (
-    <div className="p-4">
-      <div className="overflow-x-auto">
+    <div data-testid="list">
+      <div className="overflow-x-auto p-4">
         <div className="">
           {allFlight.map((cardData, index) => {
             if (
@@ -185,28 +215,13 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                       </div>
                     </div>
                     <div className="flex justify-end">
-                      <Link
-                        href={{
-                          pathname: "/DetailPage",
-                          query: {
-                            flightId: cardData.flightId,
-                            logo: cardData.logo,
-                            brand: cardData.brand,
-                            date: cardData.date,
-                            time: cardData.time,
-                            departure: cardData.departure,
-                            destination: cardData.arrival,
-                            airportStart: cardData.airportStart,
-                            airportEnd: cardData.airportEnd,
-                            status: cardData.status,
-                            price: cardData.price,
-                          },
-                        }}
+                      <button
+                        onClick={() => handleChooseFlight(cardData)}
                         className="w-20 h-8 p-3 font-semibold bg-opacity-80 hover:bg-opacity-100 active:btn-active flex items-center justify-center 
                         bg-indigo-500 rounded-xl text-white"
                       >
                         Chọn
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
