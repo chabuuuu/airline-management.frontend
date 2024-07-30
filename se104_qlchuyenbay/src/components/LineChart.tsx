@@ -8,7 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { chart } from "@/type";
+import { chart } from "@/interfaces/type";
 
 ChartJS.register(ArcElement, ...registerables, CategoryScale, Tooltip, Legend);
 

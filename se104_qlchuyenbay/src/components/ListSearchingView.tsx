@@ -2,21 +2,21 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { FlightType, IntermediateAirport } from "@/type";
+import { FlightType, IntermediateAirport } from "@/interfaces/type";
 import axios from "axios";
 import { toast } from "react-toastify";
+import PaginationControl from "./PaginationControl ";
+import { bookingEndpoint } from "@/services/axios/endpoints/booking.endpoint";
+import { apiRequest } from "@/utils/apiRequest";
+import { showErrorToast } from "@/utils/toastUtils";
+import { airportEndpoint } from "@/services/axios/endpoints/airport.endpoint";
 
 const MAX_LENGTH_COL = 9;
-const MAX_PAGE_BUTTONS = 3;
 
 const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   allFlight,
 }) => {
   const [page, setPage] = useState<number>(1);
-  const totalPages = Math.ceil(allFlight.length / MAX_LENGTH_COL);
-  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
-  const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
-  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   const statusColor = (status: any) => {
     switch (status) {
@@ -43,12 +43,13 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/airport/${id}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER}${airportEndpoint[
+        "get-find-airport-by-id"
+      ](id)}`,
       headers: {},
     };
     try {
       const response = await axios.request(config);
-      console.log(response);
       return {
         airportCode: response.data.airportCode,
         airportName: response.data.airportName,
@@ -61,9 +62,9 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   };
 
   const handleViewIntermediate = useCallback(async () => {
-    if (flightIntermediate?.intermediate) {
+    if (flightIntermediate?.intermediateAirports) {
       const data = await Promise.all(
-        flightIntermediate.intermediate.map((flight) =>
+        flightIntermediate.intermediateAirports.map((flight) =>
           getAirportByID(flight.airportId)
         )
       );
@@ -81,32 +82,14 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   }, [intermediateModalId, handleViewIntermediate]);
 
   const handleChooseFlight = async (flight: any) => {
-    const url = `${process.env.NEXT_PUBLIC_SERVER}/booking/check-booking?flightId=${flight.flightId}`;
-    const config = {
-      method: "get",
-      maxBodyLength: Infinity,
-      url: url,
-      headers: {},
-    };
-    try {
-      const response = await axios.request(config);
-      window.location.href = `/DetailPage?flightId=${flight.flightId}&logo=${flight.logo}&brand=${flight.brand}&date=${flight.date}&time=${flight.time}&departure=${flight.departure}&destination=${flight.arrival}&airportStart=${flight.airportStart}&airportEnd=${flight.airportEnd}&price=${flight.price}&duration=${flight.duration}`;
-    } catch (e: any) {
-      console.log(e);
-      const messages = e.response?.data.message;
-      console.log(messages);
+    const url = `${process.env.NEXT_PUBLIC_SERVER}${bookingEndpoint[
+      "get-check-booking-avaiable"
+    ](flight.flightId)}`;
 
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
+    const { result, error } = await apiRequest(url, "GET");
+    if (error) showErrorToast(error);
+    else
+      window.location.href = `/DetailPage?flightId=${flight.flightId}&logo=${flight.logo}&brand=${flight.brand}&date=${flight.date}&time=${flight.time}&departure=${flight.departure}&destination=${flight.arrival}&airportStart=${flight.airportStart}&airportEnd=${flight.airportEnd}&price=${flight.price}&duration=${flight.duration}`;
   };
 
   return (
@@ -140,7 +123,7 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                         <div>
                           <div className="font-bold">{cardData.flightId}</div>
                           <div className="text-sm opacity-50">
-                            {cardData.brand}
+                            {cardData.airlines}
                           </div>
                         </div>
                       </div>
@@ -148,17 +131,19 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                     <div className="col-span-2 flex justify-between px-10 items-center">
                       <div>
                         <span className="font-semibold">
-                          {cardData.departure}
+                          {cardData.departureAirport.city}
                         </span>
                         <br />
-                        <span className="text-sm">{cardData.airportStart}</span>
+                        <span className="text-sm">
+                          {cardData.departureAirport.airportName}
+                        </span>
                       </div>
                       {/* </div>
                     {cardData.intermediate && <div>-</div>}
                     
                     <div className="col-span-1"> */}
-                      {cardData.intermediate &&
-                        cardData.intermediate.length > 0 && (
+                      {cardData.intermediateAirports &&
+                        cardData.intermediateAirports.length > 0 && (
                           <div
                             onClick={() => {
                               setIntermediateModalId(cardData.flightId);
@@ -170,18 +155,20 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                         )}
                       <div>
                         <span className="font-semibold">
-                          {cardData.arrival}
+                          {cardData.arrivalAirport.city}
                         </span>
                         <br />
-                        <span className="text-sm">{cardData.airportEnd}</span>
+                        <span className="text-sm">
+                          {cardData.arrivalAirport.airportName}
+                        </span>
                       </div>
                     </div>
 
                     <div className="col-span-1">
-                      <span className="font-semibold">{cardData.date}</span>
-                      <p className="text-sm">
-                        {cardData.time}, {cardData.duration} hours
-                      </p>
+                      <span className="font-semibold">
+                        {cardData.departureTime}
+                      </span>
+                      <p className="text-sm">{cardData.flightDuration} hours</p>
                     </div>
                     <div className="col-span-1">
                       <div className="tooltip" data-tip="Seat">
@@ -265,66 +252,42 @@ const ListSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {flightIntermediate?.intermediate?.map((it, index) => (
-                    <tr key={index}>
-                      <td>{index}</td>
-                      <td>
-                        <div>
-                          {intermediateData[index]?.airportName},{" "}
-                          {intermediateData[index]?.airportCode}
-                        </div>
-                      </td>
-                      <td>
-                        <div>{intermediateData[index]?.city}</div>
-                      </td>
-                      <td>
-                        <div>{intermediateData[index]?.country}</div>
-                      </td>
-                      <td>
-                        <div> {it.duration} m</div>
-                      </td>
-                      <td>
-                        <div> {it.notes}</div>
-                      </td>
-                    </tr>
-                  ))}
+                  {flightIntermediate?.intermediateAirports?.map(
+                    (it, index) => (
+                      <tr key={index}>
+                        <td>{index}</td>
+                        <td>
+                          <div>
+                            {intermediateData[index]?.airportName},{" "}
+                            {intermediateData[index]?.airportCode}
+                          </div>
+                        </td>
+                        <td>
+                          <div>{intermediateData[index]?.city}</div>
+                        </td>
+                        <td>
+                          <div>{intermediateData[index]?.country}</div>
+                        </td>
+                        <td>
+                          <div> {it.duration} m</div>
+                        </td>
+                        <td>
+                          <div> {it.notes}</div>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       )}
-      <div className="flex justify-between p-3">
-        <p className="font-medium">Total flight: {allFlight.length} </p>
-        <div className="join">
-          <button
-            className="join-item btn btn-xs btn-ghost"
-            onClick={() => setPage(1)}
-          >
-            «
-          </button>
-          {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
-            const pageNumber = adjustedStartPage + index;
-            return (
-              <button
-                key={pageNumber}
-                className={`join-item btn btn-xs ${
-                  pageNumber === page ? "btn-active" : ""
-                }`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
-          <button
-            className="join-item btn btn-xs btn-ghost"
-            onClick={() => setPage(totalPages)}
-          >
-            »
-          </button>
-        </div>
-      </div>
+      <PaginationControl
+        totalItems={allFlight.length}
+        currentPage={page}
+        setPage={setPage}
+      />
     </div>
   );
 };

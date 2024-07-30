@@ -1,7 +1,8 @@
 "use client";
 
-import { Customer } from "@/type";
-import axios from "axios";
+import { customerEndpoint } from "@/services/axios/endpoints/customer.endpoint";
+import { Customer } from "@/interfaces/type";
+import { apiRequest } from "@/utils/apiRequest";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
@@ -14,21 +15,15 @@ const InformationCard: React.FC<{ passengerId: string }> = ({
 
   useEffect(() => {
     const fetchCustomerData = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/customer/${passengerId}`;
-      const config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: url,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        setCustomer(response.data);
-      } catch (e) {
-        console.log(e);
-      }
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${customerEndpoint[
+        "get-one"
+      ](passengerId)}`;
+      const { result, error } = await apiRequest<Customer>(
+        url,
+        "GET",
+        session?.user.token
+      );
+      setCustomer(result);
     };
     fetchCustomerData();
   }, [passengerId, session]);

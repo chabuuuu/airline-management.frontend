@@ -1,4 +1,4 @@
-import { chart } from "@/type";
+import { chart } from "@/interfaces/type";
 import React, { useState } from "react";
 
 interface BarChartProps {

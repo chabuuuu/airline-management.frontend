@@ -1,10 +1,12 @@
 "use client";
 
-import { Customer } from "@/type";
+import { customerEndpoint } from "@/services/axios/endpoints/customer.endpoint";
+import { Customer } from "@/interfaces/type";
+import { apiRequest } from "@/utils/apiRequest";
+import { showErrorToast, showSuccessToast } from "@/utils/toastUtils";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { toast } from "react-toastify";
 
 const ProfileCard = () => {
   const { data: session } = useSession();
@@ -30,20 +32,14 @@ const ProfileCard = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/customer/me`,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        setProfile(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${customerEndpoint["get-me-by-token"]}`;
+
+      const { result, error } = await apiRequest<Customer>(
+        url,
+        "GET",
+        session?.user.token
+      );
+      if (result) setProfile(result);
     };
     fetchProfile();
   }, [session]);
@@ -82,85 +78,30 @@ const ProfileCard = () => {
   };
 
   const handleOnsubmit = async () => {
-    console.log(updateData);
-    let config = {
-      method: "put",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${profile.customerId}`,
-      headers: {
-        Authorization: session?.user.token,
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify(updateData),
-    };
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-      toast.success("Update succesful!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      setInterval(() => {
-        window.location.reload();
-      }, 3000);
-    } catch (e: any) {
-      console.log(e);
-      const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
+    const url = `${process.env.NEXT_PUBLIC_SERVER}${customerEndpoint[
+      "put-update"
+    ](profile.customerId)}`;
+    const { result, error } = await apiRequest<Customer>(
+      url,
+      "PUT",
+      session?.user.token,
+      JSON.stringify(updateData)
+    );
+    if (error) showErrorToast(error);
+    else showSuccessToast("Update succesful");
   };
 
   const handleDeleteAccount = async () => {
-    let config = {
-      method: "delete",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/${profile.customerId}`,
-      headers: {
-        Authorization: session?.user.token,
-      },
-    };
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-      toast.success("Deleted succesful!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } catch (e: any) {
-      console.log(e);
-      const messages = e.response.data.message;
-      toast.error(messages || "An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
+    const url = `${process.env.NEXT_PUBLIC_SERVER}${customerEndpoint[
+      "delete-by-id"
+    ](profile.customerId)}`;
+    const { result, error } = await apiRequest<Customer>(
+      url,
+      "DELETE",
+      session?.user.token
+    );
+    if (error) showErrorToast(error);
+    else showSuccessToast("Update succesful");
   };
 
   return (

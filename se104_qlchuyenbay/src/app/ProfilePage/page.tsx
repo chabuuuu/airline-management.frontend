@@ -7,9 +7,12 @@ import TicketCard from "@/components/TIcketCard";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import TicketsPurchasedModal from "@/components/TicketsPurchasedModal";
-import { BookingType, chart } from "@/type";
-import axios from "axios";
+import { BookingType, chart } from "@/interfaces/type";
 import LineChart from "@/components/LineChart";
+import { customerEndpoint } from "@/services/axios/endpoints/customer.endpoint";
+import { sortByDateDesc } from "@/utils/dataDateSort";
+import { apiRequest } from "@/utils/apiRequest";
+import { bookingEndpoint } from "@/services/axios/endpoints/booking.endpoint";
 
 function ProfilePage() {
   const { data: session } = useSession();
@@ -30,71 +33,38 @@ function ProfilePage() {
 
   useEffect(() => {
     const getBookingTicket = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/booking/me`,
-        headers: {
-          Authorization: session?.user.token,
-        },
-      };
-      try {
-        const response = await axios.request(config);
-        const responseData = response.data;
-        console.log(responseData);
-        const mappedData = responseData.map((dt: any) => ({
-          bookingId: dt.bookingId,
-          paymentStatus: dt.paymentStatus,
-          bookingStatus: dt.bookingStatus,
-          passengerId: dt.passengerId,
-          price: dt.price,
-          bookedAt: dt.bookedAt,
-          updateAt: dt.updateAt,
-          seatId: dt.seatFlight.seatId,
-          flightId: dt.seatFlight.flightId,
-          class: dt.seatFlight.class,
-          brand: dt.seatFlight.flight.airlines,
-        }));
-        mappedData.sort((a: any, b: any) => {
-          const dateA = new Date(
-            a.bookedAt.split(" ")[0].split("-").reverse().join("-") +
-              "T" +
-              a.bookedAt.split(" ")[1]
-          ).getTime();
-          const dateB = new Date(
-            b.bookedAt.split(" ")[0].split("-").reverse().join("-") +
-              "T" +
-              b.bookedAt.split(" ")[1]
-          ).getTime();
-          return dateB - dateA;
-        });
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${bookingEndpoint["get-my-booking-history"]}`;
 
-        setBookings(mappedData);
-      } catch (e) {
-        console.log(e);
-      }
+      const { result, error } = await apiRequest<BookingType[]>(
+        url,
+        "GET",
+        session?.user.token
+      );
+
+      const mappedData = result?.map((dt: any) => ({
+        bookingId: dt.bookingId,
+        paymentStatus: dt.paymentStatus,
+        bookingStatus: dt.bookingStatus,
+        passengerId: dt.passengerId,
+        price: dt.price,
+        bookedAt: dt.bookedAt,
+        updateAt: dt.updateAt,
+        seatId: dt.seatFlight.seatId,
+        flightId: dt.seatFlight.flightId,
+        class: dt.seatFlight.class,
+        brand: dt.seatFlight.flight.airlines,
+      }));
+
+      setBookings(sortByDateDesc(mappedData, "bookedAt"));
     };
     getBookingTicket();
-  }, [session]);
+  }, [session?.user.token, setBookings]);
 
   useEffect(() => {
     const total = bookings.reduce((acc, book) => acc + Number(book.price), 0);
     setTotalMoneySpent(total);
   }, [bookings]);
 
-  const [topDestination, setTopDestination] = useState<
-    {
-      country: string;
-      count: number;
-    }[]
-  >([]);
-  // const brandChartData: chart = {
-  //   tittle: "Brand Average",
-  //   unit: "Count",
-  //   indicate: "Count",
-  //   datas: brandData.map((d) => d.count),
-  //   labels: brandData.map((d) => d.brand),
-  // };
   const [flightInMonth, setFlightInMonth] = useState<number[]>(
     Array(12).fill(0)
   );

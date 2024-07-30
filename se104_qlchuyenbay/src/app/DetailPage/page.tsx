@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { SeatColor } from "@/type";
+import { SeatColor } from "@/interfaces/type";
 import SignInForm from "@/components/SignInForm";
 
 const DetailPage = () => {

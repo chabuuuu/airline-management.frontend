@@ -1,6 +1,6 @@
 import Card from "@/components/Card";
-import { FlightType } from "@/type";
-import React, { useState } from "react";
+import { FlightType } from "@/interfaces/type";
+import React, { useState, useMemo } from "react";
 
 const MAX_LENGTH_COL = 9;
 const MAX_PAGE_BUTTONS = 3;
@@ -8,38 +8,43 @@ const MAX_PAGE_BUTTONS = 3;
 const GridSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
   allFlight,
 }) => {
-  //Page pavagation
   const [page, setPage] = useState<number>(1);
-  const totalPages = Math.ceil(allFlight.length / MAX_LENGTH_COL);
-  const startPage = Math.max(1, page - Math.floor(MAX_PAGE_BUTTONS / 2));
+  const totalPages = Math.ceil(allFlight?.length / MAX_LENGTH_COL);
+
+  const currentFlights = useMemo(() => {
+    const start = MAX_LENGTH_COL * (page - 1);
+    const end = start + MAX_LENGTH_COL;
+    return allFlight?.slice(start, end);
+  }, [page, allFlight]);
+
+  const startPage = Math.max(
+    1,
+    Math.min(
+      page - Math.floor(MAX_PAGE_BUTTONS / 2),
+      totalPages - MAX_PAGE_BUTTONS + 1
+    )
+  );
   const endPage = Math.min(totalPages, startPage + MAX_PAGE_BUTTONS - 1);
-  const adjustedStartPage = Math.max(1, endPage - MAX_PAGE_BUTTONS + 1);
 
   return (
     <div data-testid="grid">
       <div className="grid items-center justify-center md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-        {allFlight?.map((flight, index) => {
-          if (
-            index >= MAX_LENGTH_COL * (page - 1) &&
-            index < MAX_LENGTH_COL * page
-          ) {
-            return <Card key={index} flight={flight} />;
-          } else {
-            return null;
-          }
-        })}
+        {currentFlights?.map((flight, index) => (
+          <Card key={flight.flightId} flight={flight} />
+        ))}
       </div>
       <div className="flex justify-between p-3 mt-5">
-        <p className="font-medium">Total flight: {allFlight.length} </p>
+        <p className="font-medium">Total flights: {allFlight?.length}</p>
         <div className="join">
           <button
             className="join-item btn btn-xs btn-ghost"
             onClick={() => setPage(1)}
+            disabled={page === 1}
           >
             «
           </button>
-          {[...Array(endPage - adjustedStartPage + 1).keys()].map((index) => {
-            const pageNumber = adjustedStartPage + index;
+          {Array.from({ length: endPage - startPage + 1 }, (_, index) => {
+            const pageNumber = startPage + index;
             return (
               <button
                 key={pageNumber}
@@ -55,6 +60,7 @@ const GridSearchingView: React.FC<{ allFlight: FlightType[] }> = ({
           <button
             className="join-item btn btn-xs btn-ghost"
             onClick={() => setPage(totalPages)}
+            disabled={page === totalPages}
           >
             »
           </button>
