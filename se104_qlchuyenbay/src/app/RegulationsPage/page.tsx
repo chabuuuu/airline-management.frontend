@@ -1,16 +1,22 @@
 "use client";
-import { Rules } from "@/type";
+import { ticketClassEndpoint } from "@/services/axios/endpoints/ticket-class.endpoint";
+import { Rules } from "@/interfaces/type";
 import axios from "axios";
 import { useEffect, useState } from "react";
 const RegulationsPage = () => {
   const [rules, setRules] = useState<Rules>();
-
+  const [secondRegulation, setSecondRegulation] = useState<
+    {
+      ticketClass: string;
+      ticketPriceInterest: string;
+    }[]
+  >([]);
   useEffect(() => {
     const getAllTicketClass = async () => {
       let config = {
         method: "get",
         maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/list`,
+        url: `${process.env.NEXT_PUBLIC_SERVER}${ticketClassEndpoint["get-all-ticket-class"]}`,
         headers: {},
       };
       try {
@@ -38,70 +44,13 @@ const RegulationsPage = () => {
         const response = await axios.request(config);
 
         const rd = response.data;
-        setRules({
-          minFlightDuration: rd.airportRules.minFlightDuration,
-          maxIntermediateAirport: rd.airportRules.maxIntermediateAirport,
-          minIntermediateAirportStopDelay:
-            rd.airportRules.minIntermediateAirportStopDelay,
-          maxIntermediateAirportStopDelay:
-            rd.airportRules.maxIntermediateAirportStopDelay,
-          minBookingTime: rd.bookingRules.minBookingTime,
-          minCancelBookingTime: rd.bookingRules.minCancelBookingTime,
-        });
+        setRules(rd);
       } catch (e) {
         console.log(e);
       }
     };
     getRules();
   }, []);
-
-  useEffect(() => {
-    const getAllTicketClass = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/ticket-class/list`,
-        headers: {},
-      };
-      try {
-        const response = await axios.request(config);
-        const responseData = response.data.data;
-        const newClass = responseData.map((dt: any) => ({
-          ticketClass: dt.className,
-          ticketPriceInterest: dt.priceBonusInterest,
-        }));
-        setSecondRegulation(newClass);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getAllTicketClass();
-  }, []);
-
-  const [firstRegulation, setFirstRegulation] = useState<{
-    miniumDuration: string;
-    miniumMediateAiport: string;
-  }>();
-
-  const [secondRegulation, setSecondRegulation] = useState<
-    {
-      ticketClass: string;
-      ticketPriceInterest: string;
-    }[]
-  >([]);
-  const [tmpSecondR, setTmpSecondR] = useState<
-    {
-      ticketClass: string;
-      ticketPriceInterest: string;
-    }[]
-  >([]);
-
-  const handleCancel = () => {
-    setTmpSecondR(secondRegulation);
-  };
-  useEffect(() => {
-    handleCancel();
-  });
 
   return (
     <div className="flex justify-center items-center ">
@@ -125,10 +74,12 @@ const RegulationsPage = () => {
               <td>
                 <p className="mt-2 text-base  text-gray-600 max-w-[650px] ">
                   {" "}
-                  Thời gian bay tối thiểu là {rules?.minFlightDuration} giờ. Có
-                  tối đa {rules?.maxIntermediateAirport} sân bay trung gian với
-                  thời gian dừng từ {rules?.minIntermediateAirportStopDelay} đến{" "}
-                  {rules?.maxIntermediateAirportStopDelay} phút.
+                  Thời gian bay tối thiểu là{" "}
+                  {rules?.airportRules.minFlightDuration} giờ. Có tối đa{" "}
+                  {rules?.airportRules.maxIntermediateAirport} sân bay trung
+                  gian với thời gian dừng từ{" "}
+                  {rules?.airportRules.minIntermediateAirportStopDelay} đến{" "}
+                  {rules?.airportRules.maxIntermediateAirportStopDelay} phút.
                 </p>
               </td>
             </tr>
@@ -162,10 +113,13 @@ const RegulationsPage = () => {
               <td>
                 <p className="mt-2  text-base text-gray-600 max-w-[650px] ">
                   {" "}
-                  Chỉ cho đặt vé chậm nhất {rules?.minBookingTime} ngày trước
-                  khi khởi hành. Vào ngày khởi hành tất cả các phiếu đặt sẽ bị
-                  hủy. Chỉ cho hủy vé {rules?.minCancelBookingTime} ngày trước
-                  ngày khởi hành.
+                  Chỉ cho đặt vé chậm nhất {
+                    rules?.bookingRules.minBookingTime
+                  }{" "}
+                  ngày trước khi khởi hành. Vào ngày khởi hành tất cả các phiếu
+                  đặt sẽ bị hủy. Chỉ cho hủy vé{" "}
+                  {rules?.bookingRules.minCancelBookingTime} ngày trước ngày
+                  khởi hành.
                 </p>
               </td>
             </tr>
@@ -177,4 +131,3 @@ const RegulationsPage = () => {
 };
 
 export default RegulationsPage;
-/**/

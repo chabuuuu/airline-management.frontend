@@ -1,157 +1,145 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import AirportManage from "@/components/staff-components/AirportManage";
-import FlightManage from "@/components/staff-components/FlightManage";
-import RegulationsManage from "@/components/staff-components/RegulationsManage";
-import BookingManage from "@/components/staff-components/BookingManage";
-import AccountManage from "@/components/staff-components/AccountManage";
-import TicketManage from "@/components/staff-components/TicketManage";
+import AirportManage from "@/components/staff-components/Airport/AirportManage";
+import FlightManage from "@/components/staff-components/Flight/FlightManage";
+import RegulationsManage from "@/components/staff-components/Rule/RegulationsManage";
+import BookingManage from "@/components/staff-components/Booking/BookingManage";
+import AccountManage from "@/components/staff-components/Account/AccountManage";
+import TicketManage from "@/components/staff-components/Ticket/TicketManage";
+import { TicketsProvider } from "@/provider/TicketsProvider";
+import FlightProvider from "@/provider/FlightProvider";
+import BookingProvider from "@/provider/BookingProvider";
+import CustomersProvider from "@/provider/CustomerProvider";
+import StaffsProvider from "@/provider/StaffProvider";
+import AirportsProvider from "@/provider/AirportProvider";
+import RulesProvider from "@/provider/RulesProvider";
+import TicketClassTypeProvider from "@/provider/TicketClassProvider";
+
+interface TabPanelProps {
+  label: string;
+  index: number;
+  activeTab: number;
+  onChange: (index: number) => void;
+  children: React.ReactNode;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({
+  label,
+  index,
+  activeTab,
+  onChange,
+  children,
+}) => (
+  <>
+    <input
+      type="radio"
+      name={`my_tabs_${index}`}
+      role="tab"
+      className="tab font-semibold text-lg h-12"
+      aria-label={label}
+      checked={activeTab === index}
+      onChange={() => onChange(index)}
+    />
+    <div
+      role="tabpanel"
+      className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
+        activeTab === index ? "" : "hidden"
+      }`}
+    >
+      {children}
+    </div>
+  </>
+);
+
+interface TabConfig {
+  label: string;
+  content: React.ReactNode;
+}
 
 export default function StaffHome() {
-  const router = useRouter();
   const { data: session } = useSession();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!session || session.user.role === undefined) {
-        router.push("/");
-      }
-    }, 500);
-
-    return () => clearInterval(interval); // Cleanup the interval on component unmount
-  }, [session, router]);
-
   const [activeTab, setActiveTab] = useState(1);
 
-  const handleTabChange = (tabIndex: any) => {
+  const handleTabChange = (tabIndex: number) => {
     setActiveTab(tabIndex);
   };
 
-  let content;
-  switch (session?.user.role) {
-    case "Staff_LV2":
-      content = (
-        <div role="tablist" className="tabs tabs-lifted">
-          <input
-            type="radio"
-            name="my_tabs_1"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Flight "
-            checked={activeTab === 1}
-            onChange={() => handleTabChange(1)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 1 ? "" : "hidden"
-            }`}
-          >
-            <FlightManage />
-          </div>
+  const staffLV2Tabs: TabConfig[] = [
+    {
+      label: "Flight",
+      content: (
+        <FlightProvider>
+          <FlightManage />
+        </FlightProvider>
+      ),
+    },
+    {
+      label: "Booked",
+      content: (
+        <BookingProvider>
+          <BookingManage />
+        </BookingProvider>
+      ),
+    },
+    {
+      label: "Ticket",
+      content: (
+        <TicketsProvider>
+          <TicketManage />
+        </TicketsProvider>
+      ),
+    },
+  ];
 
-          <input
-            type="radio"
-            name="my_tabs_2"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Booked "
-            checked={activeTab === 2}
-            onChange={() => handleTabChange(2)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 2 ? "" : "hidden"
-            }`}
-          >
-            <BookingManage />{" "}
-          </div>
-
-          <input
-            type="radio"
-            name="my_tabs_3"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Ticket "
-            checked={activeTab === 3}
-            onChange={() => handleTabChange(3)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 3 ? "" : "hidden"
-            }`}
-          >
-            <TicketManage />{" "}
-          </div>
-        </div>
-      );
-      break;
-    case "Staff_LV1":
-      content = (
-        <div role="tablist" className="tabs tabs-lifted">
-          <input
-            type="radio"
-            name="my_tabs_1"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Regulations "
-            checked={activeTab === 1}
-            onChange={() => handleTabChange(1)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 1 ? "" : "hidden"
-            }`}
-          >
+  const staffLV1Tabs: TabConfig[] = [
+    {
+      label: "Regulations",
+      content: (
+        <RulesProvider>
+          <TicketClassTypeProvider>
             <RegulationsManage />
-          </div>
-
-          <input
-            type="radio"
-            name="my_tabs_2"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Airport"
-            checked={activeTab === 2}
-            onChange={() => handleTabChange(2)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 2 ? "" : "hidden"
-            }`}
-          >
-            <AirportManage />
-          </div>
-
-          <input
-            type="radio"
-            name="my_tabs_3"
-            role="tab"
-            className="tab font-semibold text-lg h-12"
-            aria-label="Account"
-            checked={activeTab === 3}
-            onChange={() => handleTabChange(3)}
-          />
-          <div
-            role="tabpanel"
-            className={`tab-content bg-base-100 border-base-300 rounded-box p-6 ${
-              activeTab === 3 ? "" : "hidden"
-            }`}
-          >
+          </TicketClassTypeProvider>
+        </RulesProvider>
+      ),
+    },
+    {
+      label: "Airport",
+      content: (
+        <AirportsProvider>
+          <AirportManage />
+        </AirportsProvider>
+      ),
+    },
+    {
+      label: "Account",
+      content: (
+        <StaffsProvider>
+          <CustomersProvider>
             <AccountManage />
-          </div>
-        </div>
-      );
-      break;
-    default:
-      content = null;
-  }
+          </CustomersProvider>
+        </StaffsProvider>
+      ),
+    },
+  ];
 
-  return <main className="main">{content}</main>;
+  const tabs = session?.user.role === "Staff_LV2" ? staffLV2Tabs : staffLV1Tabs;
+
+  return (
+    <main className="main">
+      <div role="tablist" className="tabs tabs-lifted">
+        {tabs.map((tab, index) => (
+          <TabPanel
+            key={index}
+            label={tab.label}
+            index={index + 1}
+            activeTab={activeTab}
+            onChange={handleTabChange}
+          >
+            {tab.content}
+          </TabPanel>
+        ))}
+      </div>
+    </main>
+  );
 }

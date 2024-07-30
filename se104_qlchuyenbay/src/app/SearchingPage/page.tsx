@@ -1,86 +1,43 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import SearchModal from "@/components/SearchModal";
-import axios from "axios";
 import { PlanesData } from "@/planes";
 import GridSearchingView from "@/components/GridSearchingView";
 import ListSearchingView from "@/components/ListSearchingView";
 import "react-toastify/dist/ReactToastify.css";
-import { FlightType } from "@/type";
+import { DataFetchType, FlightType } from "@/interfaces/type";
+import useFetch from "@/hooks/useFetch";
+import SearchModal from "@/components/SearchModal";
 
 export default function SearchingPage() {
-  const [departure, setDeparture] = useState<string>("");
-  const [destination, setDestination] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-
   const searchParams = useSearchParams();
+  const departure = searchParams.get("departure");
+  const destination = searchParams.get("destination");
+  const date = searchParams.get("date");
+  const url = `${process.env.NEXT_PUBLIC_SERVER}/flight/find-available-flight?departure=${departure}&arrival=${destination}&time=${date}`;
 
-  const [allFlightInfo, setAllFlightInfo] = useState<FlightType[]>([]);
   const [filterFlight, setFilterFlight] = useState<FlightType[]>([]);
   const [availableFlight, setAvailableFlight] = useState<boolean>(false);
   const [filters, setFilters] = useState<string | null>(null);
   const [gridView, setGridView] = useState<boolean>(true);
-  const [isFetching, setIsFetching] = useState<boolean>(true);
+
+  const { data, loading, error } = useFetch<DataFetchType<FlightType>>(url);
 
   useEffect(() => {
-    const params = Object.fromEntries(searchParams.entries());
-
-    setDeparture(params.departure || "");
-    setDestination(params.destination || "");
-    setDate(params.date || "");
-  }, [searchParams]);
-
-  useEffect(() => {
-    const searchForFlight = async () => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER}/flight/find-available-flight?departure=${departure}&arrival=${destination}&time=${date}`;
-
-      try {
-        const response = await axios.get(url);
-        const responseData = response.data;
-        console.log(responseData.data);
-        const notStartedFlight = responseData.data.filter(
-          (dt: any) => dt.status === "Chưa khởi hành"
+    if (data) {
+      const allFlightInfo = data.data.map((dt: FlightType) => {
+        const planeData = PlanesData.find(
+          (plane) => plane.brand === dt.airlines
         );
-        const updatedFlightInfo = notStartedFlight.map((dt: any) => {
-          const planeData = PlanesData.find(
-            (plane) => plane.brand === dt.airlines
-          );
-          const logo = planeData ? planeData.logo : "";
-          return {
-            flightId: dt.flightId,
-            brand: dt.airlines,
-            logo: logo,
-            date: dt.departureTime.slice(0, 10),
-            time: dt.departureTime.slice(11, 16),
-            departure: dt.departureAirport.city,
-            airportStart: dt.departureAirport.airportName,
-            arrival: dt.arrivalAirport.city,
-            airportEnd: dt.arrivalAirport.airportName,
-            duration: dt.flightDuration,
-            status: dt.status,
-            price: dt.price,
-            seatsTotal: dt.seatsTotal,
-            seatsAvailable: dt.seatsAvailable,
-            updateAt: dt.updateAt,
-            createAt: dt.createAt,
-            description: dt.description,
-            intermediate: dt.intermediateAirports,
-          };
-        });
-
-        setAllFlightInfo(updatedFlightInfo);
-        setFilterFlight(updatedFlightInfo);
-        setIsFetching(false);
-      } catch (error) {
-        console.error("Error fetching flight data:", error);
-      }
-    };
-
-    if (departure && destination) {
-      searchForFlight();
+        const logo = planeData ? planeData.logo : "";
+        return {
+          ...dt,
+          logo: logo,
+        };
+      });
+      setFilterFlight(allFlightInfo);
     }
-  }, [departure, destination, date]);
+  }, [data]);
 
   const handleFilter = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -89,15 +46,18 @@ export default function SearchingPage() {
 
     if (filterValue) {
       setFilters(filterValue);
-      let filteredFlights = [...allFlightInfo]; // Create a copy of allFlightInfo
+      let filteredFlights = data?.data;
 
       if (filterValue.includes("Pricesb")) {
-        filteredFlights.sort((a: any, b: any) => a.price - b.price);
+        filteredFlights?.sort(
+          (a: any, b: any) => Number(a.price) - Number(b.price)
+        );
       } else if (filterValue.includes("Prices")) {
-        filteredFlights.sort((a: any, b: any) => b.price - a.price);
+        filteredFlights?.sort(
+          (a: any, b: any) => Number(b.price) - Number(a.price)
+        );
       }
-
-      setFilterFlight(filteredFlights);
+      if (filteredFlights) setFilterFlight(filteredFlights);
     }
   };
 
@@ -105,30 +65,12 @@ export default function SearchingPage() {
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     setFilters(null);
-    setFilterFlight([...allFlightInfo]); // Reset to all flights
+    if (data?.data) setFilterFlight(data?.data);
   };
 
   const handleFilterAvailableFlight = () => {
     setAvailableFlight(!availableFlight);
   };
-
-  useEffect(() => {
-    let filteredFlights = [...allFlightInfo]; // Create a copy of allFlightInfo
-
-    if (availableFlight) {
-      filteredFlights = filteredFlights.filter((f) => f.seatsAvailable !== 0);
-    }
-
-    if (filters) {
-      if (filters.includes("Pricesb")) {
-        filteredFlights.sort((a: any, b: any) => a.price - b.price);
-      } else if (filters.includes("Prices")) {
-        filteredFlights.sort((a: any, b: any) => b.price - a.price);
-      }
-    }
-
-    setFilterFlight(filteredFlights);
-  }, [availableFlight, allFlightInfo, filters]);
 
   const handleChangeViewStyle = () => {
     setGridView(!gridView);
@@ -338,11 +280,11 @@ export default function SearchingPage() {
           </div>
         </div>
       </div>
-      {isFetching && (
+      {/* {isFetching && (
         <div className="flex justify-center w-full h-[300px] mt-20 ">
           <span className="loading loading-spinner loading-lg"></span>
         </div>
-      )}
+      )} */}
       {content}
     </main>
   );

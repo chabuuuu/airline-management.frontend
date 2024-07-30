@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       data: qs.stringify(body),
     };
     const response = await axios.request(config);
-
+    console.log(response.data);
     return NextResponse.json(
       { message: "success", data: response.data },
       { status: 200 }

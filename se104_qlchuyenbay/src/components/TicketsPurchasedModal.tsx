@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import TicketCard from "./TIcketCard";
 import { useSession } from "next-auth/react";
-import { BookingType } from "@/type";
+import { BookingType } from "@/interfaces/type";
 
 const TicketsPurchasedModal: React.FC<{ allBookings: BookingType[] }> = ({
   allBookings,

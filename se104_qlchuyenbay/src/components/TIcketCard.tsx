@@ -21,6 +21,9 @@ import {
   Button,
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
+import { showErrorToast, showSuccessToast } from "@/utils/toastUtils";
+import { bookingEndpoint } from "@/services/axios/endpoints/booking.endpoint";
+import { apiRequest } from "@/utils/apiRequest";
 const TicketCard: React.FC<TicketCardProps> = ({
   bookingId,
   flightId,
@@ -89,30 +92,16 @@ const TicketCard: React.FC<TicketCardProps> = ({
   }, [flightId, session]);
 
   const cancelBooking = async (id: any) => {
-    let config = {
-      method: "put",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/booking/cancel-booking/${id}`,
-      headers: {
-        Authorization: session?.user.token,
-      },
-    };
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-      toast.success("Cancel Successful", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } catch (e: any) {
-      console.log(e);
-    }
+    const url = `${process.env.NEXT_PUBLIC_SERVER}${bookingEndpoint[
+      "put-cancel-booking"
+    ](id)}`;
+    const { result, error } = await apiRequest(
+      url,
+      "DELETE",
+      session?.user.token
+    );
+    if (error) showErrorToast(error);
+    else showSuccessToast("Cancel succesful");
   };
   return (
     <div className="bg-white shadow rounded-lg p-4 drop-shadow-md m-2 min-w-[500px] max-w-[700px]">

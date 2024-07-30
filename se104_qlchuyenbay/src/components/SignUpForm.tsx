@@ -9,6 +9,14 @@ import { toast } from "react-toastify";
 import { GoogleSignUpButton } from "./GoogleSignUpButton";
 
 import { useRouter } from "next/navigation";
+import {
+  showErrorToast,
+  showErrorToasts,
+  showSuccessToast,
+} from "@/utils/toastUtils";
+import { customerEndpoint } from "@/services/axios/endpoints/customer.endpoint";
+import { apiRequest } from "@/utils/apiRequest";
+import { useSession } from "next-auth/react";
 
 const schema = z.object({
   email: z.string().email(),
@@ -48,7 +56,7 @@ type FormFields = z.infer<typeof schema>;
 
 const SignUpForm = () => {
   const router = useRouter();
-
+  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
@@ -60,7 +68,6 @@ const SignUpForm = () => {
   const onSubmit: SubmitHandler<FormFields> = async (data, event) => {
     try {
       event?.preventDefault();
-
       const response = await fetch(`/api/auth/register`, {
         method: "POST",
         headers: {
@@ -68,86 +75,36 @@ const SignUpForm = () => {
         },
         body: JSON.stringify(data),
       });
-
       const mss = await response.json();
       console.log(mss);
 
       if (mss.message.statusCode === 200) {
         verifiedEmailHandle(data.email);
-        toast.success(
-          "Register succesful! Please verified your email to login.",
-          {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
-        setInterval(() => {
-          router.push("/SignIn", { scroll: false });
-        }, 3000);
       } else {
         const messages = mss.message?.message;
-        messages.map((m: any) => {
-          toast.error(m || "An error occurred", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        });
-        toast.error("Error", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        showErrorToasts(messages);
       }
     } catch (e) {
-      toast.error("An error occurred", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      showErrorToast("Error");
       console.log(e);
     }
   };
 
   const verifiedEmailHandle = async (verifiedEmail: string) => {
     console.log(JSON.stringify({ email: verifiedEmail }));
-
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${process.env.NEXT_PUBLIC_SERVER}/customer/send-verify-email`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify({ email: verifiedEmail }),
-    };
-
-    try {
-      const response = await axios.request(config);
-      console.log(response);
-    } catch (e: any) {
-      console.log(e);
+    const url = `${process.env.NEXT_PUBLIC_SERVER}${customerEndpoint["post-send-verify-email"]}`;
+    const { result, error } = await apiRequest(
+      url,
+      "POST",
+      session?.user.token,
+      JSON.stringify({ email: verifiedEmail })
+    );
+    if (error) showErrorToast(error);
+    else {
+      showSuccessToast("Update succesful");
+      setInterval(() => {
+        router.push("/SignIn", { scroll: false });
+      }, 3000);
     }
   };
 

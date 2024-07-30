@@ -1,4 +1,4 @@
-import { AirplaneType } from "@/type";
+import { AirplaneType } from "@/interfaces/type";
 import React from "react";
 
 const AirplaneTable = () => {

@@ -6,7 +6,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import axios from "axios";
+import { showErrorToast } from "@/utils/toastUtils";
+import { airportEndpoint } from "@/services/axios/endpoints/airport.endpoint";
+import { apiRequest } from "@/utils/apiRequest";
 
 const schema = z.object({
   country: z.string().nonempty("Country is required"),
@@ -45,71 +47,41 @@ const SearchForm = () => {
   >([]);
 
   useEffect(() => {
-    const get_all_country = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/country`,
-        headers: {},
-      };
-      try {
-        const response = await axios.request(config);
-        const responseData = response.data;
-        const options = responseData.map((country: any) => ({
-          name: country.name,
-          code: country.code,
-        }));
-        setCountryOptions(options);
-      } catch (e) {
-        console.log(e);
-      }
+    const getAllCountry = async () => {
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${airportEndpoint["get-all-country"]}`;
+
+      const { result, error } = await apiRequest<
+        { name: string; code: string }[]
+      >(url, "GET");
+      if (error) showErrorToast(error);
+      if (result) setCountryOptions(result);
     };
-    get_all_country();
+    getAllCountry();
   }, []);
 
   useEffect(() => {
     const get_all_city_by_code = async () => {
-      if (!countryCode) return;
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${airportEndpoint[
+        "get-all-city-by-country-code"
+      ](countryCode)}`;
 
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/city?country=${countryCode}`,
-        headers: {},
-      };
-      try {
-        const response = await axios.request(config);
-        const responseData = response.data;
-
-        setCityOptions(responseData);
-      } catch (e) {
-        console.log(e);
-      }
+      const { result, error } = await apiRequest<string[]>(url, "GET");
+      if (error) showErrorToast(error);
+      if (result) setCityOptions(result);
     };
-    get_all_city_by_code();
-  }, [countryCode]);
+    const get_all_arival_city_by_code = async () => {
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${airportEndpoint[
+        "get-all-city-by-country-code"
+      ](countryArrivalCode)}`;
 
-  useEffect(() => {
-    const get_all_city_by_code = async () => {
-      if (!countryArrivalCode) return;
-
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/city?country=${countryArrivalCode}`,
-        headers: {},
-      };
-      try {
-        const response = await axios.request(config);
-        const responseData = response.data;
-
-        setCityArrivalOptions(responseData);
-      } catch (e) {
-        console.log(e);
-      }
+      const { result, error } = await apiRequest<string[]>(url, "GET");
+      if (error) showErrorToast(error);
+      if (result) setCityArrivalOptions(result);
     };
+
+    get_all_arival_city_by_code();
     get_all_city_by_code();
-  }, [countryArrivalCode]);
+  }, [countryCode, countryArrivalCode]);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     const queryParams = `?departure=${encodeURIComponent(

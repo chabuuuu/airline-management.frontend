@@ -10,6 +10,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { airportEndpoint } from "@/services/axios/endpoints/airport.endpoint";
+import { apiRequest } from "@/utils/apiRequest";
+import { showErrorToast } from "@/utils/toastUtils";
 
 const schema = z.object({
   country: z.string(),
@@ -27,18 +30,13 @@ const PayForm = () => {
 
   useEffect(() => {
     const getAllCountry = async () => {
-      let config = {
-        method: "get",
-        maxBodyLength: Infinity,
-        url: `${process.env.NEXT_PUBLIC_SERVER}/airport/country`,
-        headers: {},
-      };
-      try {
-        const response = await axios.request(config);
-        setCountryOptions(response.data);
-      } catch (e) {
-        console.log(e);
-      }
+      const url = `${process.env.NEXT_PUBLIC_SERVER}${airportEndpoint["get-all-country"]}`;
+
+      const { result, error } = await apiRequest<
+        { name: string; code: string }[]
+      >(url, "GET");
+      if (error) showErrorToast(error);
+      if (result) setCountryOptions(result);
     };
     getAllCountry();
   }, []);
@@ -49,20 +47,13 @@ const PayForm = () => {
 
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
   });
 
-  const handleFormSubmit: SubmitHandler<FormFields> = (data) => {
-    console.log(data);
-  };
-
   const discount = 0;
-  const handleCompleteCheckout = () => {
-    const url = `${process.env.NEXT_PUBLIC_SERVER}/`;
-  };
+
   const [showModal, setShowModal] = useState<boolean>(false);
 
   return (

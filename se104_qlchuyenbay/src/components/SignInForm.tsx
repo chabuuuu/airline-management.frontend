@@ -8,6 +8,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 import { toast } from "react-toastify";
+import { showErrorToast, showSuccessToast } from "@/utils/toastUtils";
 
 const schema = z.object({
   email: z.string().email(),
@@ -42,16 +43,7 @@ const SignInForm: React.FC<prop> = ({ isModal = false }) => {
     });
 
     if (!res?.error) {
-      toast.success("Login Successful", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      showSuccessToast("Sign in succesfully");
 
       if (!isModal) router.push("/");
       else {
@@ -59,16 +51,7 @@ const SignInForm: React.FC<prop> = ({ isModal = false }) => {
       }
     } else {
       console.log(res);
-      toast.error(res.error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      showErrorToast(res.error);
     }
   };
 
